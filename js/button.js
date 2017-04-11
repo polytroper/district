@@ -6,10 +6,17 @@ function Button(){
         y: 0
     }
 
+    this.baseColor = colors.menu.base;
+    this.touchColor = colors.menu.touch;
+    this.clickColor = colors.menu.click;
+
+    this.click = false; 
     this.touch = false; 
     this.touchProgress = 0;
     this.touchDuration = 0.2;
     this.transparency = 1;
+
+    this.world = false;
 
     this.onClick = function(){console.log("No callback on this button :(");}
 
@@ -21,9 +28,13 @@ function Button(){
 
 Button.prototype = {
     draw: function(){
-        var color = colors.menu.base;
-        if (this.touch) color = colors.menu.touch;
-        port.drawCircle(this.position, this.radius, color);
+        var color = this.baseColor;
+        if (this.enabled) {
+            if (this.click) color = this.clickColor;
+            else if (this.touch) color = this.touchColor;
+        }
+        
+        (this.world ? camera: port).drawCircle(this.position, this.radius, color);
     },
 
     update: function(){
@@ -32,7 +43,7 @@ Button.prototype = {
     },
 
     contains: function(point){
-        return distance(port.transformPoint(point), this.position) < this.radius;
+        return distance((this.world ? camera: port).transformPoint(point), this.position) < this.radius;
     },
 
     onMouseMove: function(event){
@@ -40,10 +51,13 @@ Button.prototype = {
     },
 
     onMouseDown: function(event){
-        if (this.touch && this.enabled) this.onClick();
+        if (this.touch && this.enabled) {
+            this.click = true;
+            this.onClick();
+        }
     },
 
     onMouseUp: function(event){
-
+        this.click = false;
     }
 }

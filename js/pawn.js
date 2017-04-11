@@ -36,5 +36,9 @@ Pawn.prototype = {
         if (this.xIndex < this.board.xSize-1) this.neighbors.push(this.board.pawns[this.xIndex+1][this.yIndex]);
         if (this.yIndex > 0) this.neighbors.push(this.board.pawns[this.xIndex][this.yIndex-1]);
         if (this.yIndex < this.board.ySize-1) this.neighbors.push(this.board.pawns[this.xIndex][this.yIndex+1]);
+    },
+
+    invert: function(){
+        if (this.teamIndex < 2) this.teamIndex = 1-this.teamIndex;
     }
 };

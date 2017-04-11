@@ -17,7 +17,7 @@ Post.prototype = {
         //console.log(this.TAG+"Drawing at "+xyString(this.centerX, this.centerY));
 
         var color;
-        if (this.contains(mousePoint)) color = colors.post.touch;
+        if (this.contains(mousePoint) && this.board.active) color = colors.post.touch;
         else color = colors.post.base;
 
         camera.drawCircle(this.position, sizes.postRadius, color);
@@ -26,7 +26,7 @@ Post.prototype = {
     contains: function(point){
         point = camera.transformPoint(point);
         //console.log(this.TAG+"Checking at "+pointString(point));
-        return Math.sqrt((point.x-this.position.x)**2+(point.y-this.position.y)**2) < sizes.postRadius*4;
+        return Math.sqrt((point.x-this.position.x)**2+(point.y-this.position.y)**2) < sizes.postRadius*3.5;
     },
 
     isNeighbor: function(post){

@@ -31,6 +31,20 @@ Port.prototype = {
         view.drawLine(point0, point1, width, color);
     },
 
+    drawImage: function(image, position, size){
+        position = this.untransformPoint(position);
+        size = this.untransformPoint(size);
+
+        view.drawImage(image, position, size);
+    },
+
+    drawPointer: function(center, tip, color){
+        center = this.untransformPoint(center);
+        tip = this.untransformPoint(tip);
+
+        view.drawPointer(center, tip, color);
+    },
+
     transformPoint: function(point){
         point = {
             x: point.x/view.height,

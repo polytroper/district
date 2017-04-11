@@ -70,6 +70,10 @@ Camera.prototype = {
         this.transitioning = false;
     },
 
+    resumeTransition: function(){
+        this.transitioning = true;
+    },
+
     translate: function(point){
         this.position.x += point.x;
         this.position.y += point.y;
@@ -130,17 +134,20 @@ Camera.prototype = {
         width = view.height*width/this.fov;
 
         view.drawLine(point0, point1, width, color);
-        /*
-        context.beginPath();
-        context.moveTo(p0.x, p0.y);
-        context.lineTo(p1.x, p1.y);
-        context.lineWidth = width;
-        context.strokeStyle = color;
-        context.stroke();
+    },
 
-        this.drawCircle(point0, width/2, color);
-        this.drawCircle(point1, width/2, color);
-        */
+    drawImage: function(image, position, size){
+        position = this.untransformPoint(position);
+        size = this.unscalePoint(size);
+
+        view.drawImage(image, position, size);
+    },
+
+    drawPointer: function(center, tip, color){
+        center = this.untransformPoint(center);
+        tip = this.untransformPoint(tip);
+
+        view.drawPointer(center, tip, color);
     },
 
     transformPoint: function(point){

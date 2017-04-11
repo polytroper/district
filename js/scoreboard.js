@@ -31,9 +31,24 @@ function Scoreboard(){
 
 Scoreboard.prototype = {
     draw: function(){
+        /*
         var groupCount = this.board.groupCount;
         var width = groupCount*(sizes.counterSize+sizes.counterGap)-sizes.counterGap;
 
+        var pos = {
+            x: 0.5-width/2,
+            y: this.position.y
+        }
+
+
+
+        for (var i = 0; i < this.scores.length; i++) {
+            for (var j = 0; j < this.scores[i]; j++) {
+
+                pos.x += sizes.
+            }
+        }
+        */
 
         var boardWidth = this.stackCount*(sizes.counterSize+sizes.counterGap)-sizes.counterGap;
 

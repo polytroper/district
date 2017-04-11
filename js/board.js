@@ -12,6 +12,10 @@ function Board(puzzle){
     this.active = false;
     this.dragPost = null;
 
+    this.goalTeam = (puzzle.goalTeam === undefined ? -1 : puzzle.goalTeam);
+    this.goalScore = (puzzle.goalScore === undefined ? -1 : puzzle.goalScore);
+    this.secondScore = (puzzle.secondScore === undefined ? this.goalScore : puzzle.secondScore);
+
     this.winner = -1;
     this.playerTeam = 0;
     this.playerScore = 0;
@@ -36,16 +40,19 @@ function Board(puzzle){
     this.pawnCount = this.xSize*this.ySize;
     this.groupSize = this.pawnCount/this.groupCount;
 
+    this.ratio = 0;
     for (var i = 0; i < this.pawnList.length; i++) {
         this.pawnList[i].findNeighbors();
+        this.ratio += this.pawnList[i].teamIndex;
     }
+    this.ratio /= this.pawnCount;
 
     this.size = {
         x: (this.xSize)*3*sizes.pawnRadius+sizes.postRadius*2,
         y: (this.ySize)*3*sizes.pawnRadius+sizes.postRadius*2,
     };
 
-    this.fov = Math.max(this.size.x, this.size.y)*2;
+    this.fov = Math.max(this.size.x, this.size.y)*5/3;
 
     return this;
 };
@@ -84,22 +91,38 @@ Board.prototype = {
         return true;
     },
 
+    invert: function(){
+        for (var i = 0; i < this.pawnList.length; i++) {
+            this.pawnList[i].invert();
+        }
+        this.ratio = 1-this.ratio;
+    },
+
+    switchScores: function(){
+        var s = this.secondScore;
+        this.secondScore = this.goalScore;
+        this.goalScore = s;
+    },
+
     setActive: function(value){
         this.active = value;
 
         if (value) {
             this.compute();
-            menu.showPrompt = true;
-            menu.setPrompt("Make "+this.groupCount+" groups of "+this.groupSize);
-            menu.setShowNext(true);
+            //menu.setPrompt("Make "+this.groupCount+" groups of "+this.groupSize);
+            menu.setPrompt("Make groups of "+this.groupSize);
+            menu.setShowPrompt(true);
+            menu.setShowNext(this.complete);
             menu.setShowReset(true);
-            menu.setShowScoreboard(true);
+            menu.setShowBalance(true);
+            //menu.balance.setRatio(this.ratio);
+            menu.balance.setGoal(playerTeam, this.goalScore);
         }
         else {
-            menu.showPrompt = false;
+            menu.setShowPrompt(false);
             menu.setShowNext(false);
             menu.setShowReset(false);
-            menu.setShowScoreboard(false);
+            menu.setShowBalance(false);
         }
     },
 
@@ -175,7 +198,9 @@ Board.prototype = {
         for (var i = 0; i < this.pawnList.length; i++) {
             fractions[this.pawnList[i].teamIndex] += 1/this.pawnList.length;
         }
-    }
+
+        return fractions;
+    },
 
     getRandomTeam: function() {
         return Math.floor(Math.random()*this.teamCount);
@@ -225,7 +250,6 @@ Board.prototype = {
     },
 
     getTouchPost: function(point){
-        if (!this.active) return null;
         for (var i = 0; i < this.postList.length; i++) {
             if (this.postList[i].contains(point)) return this.postList[i];
         }
@@ -286,16 +310,27 @@ Board.prototype = {
             }
         }
 
-        
+
 /*
         this.playerScore = this.scores[this.playerTeam];
         for (var i = 0; i < this.scores.length; i++) {
 
         }
 */
-        scoreInfo = {
+        var score = this.scores[playerTeam]-this.scores[1-playerTeam];
 
+        this.valid = true;
+        for (var i = 0; i < this.groups.length; i++) {
+            if (!this.groups[i].valid) this.valid = false;
         }
-        menu.scoreboard.setScores(this);
+        this.valid =  this.valid && this.groups.length == this.groupCount
+
+        this.complete = (score >= this.goalScore || this.goalScore < 0) && this.valid;
+
+        if (this.active) {
+            menu.setShowNext(this.complete);
+            menu.balance.setScores(this.scores[1], this.scores[0], this.scores[2], this.groupCount);
+        }
+        
     }
 };

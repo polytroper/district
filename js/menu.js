@@ -10,8 +10,8 @@ function Menu(){
         y: 0.95
     }
     this.resetButton.onClick = function(){
-        board.resetFences();
-        draw();
+        if (typeof stage.resetFences !== 'undefined') stage.resetFences();
+//        draw();
     }
 
     this.nextButton = new Button();
@@ -25,7 +25,7 @@ function Menu(){
         y: 0.5
     }
     this.nextButton.onClick = function(){
-        nextBoard();
+        nextStage();
     }
 
     this.showPrompt = false;
@@ -42,6 +42,7 @@ function Menu(){
     this.showNextDuration = 1;
 
     this.scoreboard = new Scoreboard();
+    this.balance = new Balance();
 }
 
 Menu.prototype = {
@@ -49,12 +50,12 @@ Menu.prototype = {
     draw: function(){
         if (this.showPromptProgress > 0) {
             var ypos = lerp(-0.05, 0.05, smooth01(this.showPromptProgress));
-            port.drawText(this.promptString, {x: view.aspect/2, y: ypos}, 0.04, "center", va(0.2, 1));
+            port.drawText(this.promptString, {x: view.aspect/2, y: ypos}, 0.04, "center", va(64, 1));
         }
 
         this.resetButton.draw();
         this.nextButton.draw();
-        this.scoreboard.draw();
+        this.balance.draw();
     },
 
     update: function(){
@@ -65,11 +66,15 @@ Menu.prototype = {
         this.resetButton.position = smoothLerpPoint(this.resetButtonPosition0, this.resetButtonPosition1, this.showResetProgress);
         this.nextButton.position = smoothLerpPoint(this.nextButtonPosition0, this.nextButtonPosition1, this.showNextProgress);
 
-        this.scoreboard.update();
+        this.balance.update();
     },
     
     setPrompt: function(prompt){
         this.promptString = prompt;
+    },
+    
+    setShowPrompt: function(show){
+        this.showPrompt = show;
     },
 
     setShowReset: function(show){
@@ -82,9 +87,8 @@ Menu.prototype = {
         this.nextButton.enabled = show;
     },
 
-    setShowScoreboard: function(show){
-        this.scoreboard.show = show;
-        this.scoreboard.enabled = show;
+    setShowBalance: function(show){
+        this.balance.show = show;
     },
 
     setCounterQuantity: function(quantity){
