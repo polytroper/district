@@ -350,14 +350,10 @@ canvas {
 
                 function draw() {
                     clear();
-                    for (var i = 0; i < 2; i++) {
-                        /*
-                        if (boards[i].isVisible()) {
-                            boards[i].draw();
-                            visibleBoards++;
+                    for (var i = 0; i < stages.length; i++) {
+                        if (stages[i].isVisible()) {
+                            stages[i].draw();
                         }
-                        */
-                        stages[i].draw();
                     }
                     //console.log("Drawing "+visibleBoards+" of "+boards.length+" boards");
                     //camera.report();
@@ -454,10 +450,7 @@ canvas {
 
                 function onTouchEnd(event){
                     var touch = event.touches[0];
-                    var mouseEvent = new MouseEvent("mouseup", {
-                        clientX: touch.clientX,
-                        clientY: touch.clientY
-                    });
+                    var mouseEvent = new MouseEvent("mouseup");
                     canvas.dispatchEvent(mouseEvent);
                     //onMouseUp(convertTouches(event));
                 }

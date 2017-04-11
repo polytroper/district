@@ -35,6 +35,10 @@ OpeningStage.prototype = {
         }
     },
 
+    isVisible: function(){
+        return true;
+    },
+
     update: function(){
         if (this.click && !this.lock) {
             this.touchPost = boards[0].getTouchPost(mousePoint);
@@ -191,6 +195,10 @@ ChoiceStage.prototype = {
         this.team1Button.position = lerpPoint(this.position, this.team1ButtonPosition, progress);
     },
 
+    isVisible: function(){
+        return true;
+    },
+
     setActive: function(active){
         this.active = active;
 
@@ -217,88 +225,7 @@ ChoiceStage.prototype = {
 
     },
 }
-/*
-function MidStage(){
-    this.position = {
-        x: -32,
-        y: 128
-    }
-    this.fov = 24;
 
-    this.active = false;
-
-    this.delay0Progress = 0;
-
-    this.text0Progress = 0;
-
-    this.delay1Progress = 0;
-
-    this.text1Progress = 0;
-
-    this.delay2Progress = 0;
-
-    this.endButton = new Button();
-
-    this.endButtonPosition0 = {
-        x: 0.5,
-        y: 0.9
-    }
-    this.endButtonPosition1 = {
-        x: 0.5,
-        y: 0.9
-    }
-}
-
-MidStage.prototype = {
-    draw: function(){
-
-        camera.drawText("Drawing districts ", {x: this.position.x, y: this.position.y-8}, 2, "center", va(32, this.text0Progress));
-
-        camera.drawText("But this is indefensible.", {x: this.position.x, y: this.position.y+8}, 2, "center", va(32, this.text1Progress));
-    },
-
-    update: function(){
-        var progress = 1/Math.sqrt(1+distance(camera.position, this.position)/4);
-
-        this.delay0Progress = tickProgress(this.active, this.delay0Progress, 2);
-
-        this.text0Progress = tickProgress(this.delay0Progress == 1, this.text0Progress, 2);
-
-        this.delay1Progress = tickProgress(this.text0Progress == 1, this.delay1Progress, 2);
-
-        this.text1Progress = tickProgress(this.delay1Progress == 1, this.text1Progress, 2);
-
-        this.delay2Progress = tickProgress(this.text1Progress == 1, this.delay2Progress, 2);
-
-        if (this.delay2Progress == 1) menu.setShowNext(true);
-    },
-
-    setActive: function(active){
-        this.active = active;
-
-        if (!active) {
-            menu.setShowNext(false);
-            choiceStage.promptString = ""
-        }
-
-
-        //menu.setShowPrompt(active);
-        //menu.setPrompt("Drawing districts .");
-    },
-
-    onMouseMove: function(point){
-
-    },
-
-    onMouseDown: function(point){
-
-    },
-
-    onMouseUp: function(point){
-
-    },
-}
-*/
 function EndStage(){
     this.position = {
         x: 64,
@@ -353,6 +280,10 @@ EndStage.prototype = {
         this.delay2Progress = tickProgress(this.text1Progress == 1, this.delay2Progress, 2);
 
         if (this.delay1Progress == 1) menu.setShowNext(true);
+    },
+
+    isVisible: function(){
+        return true;
     },
 
     setActive: function(active){
