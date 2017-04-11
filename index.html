@@ -63,6 +63,11 @@ canvas {
                 canvas.addEventListener("mouseup", onMouseUp, false);
                 canvas.addEventListener("mousemove", onMouseMove, false);
 
+                canvas.addEventListener("touchstart", onTouchStart, false);
+                canvas.addEventListener("touchend", onTouchEnd, false);
+                canvas.addEventListener("touchcancel", onTouchCancel, false);
+                canvas.addEventListener("touchmove", onTouchMove, false);
+
                 var mouseListeners = [];
                 var updateListeners = [];
 
@@ -436,12 +441,36 @@ canvas {
                     draw();
                 }
 
+                function onTouchStart(event){
+                    onMouseDown(convertTouches(event));
+                }
+
+                function onTouchEnd(event){
+                    onMouseUp(convertTouches(event));
+                }
+
+                function onTouchMove(event){
+                    onMouseMove(convertTouches(event));
+                }
+
+                function onTouchCancel(event){
+                    onMouseUp(convertTouches(event));
+                }
+
                 function getMousePos(canvas, event){
                     var rect = canvas.getBoundingClientRect();
                     return {
                         x: event.clientX - rect.left,
                         y: event.clientY - rect.top
                     };
+                }
+
+                function convertTouches(event) {
+                    var touches = event.touches;
+                    if (touches.length > 0) {
+                        event.clientX = touches[0].clientX;
+                        event.clientY = touches[0].clientY;
+                    }
                 }
 
                 function clamp01(value){

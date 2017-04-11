@@ -162,13 +162,13 @@ function ChoiceStage(){
 
     this.buttons = [this.team0Button, this.team1Button];
 
-    this.promptString = "Inevitably, we all must choose a team."
+    this.promptString = "Inevitably we all must choose a team."
 }
 
 ChoiceStage.prototype = {
     draw: function(){
         var promptString
-        camera.drawText(this.promptString, {x: this.position.x, y: this.position.y-4}, 1, "center", va(32, this.text0Progress));
+        camera.drawText(this.promptString, {x: this.position.x, y: this.position.y-2}, 0.8, "center", va(32, this.text0Progress));
 
         //camera.drawText("Pick a Team", {x: this.position.x, y: this.position.y-2}, 1, "center", "black");
         if (playerTeam >= 0) camera.drawCircle(this.buttons[playerTeam].position, this.buttons[playerTeam].radius*1.1, colors.teamNeutral);
