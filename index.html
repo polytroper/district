@@ -350,7 +350,7 @@ canvas {
 
                 function draw() {
                     clear();
-                    for (var i = 0; i < stages.length; i++) {
+                    for (var i = 0; i < 2; i++) {
                         /*
                         if (boards[i].isVisible()) {
                             boards[i].draw();
@@ -443,19 +443,37 @@ canvas {
                 }
 
                 function onTouchStart(event){
-                    onMouseDown(convertTouches(event));
+                    var touch = event.touches[0];
+                    var mouseEvent = new MouseEvent("mousedown", {
+                        clientX: touch.clientX,
+                        clientY: touch.clientY
+                    });
+                    canvas.dispatchEvent(mouseEvent);
+                    //onMouseDown(convertTouches(event));
                 }
 
                 function onTouchEnd(event){
-                    onMouseUp(convertTouches(event));
+                    var touch = event.touches[0];
+                    var mouseEvent = new MouseEvent("mouseup", {
+                        clientX: touch.clientX,
+                        clientY: touch.clientY
+                    });
+                    canvas.dispatchEvent(mouseEvent);
+                    //onMouseUp(convertTouches(event));
                 }
 
                 function onTouchMove(event){
-                    onMouseMove(convertTouches(event));
+                    var touch = event.touches[0];
+                    var mouseEvent = new MouseEvent("mousemove", {
+                        clientX: touch.clientX,
+                        clientY: touch.clientY
+                    });
+                    canvas.dispatchEvent(mouseEvent);
+                    //onMouseMove(convertTouches(event));
                 }
 
                 function onTouchCancel(event){
-                    onMouseUp(convertTouches(event));
+                    //onMouseUp(convertTouches(event));
                 }
 
                 function getMousePos(canvas, event){
