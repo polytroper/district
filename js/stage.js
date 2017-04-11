@@ -68,12 +68,13 @@ OpeningStage.prototype = {
 
     onMouseMove: function(point){
         point = camera.transformPoint(point);
-        //console.log(this.TAG+"Checking at "+pointString(point));
         this.touch = Math.sqrt((point.x-this.position.x)**2+(point.y-this.position.y)**2) < sizes.postRadius*4;
-        //this.touch = this.touch && (camera.transitionProgress == 0 || camera.transitioning);
     },
 
     onMouseDown: function(point){
+        point = camera.transformPoint(point);
+        this.touch = Math.sqrt((point.x-this.position.x)**2+(point.y-this.position.y)**2) < sizes.postRadius*4;
+        
         if (this.touch) {
             this.click = true;
             this.fadeProgress = 0;
@@ -83,6 +84,9 @@ OpeningStage.prototype = {
     },
 
     onMouseUp: function(point){
+        point = camera.transformPoint(point);
+        this.touch = Math.sqrt((point.x-this.position.x)**2+(point.y-this.position.y)**2) < sizes.postRadius*4;
+        
         if (this.click && this.active && !this.lock) {
             camera.cancelTransition();
             //this.fade = true;
