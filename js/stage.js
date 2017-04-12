@@ -268,9 +268,9 @@ EndStage.prototype = {
     draw: function(){
         camera.drawImage(endStageImage, this.position, {x: 16, y: 16});
 
-        camera.drawText("Gerrymandering is indefensible", {x: this.position.x, y: this.position.y-8}, 2, "center", va(32, this.text0Progress));
+        camera.drawText("Democracy is complex", {x: this.position.x, y: this.position.y-8}, 2, "center", va(32, this.text0Progress));
 
-        camera.drawText("But it's a symptom of a deeper problem.", {x: this.position.x, y: this.position.y+8}, 2, "center", va(32, this.text1Progress));
+        camera.drawText("But this is indefensible.", {x: this.position.x, y: this.position.y+8}, 2, "center", va(32, this.text1Progress));
     },
 
     update: function(){
@@ -286,7 +286,7 @@ EndStage.prototype = {
 
         this.delay2Progress = tickProgress(this.text1Progress == 1, this.delay2Progress, 2);
 
-        if (this.delay1Progress == 1) menu.setShowNext(true);
+        //if (this.delay1Progress == 1) menu.setShowNext(true);
     },
 
     isVisible: function(){

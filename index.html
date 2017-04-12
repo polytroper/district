@@ -321,7 +321,6 @@ canvas {
                     deltaTime = 1/FPS;
                     setInterval(function() {
                       update();
-                      draw();
                     }, 1000/FPS);
 
                     stage = stages[0];
@@ -334,7 +333,13 @@ canvas {
                     camera.fov = stage.fov;
 
                     update();
+
+                    window.requestAnimationFrame(step);
+                }
+
+                function step(timestamp) {
                     draw();
+                    window.requestAnimationFrame(step);
                 }
 
                 function update() {
@@ -409,7 +414,7 @@ canvas {
 
                 function onMouseDown(event){
                     click = true;
-                    
+
                     mousePoint = getMousePos(canvas, event);
                     mousePointWorld = camera.transformPoint(mousePoint);
 
