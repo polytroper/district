@@ -409,6 +409,9 @@ canvas {
 
                 function onMouseDown(event){
                     click = true;
+                    
+                    mousePoint = getMousePos(canvas, event);
+                    mousePointWorld = camera.transformPoint(mousePoint);
 
                     for (var i = 0; i < mouseListeners.length; i++) {
                         mouseListeners[i].onMouseDown(event);

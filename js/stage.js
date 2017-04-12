@@ -73,6 +73,13 @@ OpeningStage.prototype = {
     onMouseMove: function(point){
         point = camera.transformPoint(point);
         this.touch = Math.sqrt((point.x-this.position.x)**2+(point.y-this.position.y)**2) < sizes.postRadius*4;
+
+        if (this.touch && click) {
+            this.click = true;
+            this.fadeProgress = 0;
+            if (camera.transitionProgress > 0) camera.resumeTransition();
+            else camera.transitionFromTo(this.position, this.fov, boards[0].position, boards[0].fov, this.completeTransition);
+        }
     },
 
     onMouseDown: function(point){
