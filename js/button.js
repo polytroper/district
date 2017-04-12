@@ -58,6 +58,9 @@ Button.prototype = {
     },
 
     onMouseUp: function(event){
+        if (this.touch && this.enabled && !this.click) {
+            this.onClick();
+        }
         this.click = false;
     }
 }
