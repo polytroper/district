@@ -218,6 +218,13 @@ Board.prototype = {
     },
 
     onMouseMove: function(point){
+        if (this.dragPost == null && click) {
+            var touchPost = this.getTouchPost(point);
+            if (touchPost != null) {
+                this.dragPost = touchPost;
+            }
+        }
+        
         if (this.dragPost != null) {
             var touchPost = this.getTouchPost(point);
             if (touchPost != null && touchPost != this.dragPost) {

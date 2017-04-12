@@ -309,6 +309,8 @@ canvas {
 
                 var playerTeam = -1;
 
+                var click = false;
+
                 var camera = new Camera();
                 var view = new View();
                 var menu = new Menu();
@@ -406,6 +408,8 @@ canvas {
                 }
 
                 function onMouseDown(event){
+                    click = true;
+
                     for (var i = 0; i < mouseListeners.length; i++) {
                         mouseListeners[i].onMouseDown(event);
                     }
@@ -416,6 +420,8 @@ canvas {
                 }
 
                 function onMouseUp(event){
+                    click = false;
+
                     for (var i = 0; i < mouseListeners.length; i++) {
                         mouseListeners[i].onMouseUp(event);
                     }
