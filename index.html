@@ -306,6 +306,7 @@ canvas {
 
                 var time = 0;
                 var deltaTime;
+                var drawTime = 0;
 
                 var playerTeam = -1;
 
@@ -338,7 +339,10 @@ canvas {
                 }
 
                 function step(timestamp) {
-                    draw();
+                    if (time-drawTime >= deltaTime/2) {
+                        drawTime = time;
+                        draw();
+                    }
                     window.requestAnimationFrame(step);
                 }
 
