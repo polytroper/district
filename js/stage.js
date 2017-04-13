@@ -129,6 +129,7 @@ function ChoiceStage(){
     this.fov = 16;
 
     this.team0Button = new Button();
+    this.team0Button.enabled = false;
     this.team0Button.world = true;
     this.team0ButtonPosition = {
         x: this.position.x-1.5,
@@ -140,7 +141,7 @@ function ChoiceStage(){
     this.team0Button.clickColor = colors.teamsDark[0];
     this.team0Button.onClick = function(){
         playerTeam = 0;
-        if (choiceStage.rerun) roundTwo();
+        //if (choiceStage.rerun) roundTwo();
         
         choiceStage.rerun = true;
         
@@ -149,6 +150,7 @@ function ChoiceStage(){
 
     this.team1Button = new Button();
     this.team1Button.world = true;
+    this.team1Button.enabled = false;
     this.team1ButtonPosition = {
         x: this.position.x+1.5,
         y: this.position.y
@@ -159,7 +161,7 @@ function ChoiceStage(){
     this.team1Button.clickColor = colors.teamsDark[1];
     this.team1Button.onClick = function(){
         playerTeam = 1;
-        if (choiceStage.rerun) roundTwo();
+        //if (choiceStage.rerun) roundTwo();
 
         if (!choiceStage.rerun) {
             console.log("Inverting all subsequent boards!");
@@ -246,8 +248,8 @@ ChoiceStage.prototype = {
 
 function EndStage(){
     this.position = {
-        x: 64,
-        y: 128
+        x: 96,
+        y: 96
     }
     this.size = {
         x: 16,

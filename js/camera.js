@@ -33,7 +33,10 @@ Camera.prototype = {
             if (this.transitionProgress == 1) {
                 this.transitionProgress = 0;
                 this.transitioning = false;
-                if (this.transitionCallback != null) this.transitionCallback();
+                if (this.transitionCallback != null) {
+                    console.log("Calling transition callback");
+                    this.transitionCallback();
+                }
             }
         }
     },

@@ -8,7 +8,7 @@ function Post(board, x, y){
         y: board.position.y+(this.yIndex-(board.ySize)/2)*sizes.pawnRadius*3
     };
 
-    this.TAG = "Post("+this.xIndex+", "+this.yIndex+"): ";
+    this.TAG = "Post("+this.xIndex+", "+this.yIndex+")";
     return this;
 };
 

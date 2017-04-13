@@ -90,7 +90,7 @@ Board.prototype = {
         if (value) {
             this.compute();
             //menu.setPrompt("Make "+this.groupCount+" groups of "+this.groupSize);
-            menu.setPrompt("Make groups of "+this.groupSize);
+            menu.setPrompt("Draw groups of "+this.groupSize);
             menu.setShowPrompt(true);
             menu.setShowNext(this.complete);
             menu.setShowReset(true);
@@ -183,13 +183,9 @@ Board.prototype = {
         return fractions;
     },
 
-    getRandomTeam: function() {
-        return Math.floor(Math.random()*this.teamCount);
-    },
-
     onMouseDown: function(point){
         var touchPost = this.getTouchPost(point);
-        if (touchPost != null) {
+        if (touchPost != null && this.active) {
             this.dragPost = touchPost;
         }
     },
@@ -199,7 +195,7 @@ Board.prototype = {
     },
 
     onMouseMove: function(point){
-        if (this.dragPost == null && click) {
+        if (this.dragPost == null && click && this.active) {
             var touchPost = this.getTouchPost(point);
             if (touchPost != null) {
                 this.dragPost = touchPost;
@@ -208,26 +204,52 @@ Board.prototype = {
         
         if (this.dragPost != null) {
             var touchPost = this.getTouchPost(point);
-            if (touchPost != null && touchPost != this.dragPost) {
-                this.snapToPost(touchPost);
+            if (touchPost != null && touchPost != this.dragPost && this.chainEligible(touchPost)) {
+                this.chainPosts(this.dragPost, touchPost);
+                this.dragPost = touchPost;
+                this.compute();
             }
         }
     },
 
-    snapToPost: function(post){
-        if (this.dragPost.isNeighbor(post)) {
-            var fence = this.getFenceFromPosts(this.dragPost, post);
-            if (fence == null) {
-                this.fences.push(new Fence(this, this.dragPost, post));
-                this.compute();
-            }
-            else if (!fence.isBorder) {
-                var fenceIndex = this.fences.indexOf(fence);
-                this.fences.splice(fenceIndex, 1);
-                this.compute();
-            }
+    chainEligible: function(post){
+        if (post == null) return false;
+        return this.dragPost.xIndex == post.xIndex || this.dragPost.yIndex == post.yIndex;
+    },
+
+    chainPosts: function(post0, post1){
+        if (post0.xIndex > post1.xIndex) {this.chainPosts(post1, post0); return;}
+        if (post0.yIndex > post1.yIndex) {this.chainPosts(post1, post0); return;}
+
+        var x = post0.xIndex;
+        var y = post0.yIndex;
+        var linkPost = post1;
+
+        if (post0.xIndex < post1.xIndex) {
+            x++;
+            linkPost = this.posts[x][y];
         }
-        this.dragPost = post;
+        if (post0.yIndex < post1.yIndex) {
+            y++;
+            linkPost = this.posts[x][y];
+        }
+        if (post0 != linkPost) {
+            this.linkPosts(post0, linkPost);
+            this.chainPosts(linkPost, post1);
+        }
+    },
+
+    linkPosts: function(post0, post1){
+        var fence = this.getFenceFromPosts(post0, post1);
+        if (fence == null) {
+            console.log("Linking "+post0.TAG+" and "+post1.TAG);
+            this.fences.push(new Fence(this, post0, post1));
+        }
+        else if (!fence.isBorder) {
+            console.log("Unlinking "+post0.TAG+" and "+post1.TAG);
+            var fenceIndex = this.fences.indexOf(fence);
+            this.fences.splice(fenceIndex, 1);
+        }
     },
 
     getFenceFromPosts: function(post0, post1){
