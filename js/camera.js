@@ -190,7 +190,7 @@ Camera.prototype = {
         sx = this.unscaleX(sx);
         sy = this.unscaleY(sy);
 
-        view.drawImageXY(image, position, size);
+        view.drawImageXY(image, px, py, sx, sy);
     },
 
     drawPointer: function(center, tip, color){

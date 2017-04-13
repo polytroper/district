@@ -314,6 +314,7 @@ canvas {
                 var playerTeam = -1;
 
                 var click = false;
+                var dirty = false;
 
                 var camera = new Camera();
                 var view = new View();
@@ -392,9 +393,9 @@ canvas {
                 }
 
                 function step(timestamp) {
-                    if (time-drawTime >= deltaTime/4) {
-                        drawTime = time;
+                    if (dirty) {
                         draw();
+                        dirty = false;
                     }
                     window.requestAnimationFrame(step);
                 }
@@ -412,6 +413,7 @@ canvas {
                             stages[i].update();
                         }
                     }
+                    dirty = true;
                 }
 
                 function draw() {

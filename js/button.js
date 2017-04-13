@@ -20,6 +20,8 @@ function Button(){
 
     this.onClick = function(){console.log("No callback on this button :(");}
 
+    this.drawDetails = function(){}
+
     this.enabled = true;
 
     mouseListeners.push(this);
@@ -35,6 +37,8 @@ Button.prototype = {
         }
         
         (this.world ? camera: port).drawCircle(this.position, this.radius, color);
+
+        this.drawDetails();
     },
 
     update: function(){

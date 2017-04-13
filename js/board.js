@@ -103,6 +103,7 @@ Board.prototype = {
             menu.setShowNext(false);
             menu.setShowReset(false);
             menu.setShowBalance(false);
+            this.dragPost = null;
         }
     },
 

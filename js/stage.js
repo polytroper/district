@@ -113,7 +113,7 @@ OpeningStage.prototype = {
         stage.setActive(false);
         stage = boards[0];
         stage.setActive(true);
-        stageIndex++;
+        stageIndex = stages.indexOf(boards[0]);
     }
 }
 
@@ -192,7 +192,7 @@ ChoiceStage.prototype = {
         camera.drawText(this.promptString, {x: this.position.x, y: this.position.y-2}, 0.8, "center", va(32, this.proximityProgress));
 
         //camera.drawText("Pick a Team", {x: this.position.x, y: this.position.y-2}, 1, "center", "black");
-        if (playerTeam >= 0) camera.drawCircle(this.buttons[playerTeam].position, this.buttons[playerTeam].radius*1.1, colors.teamNeutral);
+        //if (playerTeam >= 0) camera.drawCircle(this.buttons[playerTeam].position, this.buttons[playerTeam].radius*1.1, colors.teamNeutral);
 
         this.team0Button.draw();
         this.team1Button.draw();

@@ -27,11 +27,14 @@ function Menu(){
     this.nextButton.onClick = function(){
         nextStage();
     }
+    this.nextButton.drawDetails = function(){
+        port.drawPointer(this.position, {x: this.position.x+this.radius*0.75, y: this.position.y}, "white");
+    }
 
     this.showPrompt = false;
     this.showPromptProgress = 0;
     this.showPromptDuration = 1;
-    this.promptString = "BINGALING";
+    this.promptString = "";
 
     this.showReset = false;
     this.showResetProgress = 0;
