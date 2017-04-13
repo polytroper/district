@@ -39,6 +39,7 @@ function Balance(){
 
 Balance.prototype = {
     draw: function(){
+        if (this.showProgress == 0) return;
         //console.log("Drawing balance at "+pointString(this.position));
         var center = {
             x: this.position.x,

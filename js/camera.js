@@ -18,6 +18,11 @@ function Camera(){
     this.transitionCallback = null;
 
     updateListeners.push(this);
+    
+    this.p = {
+        x: 0,
+        y: 0
+    }
 }
 
 Camera.prototype = {
@@ -89,6 +94,14 @@ Camera.prototype = {
 
     report: function(){
         console.log("Camera position="+pointString(this.position)+", fov="+this.fov);
+    },
+
+    isVisible: function(position, size) {
+        if (position.x+size.x/2 < this.position.x-this.fov/2) return false;
+        if (position.y+size.y/2 < this.position.y-this.fov/2) return false;
+        if (position.x-size.x/2 > this.position.x+this.fov/2) return false;
+        if (position.y-size.y/2 > this.position.y+this.fov/2) return false;
+        return true;
     },
 
     drawBox: function(position, size, color){

@@ -38,7 +38,7 @@ Button.prototype = {
     },
 
     update: function(){
-        this.touch = this.contains(mousePoint);
+        this.touch = this.contains(mousePoint) && this.enabled;
         this.touchProgress = tickProgress(this.touch, this.touchProgress, this.touchDuration);
     },
 

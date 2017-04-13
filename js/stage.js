@@ -4,6 +4,10 @@ function OpeningStage(){
         x: 0,
         y: -16
     }
+    this.size = {
+        x: 1,
+        y: 32
+    }
     this.fov = 16;
 
     this.touch = false;
@@ -118,6 +122,10 @@ function ChoiceStage(){
         x: -32,
         y: 64
     }
+    this.size = {
+        x: 8,
+        y: 4
+    }
     this.fov = 16;
 
     this.team0Button = new Button();
@@ -171,6 +179,8 @@ function ChoiceStage(){
 
     this.active = false;
 
+    this.proximityProgress = 0;
+
     this.buttons = [this.team0Button, this.team1Button];
 
     this.promptString = "Inevitably we all must choose a team."
@@ -179,7 +189,7 @@ function ChoiceStage(){
 ChoiceStage.prototype = {
     draw: function(){
         var promptString
-        camera.drawText(this.promptString, {x: this.position.x, y: this.position.y-2}, 0.8, "center", va(32, this.text0Progress));
+        camera.drawText(this.promptString, {x: this.position.x, y: this.position.y-2}, 0.8, "center", va(32, this.proximityProgress));
 
         //camera.drawText("Pick a Team", {x: this.position.x, y: this.position.y-2}, 1, "center", "black");
         if (playerTeam >= 0) camera.drawCircle(this.buttons[playerTeam].position, this.buttons[playerTeam].radius*1.1, colors.teamNeutral);
@@ -189,7 +199,8 @@ ChoiceStage.prototype = {
     },
 
     update: function(){
-        var progress = 1/Math.sqrt(1+distance(camera.position, this.position)/4);
+        this.proximityProgress = 1/Math.sqrt(1+distance(camera.position, this.position)/4);
+
         var target0;
         if (this.active) target0 = this.team0ButtonPosition;
         else target0 = this.position;
@@ -198,8 +209,8 @@ ChoiceStage.prototype = {
         if (this.active) target1 = this.team1ButtonPosition;
         else target1 = this.position;
 
-        this.team0Button.position = lerpPoint(this.position, this.team0ButtonPosition, progress);
-        this.team1Button.position = lerpPoint(this.position, this.team1ButtonPosition, progress);
+        this.team0Button.position = lerpPoint(this.position, this.team0ButtonPosition, this.proximityProgress);
+        this.team1Button.position = lerpPoint(this.position, this.team1ButtonPosition, this.proximityProgress);
     },
 
     isVisible: function(){
@@ -237,6 +248,10 @@ function EndStage(){
     this.position = {
         x: 64,
         y: 128
+    }
+    this.size = {
+        x: 16,
+        y: 16
     }
     this.fov = 24;
 

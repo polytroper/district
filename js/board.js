@@ -70,26 +70,6 @@ Board.prototype = {
             camera.drawLine(this.dragPost.position, camera.transformPoint(mousePoint), sizes.fenceWidth, colors.fence.drag);
         }
     },
-    
-    isVisible: function(){
-        if (this.position.x+this.size.x/2 < camera.position.x-camera.fov/2) {
-            //console.log(this.TAG+"position="+pointString(this.position)+", size="+pointString(this.size)+", Culled from left");
-            return false;
-        }
-        if (this.position.y+this.size.y/2 < camera.position.y-camera.fov/2) {
-            //console.log(this.TAG+"position="+pointString(this.position)+", size="+pointString(this.size)+", Culled from top");
-            return false;
-        }
-        if (this.position.x-this.size.x/2 > camera.position.x+camera.fov/2) {
-            //console.log(this.TAG+"position="+pointString(this.position)+", size="+pointString(this.size)+", Culled from right");
-            return false;
-        }
-        if (this.position.y-this.size.y/2 > camera.position.y+camera.fov/2) {
-            //console.log(this.TAG+"position="+pointString(this.position)+", size="+pointString(this.size)+", Culled from bottom");
-            return false;
-        }
-        return true;
-    },
 
     invert: function(){
         for (var i = 0; i < this.pawnList.length; i++) {
@@ -116,7 +96,7 @@ Board.prototype = {
             menu.setShowReset(true);
             menu.setShowBalance(true);
             //menu.balance.setRatio(this.ratio);
-            menu.balance.setGoal(playerTeam, this.goalScore);
+            menu.balance.setGoal(this.goalTeam < 0 ? playerTeam : this.goalTeam, this.goalScore);
         }
         else {
             menu.setShowPrompt(false);
@@ -324,7 +304,8 @@ Board.prototype = {
 
         }
 */
-        var score = this.scores[playerTeam]-this.scores[1-playerTeam];
+        var team = this.goalTeam < 0 ? playerTeam : this.goalTeam;
+        var score = this.scores[team]-this.scores[1-team];
 
         this.valid = true;
         for (var i = 0; i < this.groups.length; i++) {

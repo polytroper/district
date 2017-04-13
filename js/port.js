@@ -1,4 +1,8 @@
 function Port(){
+    this.p = {
+        x: 0,
+        y: 0
+    }
 }
 
 Port.prototype = {

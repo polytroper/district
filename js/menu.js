@@ -41,8 +41,9 @@ function Menu(){
     this.showNextProgress = 0;
     this.showNextDuration = 1;
 
-    this.scoreboard = new Scoreboard();
     this.balance = new Balance();
+
+
 }
 
 Menu.prototype = {
@@ -50,7 +51,7 @@ Menu.prototype = {
     draw: function(){
         if (this.showPromptProgress > 0) {
             var ypos = lerp(-0.05, 0.05, smooth01(this.showPromptProgress));
-            port.drawText(this.promptString, {x: view.aspect/2, y: ypos}, 0.04, "center", va(64, 1));
+            port.drawText(this.promptString, {x: view.aspect/2, y: ypos}, 0.04, strings.center, colors.menu.prompt);
         }
 
         this.resetButton.draw();

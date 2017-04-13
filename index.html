@@ -124,13 +124,18 @@ canvas {
                     menu: {
                         base: '#18F2F2',
                         touch: '#F2BC18',
-                        click: '#CCCCCC'
+                        click: '#CCCCCC',
+                        prompt: '#404040'
                     },
 
                     balance: {
                         arm: '#404040',
                         pan: '#202020',
                     }
+                }
+
+                var strings = {
+                    center: "center",
                 }
 
                 var borderSize = 4;
@@ -216,15 +221,13 @@ canvas {
                         ],
                     },
                     {
-                        goalScore: 2,
+                        goalScore: 1,
                         secondScore: 2,
-                        groupCount: 4,
+                        groupCount: 3,
                         layout: [
-                            [0, 0, 1, 1],
-                            [0, 0, 1, 1],
-                            [0, 0, 1, 1],
-                            [0, 0, 1, 1],
-                            [0, 0, 1, 1],
+                            [0, 0, 1, 1, 0, 0],
+                            [0, 1, 1, 1, 1, 0],
+                            [1, 1, 0, 0, 1, 1],
                         ],
                     },
                     /*
@@ -324,11 +327,18 @@ canvas {
                       update();
                     }, 1000/FPS);
 
+                    var queryBoard = getQueryBoard();
+                    if (queryBoard != null) {
+                        console.log("Adding queryBoard to stages");
+                        stages.unshift(queryBoard);
+                    }
                     stage = stages[0];
                     //stage = endStage;
                     //stage = stages[10];
                     stageIndex = stages.indexOf(stage);
                     stage.setActive(true);
+
+
 
                     camera.position = stage.position;
                     camera.fov = stage.fov;
@@ -336,6 +346,49 @@ canvas {
                     update();
 
                     window.requestAnimationFrame(step);
+
+                }
+
+                function getQueryBoard(){
+                    var xCount = parseInt(getQueryString("x"));
+                    var yCount = parseInt(getQueryString("y"));
+                    
+                    var score = parseInt(getQueryString("s"));
+                    var team = parseInt(getQueryString("t"));
+
+                    var groups = parseInt(getQueryString("g"));
+                    var pawns = getQueryString("p");
+
+                    if (isNaN(xCount) || isNaN(yCount) || isNaN(score) || isNaN(team) || isNaN(groups)) return null;
+
+                    if (pawns == null) return null;
+                    if (pawns.length != xCount*yCount) return null;
+                    pawns = parseQueryLayout(xCount, yCount, pawns);
+
+                    return new Board({
+                        groupCount: groups,
+                        goalScore: score,
+                        goalTeam: team,
+                        layout: pawns,
+                        position: {
+                            x: -32,
+                            y: -16
+                        }
+                    });
+                }
+
+                function parseQueryLayout(xCount, yCount, layoutString){
+                    var layout = [];
+                    var parsedInt;
+                    for (var i = 0; i < yCount; i++) {
+                        layout.push([]);
+                        for (var j = 0; j < xCount; j++) {
+                            parsedInt = parseInt(layoutString[i*xCount+j]);
+                            if (parsedInt !== 0 && parsedInt !== 1) return null;
+                            layout[i].push(parsedInt);
+                        }
+                    }
+                    return layout;
                 }
 
                 function step(timestamp) {
@@ -355,14 +408,16 @@ canvas {
                         updateListeners[i].update();
                     }
                     for (var i = 0; i < stages.length; i++) {
-                        stages[i].update();
+                        if (camera.isVisible(stages[i].position, stages[i].size)) {
+                            stages[i].update();
+                        }
                     }
                 }
 
                 function draw() {
                     clear();
                     for (var i = 0; i < stages.length; i++) {
-                        if (stages[i].isVisible()) {
+                        if (camera.isVisible(stages[i].position, stages[i].size)) {
                             stages[i].draw();
                         }
                     }
@@ -427,8 +482,6 @@ canvas {
                     }
 
                     stage.onMouseDown(mousePoint);
-
-                    draw();
                 }
 
                 function onMouseUp(event){
@@ -439,8 +492,6 @@ canvas {
                     }
 
                     stage.onMouseUp(mousePoint);
-
-                    draw();
                 }
 
                 function onMouseMove(event){
@@ -452,8 +503,6 @@ canvas {
                     mousePointWorld = camera.transformPoint(mousePoint);
 
                     stage.onMouseMove(mousePoint);
-
-                    draw();
                 }
 
                 function onTouchStart(event){
@@ -495,12 +544,19 @@ canvas {
                     };
                 }
 
-                function convertTouches(event) {
+                function convertTouches(event){
                     var touches = event.touches;
                     if (touches.length > 0) {
                         event.clientX = touches[0].clientX;
                         event.clientY = touches[0].clientY;
                     }
+                }
+
+                function getQueryString(field, url){
+                    var href = url ? url : window.location.href;
+                    var reg = new RegExp( '[?&]' + field + '=([^&#]*)', 'i' );
+                    var string = reg.exec(href);
+                    return string ? string[1] : null;
                 }
 
                 function clamp01(value){
