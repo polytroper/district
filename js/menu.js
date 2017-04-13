@@ -79,7 +79,7 @@ Menu.prototype = {
     },
 
     setShowReset: function(show){
-        this.showReset = show;
+        this.showReset = false;//show;
         this.resetButton.enabled = show;
     },
 

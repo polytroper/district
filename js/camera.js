@@ -18,11 +18,6 @@ function Camera(){
     this.transitionCallback = null;
 
     updateListeners.push(this);
-    
-    this.p = {
-        x: 0,
-        y: 0
-    }
 }
 
 Camera.prototype = {
@@ -105,55 +100,97 @@ Camera.prototype = {
     },
 
     drawBox: function(position, size, color){
+        this.drawBoxXY(position.x, position.y, size.x, size.y, color);
+        /*
         position = this.untransformPoint(position);
         size = this.unscalePoint(size);
 
         view.drawBox(position, size, color);
-        /*
-        context.beginPath();
-        context.rect(position.x, position.y, size.x, size.y);
-        context.fillStyle = color;
-        context.fill();
         */
     },
 
+    drawBoxXY: function(px, py, sx, sy, color){
+        px = this.untransformX(px);
+        py = this.untransformY(py);
+        sx = this.unscaleX(sx);
+        sy = this.unscaleY(sy);
+        view.drawBoxXY(px, py, sx, sy, color);
+    },
+
     drawText: function(text, position, size, alignment, color){
+        this.drawTextXY(text, position.x, position.y, size, alignment, color);
+        /*
         position = this.untransformPoint(position);
         size = view.height*size/this.fov;
 
         view.drawText(text, position, size, alignment, color);
-        /*
-        context.font = Math.ceil(size)+"px Arial";
-        context.textAlign = alignment;
-        context.textAnchor = alignment;
-        context.fillStyle = color;
-        context.fillText(text, position.x, position.y);
         */
     },
 
+    drawTextXY: function(text, px, py, size, alignment, color){
+        px = this.untransformX(px);
+        py = this.untransformY(py);
+        size = view.height*size/this.fov;
+
+        view.drawTextXY(text, px, py, size, alignment, color);
+    },
+
     drawPie: function(position, radius, start, end, fill){
+        this.drawPieXY(position.x, position.y, radius, start, end, fill);
+        /*
         position = this.untransformPoint(position);
         radius = view.height*radius/this.fov;
         view.drawPie(position, radius, start, end, fill);
+        */
+    },
+
+    drawPieXY: function(px, py, radius, start, end, fill){
+        px = this.untransformX(px);
+        py = this.untransformY(py);
+        radius = view.height*radius/this.fov;
+        view.drawPieXY(px, py, radius, start, end, fill);
     },
 
     drawCircle: function(position, radius, fill){
-        this.drawPie(position, radius, 0, 1, fill);
+        this.drawCircleXY(position.x, position.y, radius, fill);
+    },
+
+    drawCircleXY: function(px, py, radius, fill){
+        this.drawPieXY(px, py, radius, 0, 1, fill);
     },
 
     drawLine: function(point0, point1, width, color){
+        this.drawLineXY(point0.x, point0.y, point1.x, point1.y, width, color);
+        /*
         point0 = this.untransformPoint(point0);
         point1 = this.untransformPoint(point1);
         width = view.height*width/this.fov;
 
         view.drawLine(point0, point1, width, color);
+        */
+    },
+
+    drawLineXY: function(x0, y0, x1, y1, width, color){
+        x0 = this.untransformX(x0);
+        y0 = this.untransformY(y0);
+        x1 = this.untransformX(x1);
+        y1 = this.untransformY(y1);
+        width = view.height*width/this.fov;
+
+        view.drawLineXY(x0, y0, x1, y1, width, color);
     },
 
     drawImage: function(image, position, size){
-        position = this.untransformPoint(position);
-        size = this.unscalePoint(size);
+        this.drawImageXY(image, position.x, position.y, size.x, size.y);
+    },
 
-        view.drawImage(image, position, size);
+    drawImageXY: function(image, px, py, sx, sy){
+        px = this.untransformX(px);
+        py = this.untransformY(py);
+        sx = this.unscaleX(sx);
+        sy = this.unscaleY(sy);
+
+        view.drawImageXY(image, position, size);
     },
 
     drawPointer: function(center, tip, color){
@@ -163,33 +200,65 @@ Camera.prototype = {
         view.drawPointer(center, tip, color);
     },
 
+    transformX: function(x){
+        return (x-view.width/2)*this.fov/view.height+this.position.x;
+    },
+
+    transformY: function(y){
+        return (y-view.height/2)*this.fov/view.height+this.position.y;
+    },
+
+    untransformX: function(x){
+        return view.height*(x-this.position.x)/this.fov+view.width/2;
+    },
+
+    untransformY: function(y){
+        return view.height*(y-this.position.y)/this.fov+view.height/2;
+    },
+
     transformPoint: function(point){
         point = {
-            x: (point.x-view.width/2)*this.fov/view.height+this.position.x,
-            y: (point.y-view.height/2)*this.fov/view.height+this.position.y
+            x: this.transformX(point.x),
+            y: this.transformY(point.y)
         };
         return point;
     },
 
     untransformPoint: function(point){
         point = {
-            x: view.height*(point.x-this.position.x)/this.fov+view.width/2,
-            y: view.height*(point.y-this.position.y)/this.fov+view.height/2
+            x: this.untransformX(point.x),
+            y: this.untransformY(point.y)
         };
         return point;
     },
 
+    scaleX: function(x){
+        return x*this.fov/view.height;
+    },
+
+    scaleY: function(y){
+        return y*this.fov/view.height;
+    },
+
+    unscaleX: function(x){
+        return view.height*x/this.fov;
+    },
+
+    unscaleY: function(y){
+        return view.height*y/this.fov;
+    },
+
     scalePoint: function(point){
         return {
-            x: point.x*this.fov/view.height,
-            y: point.y*this.fov/view.height
+            x: this.scaleX(point.x),
+            y: this.scaleY(point.y)
         };
     },
 
     unscalePoint: function(point){
         return {
-            x: view.height*point.x/this.fov,
-            y: view.height*point.y/this.fov
+            x: this.unscaleX(point.x),
+            y: this.unscaleY(point.y)
         };
     }
 }

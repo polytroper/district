@@ -78,7 +78,7 @@ OpeningStage.prototype = {
         point = camera.transformPoint(point);
         this.touch = Math.sqrt((point.x-this.position.x)**2+(point.y-this.position.y)**2) < sizes.postRadius*4;
 
-        if (this.touch && click) {
+        if (this.touch && click && this.active) {
             this.click = true;
             this.fadeProgress = 0;
             if (camera.transitionProgress > 0) camera.resumeTransition();
@@ -90,7 +90,7 @@ OpeningStage.prototype = {
         point = camera.transformPoint(point);
         this.touch = Math.sqrt((point.x-this.position.x)**2+(point.y-this.position.y)**2) < sizes.postRadius*4;
         
-        if (this.touch) {
+        if (this.touch && this.active) {
             this.click = true;
             this.fadeProgress = 0;
             if (camera.transitionProgress > 0) camera.resumeTransition();
@@ -123,7 +123,7 @@ function ChoiceStage(){
         y: 64
     }
     this.size = {
-        x: 8,
+        x: 16,
         y: 4
     }
     this.fov = 16;

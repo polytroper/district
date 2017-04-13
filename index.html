@@ -392,7 +392,7 @@ canvas {
                 }
 
                 function step(timestamp) {
-                    if (time-drawTime >= deltaTime/2) {
+                    if (time-drawTime >= deltaTime/4) {
                         drawTime = time;
                         draw();
                     }
