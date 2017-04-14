@@ -10,7 +10,7 @@ function Camera(){
     this.transitionPosition1 = this.position;
     this.transitionFov0 = this.fov;
     this.transitionFov1 = this.fov;
-    this.transitionDuration = 4;
+    this.transitionDuration = 2;
     this.transitionProgress = 0;
 
     this.transitionFovMid = this.fov;
