@@ -31,17 +31,17 @@ Group.prototype = {
 
     drawPawn: function(pawn) {
         var size = {
-            x: sizes.pawnRadius*3,
-            y: sizes.pawnRadius*3
+            x: sizes.pawnRadius*3+camera.scaleX(2),
+            y: sizes.pawnRadius*3+camera.scaleY(2)
         };
         var position = {
-            x: pawn.position.x-size.x/2,
-            y: pawn.position.y-size.y/2,
+            x: pawn.position.x-size.x/2-camera.scaleX(1),
+            y: pawn.position.y-size.y/2-camera.scaleY(1),
         };
 
         var color;
-        if (this.winTeam <0) color = colors.groupNeutral;
-        else color = colors.groups[this.winTeam];
+        if (this.winTeam < 0) color = colors.groupNeutral;
+        else color = colors.teamsLight[this.winTeam];
 
         camera.drawBox(position, size, color);
     },

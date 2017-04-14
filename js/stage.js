@@ -39,10 +39,6 @@ OpeningStage.prototype = {
         }
     },
 
-    isVisible: function(){
-        return true;
-    },
-
     update: function(){
         if (this.click && !this.lock) {
             this.touchPost = boards[0].getTouchPost(mousePoint);
@@ -215,10 +211,6 @@ ChoiceStage.prototype = {
         this.team1Button.position = lerpPoint(this.position, this.team1ButtonPosition, this.proximityProgress);
     },
 
-    isVisible: function(){
-        return true;
-    },
-
     setActive: function(active){
         this.active = active;
 
@@ -306,10 +298,6 @@ EndStage.prototype = {
         //if (this.delay1Progress == 1) menu.setShowNext(true);
     },
 
-    isVisible: function(){
-        return true;
-    },
-
     setActive: function(active){
         this.active = active;
 
@@ -331,73 +319,47 @@ EndStage.prototype = {
 
     },
 }
-/*
-function EndStage1(){
+
+function SandboxStage(){
     this.position = {
-        x: 96,
-        y: 128
+        x: -32,
+        y: -16
     }
+    this.size = {
+        x: 16,
+        y: 16
+    }
+    this.fov = 24;
 
-    this.board = new Board({
-        position: this.position,
-        goalScore: 2,
-        groupCount: 2,
-        layout: [
-            [0, 0, 1, 1, 0, 1],
-            [0, 0, 0, 0, 0, 1],
-            [0, 1, 1, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0],
-            [1, 1, 0, 0, 1, 0],
-        ],
-    });
-
-    this.fov = this.board.fov;
+    this.board = null;
 
     this.active = false;
 
-    this.delay0Progress = 0;
-    this.text0Progress = 0;
+    this.endButton = new Button();
 
-    this.animationProgress = 0;
-
-    this.delay1Progress = 0;
-    this.text1Progress = 0;
-    this.delay2Progress = 0;
-
-
+    this.endButtonPosition0 = {
+        x: 0.5,
+        y: 0.9
+    }
+    this.endButtonPosition1 = {
+        x: 0.5,
+        y: 0.9
+    }
 }
 
-EndStage1.prototype = {
+SandboxStage.prototype = {
     draw: function(){
-        //camera.drawText("Any set of districts is unfair here", {x: this.position.x, y: this.position.y-8}, 2, "center", va(32, this.text0Progress));
 
-        camera.drawText("In this town, 30% of the voters get 0% of the power", {x: this.position.x, y: this.position.y-7}, 1.5, "center", va(32, this.text1Progress));
-    },
-
-    drawAnimation: function(progress){
-        var lineProgress = unlerp(0, 0.2, progress);
     },
 
     update: function(){
-        var progress = 1/Math.sqrt(1+distance(camera.position, this.position)/4);
-
-        this.delay0Progress = tickProgress(this.active, this.delay0Progress, 2);
-        this.text0Progress = tickProgress(this.delay0Progress == 1, this.text0Progress, 2);
-        this.delay1Progress = tickProgress(this.text0Progress == 1, this.delay1Progress, 2);
-
-        this.animationProgress = tickProgress(this.delay1Progress == 1, this.animationProgress, 4);
-
-        this.text1Progress = tickProgress(this.delay1Progress == 1, this.text1Progress, 2);
-        this.delay2Progress = tickProgress(this.text1Progress == 1, this.delay2Progress, 2);
-        if (this.delay1Progress == 1) menu.setShowNext(true);
+        //if (this.delay1Progress == 1) menu.setShowNext(true);
     },
-
+    
     setActive: function(active){
         this.active = active;
 
-        this.board.setActive(active);
-
-        //if (!active) menu.setShowNext(false);
+        if (!active) menu.setShowNext(false);
 
         //menu.setShowPrompt(active);
         //menu.setPrompt("Drawing districts .");
@@ -415,90 +377,3 @@ EndStage1.prototype = {
 
     },
 }
-
-function EndStage2(){
-    this.position = {
-        x: 128,
-        y: 128
-    }
-
-    this.board = new Board({
-        position: this.position,
-        goalScore: 2,
-        groupCount: 2,
-        layout: [
-            [0, 0, 1, 1, 0, 1],
-            [0, 0, 0, 0, 0, 1],
-            [0, 1, 1, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0],
-            [1, 1, 0, 0, 1, 0],
-        ],
-    });
-
-    this.fov = this.board.fov;
-
-    this.active = false;
-
-    this.delay0Progress = 0;
-    this.text0Progress = 0;
-
-    this.animationProgress = 0;
-
-    this.delay1Progress = 0;
-    this.text1Progress = 0;
-    this.delay2Progress = 0;
-
-
-}
-
-EndStage2.prototype = {
-    draw: function(){
-
-        //camera.drawText("Any set of districts is unfair here", {x: this.position.x, y: this.position.y-8}, 2, "center", va(32, this.text0Progress));
-
-        camera.drawText("With only ", {x: this.position.x, y: this.position.y+8}, 2, "center", va(32, this.text1Progress));
-    },
-
-    drawAnimation: function(progress){
-        var lineProgress = unlerp(0, 0.2, progress);
-    },
-
-    update: function(){
-        var progress = 1/Math.sqrt(1+distance(camera.position, this.position)/4);
-
-        this.delay0Progress = tickProgress(this.active, this.delay0Progress, 2);
-        this.text0Progress = tickProgress(this.delay0Progress == 1, this.text0Progress, 2);
-        this.delay1Progress = tickProgress(this.text0Progress == 1, this.delay1Progress, 2);
-
-        this.animationProgress = tickProgress(this.delay1Progress == 1, this.animationProgress, 4);
-
-        this.text1Progress = tickProgress(this.delay1Progress == 1, this.text1Progress, 2);
-        this.delay2Progress = tickProgress(this.text1Progress == 1, this.delay2Progress, 2);
-
-        if (this.delay1Progress == 1) menu.setShowNext(true);
-    },
-
-    setActive: function(active){
-        this.active = active;
-
-        this.board.setActive(active);
-
-        //if (!active) menu.setShowNext(false);
-
-        //menu.setShowPrompt(active);
-        //menu.setPrompt("Drawing districts .");
-    },
-
-    onMouseMove: function(point){
-
-    },
-
-    onMouseDown: function(point){
-
-    },
-
-    onMouseUp: function(point){
-
-    },
-}
-*/
