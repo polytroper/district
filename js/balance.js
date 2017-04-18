@@ -103,16 +103,18 @@ Balance.prototype = {
             goalPointerPosition = rotateAround(goalPointerPosition, this.position, goalPointerAngle);
 
             var goalPointerTip = lerpPoint(goalPointerPosition, this.position, 0.125);
-            port.drawPointer(goalPointerPosition, goalPointerTip, colors.teams[this.goalTeam]);
+
+            var c = colors.teamNeutral;
+            if (this.goalScore != 0) c = colors.teams[this.goalTeam];
+            port.drawPointer(goalPointerPosition, goalPointerTip, c);
         }
+
+        var incompleteScore = this.totalScore-this.leftScore-this.rightScore-this.middleScore;
+        this.drawPan(bottom, incompleteScore, "black", -1);
 
         this.drawPan(center, this.middleScore, colors.teamNeutral, 1);
         this.drawPan(right, this.rightScore, colors.teams[0], 1);
         this.drawPan(left, this.leftScore, colors.teams[1], 1);
-
-        var incompleteScore = this.totalScore-this.leftScore-this.rightScore-this.middleScore;
-
-        this.drawPan(bottom, incompleteScore, "black", -1);
 
 
         /*

@@ -1,29 +1,34 @@
 function Menu(){
     this.resetButton = new Button();
-    this.resetButton.radius = 0.03;
+    this.resetButton.radius = 0.04;
     this.resetButtonPosition0 = {
-        x: 0.05,
-        y: 1.05
+        x: -0.06,
+        y: 0.94
     }
     this.resetButtonPosition1 = {
-        x: 0.05,
-        y: 0.95
+        x: 0.06,
+        y: 0.94
     }
     this.resetButton.onClick = function(){
         if (typeof stage.resetFences !== 'undefined') stage.resetFences();
-//        draw();
+    }
+    this.resetButton.drawDetails = function(){
+        port.drawPie(this.position, this.radius*0.6, -0.25, 0.5, "white");
+        port.drawCircle(this.position, this.radius*0.4, this.drawColor);
+        port.drawPointer({x: this.position.x-this.radius*0.12, y: this.position.y-this.radius*0.5}, {x: this.position.x-this.radius*0.42, y: this.position.y-this.radius*0.5}, "white");
     }
 
     this.nextButton = new Button();
-    this.nextButton.radius = 0.05;
+    this.nextButton.radius = 0.06;
     this.nextButtonPosition0 = {
-        x: view.aspect+0.075,
+        x: view.aspect+0.08,
         y: 0.5
     }
     this.nextButtonPosition1 = {
-        x: view.aspect-0.075,
+        x: view.aspect-0.08,
         y: 0.5
     }
+    this.nextButton.position = this.nextButtonPosition0;
     this.nextButton.onClick = function(){
         nextStage();
     }
@@ -68,7 +73,8 @@ Menu.prototype = {
         this.showNextProgress = tickProgress(this.showNext, this.showNextProgress, this.showNextDuration);
 
         this.resetButton.position = smoothLerpPoint(this.resetButtonPosition0, this.resetButtonPosition1, this.showResetProgress);
-        this.nextButton.position = smoothLerpPoint(this.nextButtonPosition0, this.nextButtonPosition1, this.showNextProgress);
+        //this.nextButton.position = smoothLerpPoint(this.nextButtonPosition0, this.nextButtonPosition1, this.showNextProgress);
+        this.nextButton.position = lerpPoint(this.nextButton.position, [this.nextButtonPosition0, this.nextButtonPosition1][this.showNext?1:0], 0.08);
 
         this.balance.update();
     },
@@ -82,7 +88,7 @@ Menu.prototype = {
     },
 
     setShowReset: function(show){
-        this.showReset = false;//show;
+        this.showReset = show;
         this.resetButton.enabled = show;
     },
 

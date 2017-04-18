@@ -14,6 +14,11 @@ function Pawn(board, x, y, team){
 
     this.TAG = "Pawn("+this.xIndex+", "+this.yIndex+")";
 
+    this.mutable = false;
+    this.touch = false;
+    this.down = false;
+
+
     return this;
 };
 
@@ -22,13 +27,58 @@ Pawn.prototype = {
         //console.log(this.TAG+"Drawing at "+xyString(this.centerX, this.centerY));
 
         var color = colors.teams[this.teamIndex];
+        if (this.mutable) {
+            if (this.touch) color = colors.teamsDark[this.teamIndex];
+        }
+
         camera.drawCircle(this.position, sizes.pawnRadius, color);
     },
 
+    setMutable: function(mutable){
+        if (mutable != this.mutable) {
+            this.mutable = mutable;
+            if (this.mutable) {
+                mouseListeners.push(this);
+                updateListeners.push(this);
+            }
+            else {
+                mouseListeners.splice(mouseListeners.indexOf(this), 1);
+                updateListeners.splice(updateListeners.indexOf(this), 1);
+                this.touch = false;
+            }
+        }
+    },
+
+    update: function(){
+        //console.log(this.TAG+"Drawing at "+xyString(this.centerX, this.centerY));
+
+
+    },
+
+    onMouseDown: function(point){
+        this.touch = this.contains(point);
+        if (this.touch) this.down = true;
+    },
+
+    onMouseUp: function(point){
+        this.touch = this.contains(point);
+
+        if (this.touch && (this.board.dragPost == null || this.down)) {
+            this.teamIndex = 1-this.teamIndex;
+            this.board.compute();
+        }
+        this.down = false;
+    },
+
+    onMouseMove: function(point){
+        this.touch = this.contains(point);
+
+        if (!this.touch) this.down = false;
+    },
+
     contains: function(point){
-        //console.log(this.TAG+"Checking at "+pointString(point));
         point = camera.transformPoint(point);
-        return Math.sqrt((point.x-this.position.x)**2+(point.y-this.position.y)**2) < sizes.pawnRadius;
+        return distance(this.position, point) < sizes.pawnRadius;
     },
 
     findNeighbors: function(){

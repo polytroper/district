@@ -10,12 +10,12 @@ function Group(board, pawn){
 
     this.valid = false;
 
-    console.log("Creating new group...");
+    //console.log("Creating new group...");
 
     this.trace(board.fences, pawn);
     this.compute();
 
-    console.log("Creating group of "+this.pawns.length+" pawns, valid="+this.valid);
+    //console.log("Creating group of "+this.pawns.length+" pawns, valid="+this.valid);
 
     return this;
 };
@@ -59,7 +59,7 @@ Group.prototype = {
     fenceBetween: function(fences, pawn0, pawn1) {
         for (var i = 0; i < fences.length; i++) {
             if (fences[i].dividesPawns(pawn0, pawn1)) {
-                console.log("Fence found between "+pawn0.TAG+" and "+pawn1.TAG);
+                //console.log("Fence found between "+pawn0.TAG+" and "+pawn1.TAG);
                 return true;
             }
         }

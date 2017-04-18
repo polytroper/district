@@ -12,20 +12,25 @@ function Board(puzzle){
     this.active = false;
     this.dragPost = null;
 
+    this.showNext = (puzzle.showNext === undefined ? true : puzzle.showNext);
+    this.showReset = (puzzle.showReset === undefined ? true : puzzle.showReset);
+
     this.goalTeam = (puzzle.goalTeam === undefined ? -1 : puzzle.goalTeam);
     this.goalScore = (puzzle.goalScore === undefined ? -1 : puzzle.goalScore);
     this.secondScore = (puzzle.secondScore === undefined ? this.goalScore : puzzle.secondScore);
+
 
     this.winner = -1;
     this.playerTeam = 0;
     this.playerScore = 0;
     this.scores = [];
     this.fractions = [];
+    this.teamCount = 2;
 
     this.valid = false;
     this.complete = false;
 
-    this.teamCount = 0;
+    this.teamCount = 2;
     this.groupCount = puzzle.groupCount;
 
     this.position = puzzle.position;
@@ -84,6 +89,20 @@ Board.prototype = {
         this.goalScore = s;
     },
 
+    setScore: function(team, score){
+        this.goalTeam = team;
+        this.goalScore = score;
+        menu.balance.setGoal(this.goalTeam, this.goalScore);
+        this.compute();
+    },
+
+    setGroupCount: function(groups){
+        this.groupCount = groups;
+        this.groupSize = this.pawnList.length/this.groupCount;
+        menu.setPrompt("Draw groups of "+this.groupSize);
+        this.compute();
+    },
+
     setActive: function(value){
         this.active = value;
 
@@ -92,8 +111,9 @@ Board.prototype = {
             //menu.setPrompt("Make "+this.groupCount+" groups of "+this.groupSize);
             menu.setPrompt("Draw groups of "+this.groupSize);
             menu.setShowPrompt(true);
-            menu.setShowNext(this.complete);
-            menu.setShowReset(true);
+            menu.setShowNext(this.complete && this.showNext);
+            //menu.setShowReset(stages.indexOf(this) > stages.indexOf(choiceStage));
+            menu.setShowReset(this.showReset);
             menu.setShowBalance(true);
             //menu.balance.setRatio(this.ratio);
             menu.balance.setGoal(this.goalTeam < 0 ? playerTeam : this.goalTeam, this.goalScore);
@@ -115,14 +135,34 @@ Board.prototype = {
         for (var x = 0; x < this.xSize; x++) {
             this.pawns.push([]);
             for (var y = 0; y < this.ySize; y++) {
-                this.teamCount = Math.max(layout[y][x]+1, this.teamCount);
-
                 pawn = new Pawn(this, x, y, layout[y][x]);
 
                 this.pawns[x].push(pawn);
                 this.pawnList.push(pawn);
             }
         }
+    },
+
+    getQueryString: function(){
+        var qs = "?=";
+        
+        qs += "&x="+this.xSize;
+        qs += "&y="+this.ySize;
+
+        qs += "&s="+this.goalScore;
+        qs += "&t="+this.goalTeam;
+
+        qs += "&g="+this.groupCount;
+
+        var pString = "";
+        for (var j = 0; j < this.ySize; j++) {
+            for (var i = 0; i < this.xSize; i++) {
+                pString += this.pawns[i][j].teamIndex;
+            }
+        }
+        qs += "&p="+pString;
+
+        return qs;
     },
 
     placePawns: function(){
@@ -291,6 +331,24 @@ Board.prototype = {
 
     },
 
+    setMutable: function(mutable){
+        for (var i = 0; i < this.pawnList.length; i++) {
+            this.pawnList[i].setMutable(mutable);
+        }
+    },
+
+    extractLayout: function(){
+        var layout = [];
+
+        for (var x = 0; x < this.xSize; x++) {
+            for (var y = 0; y < this.ySize; y++) {
+                if (layout.length <= y) layout.push([]);
+                layout[y].push(this.pawns[x][y].teamIndex);
+            }
+        }
+        return layout;
+    },
+
     compute: function() {
         console.log("Computing board...");
         this.groups = [];
@@ -339,7 +397,7 @@ Board.prototype = {
         this.complete = (score >= this.goalScore || this.goalScore < 0) && this.valid;
 
         if (this.active) {
-            menu.setShowNext(this.complete);
+            menu.setShowNext(this.complete && this.showNext);
             menu.balance.setScores(this.scores[1], this.scores[0], this.scores[2], this.groupCount);
         }
         

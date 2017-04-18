@@ -6,6 +6,7 @@ function Button(){
         y: 0
     }
 
+    this.drawColor = null;
     this.baseColor = colors.menu.base;
     this.touchColor = colors.menu.touch;
     this.clickColor = colors.menu.click;
@@ -30,13 +31,14 @@ function Button(){
 
 Button.prototype = {
     draw: function(){
-        var color = this.baseColor;
+        this.drawColor = color = this.baseColor;
         if (this.enabled) {
-            if (this.click) color = this.clickColor;
-            else if (this.touch) color = this.touchColor;
+            if (this.click) this.drawColor = this.clickColor;
+            else if (this.touch) this.drawColor = this.touchColor;
         }
+        else this.drawColor = colors.teamNeutral;
         
-        (this.world ? camera: port).drawCircle(this.position, this.radius, color);
+        (this.world ? camera: port).drawCircle(this.position, this.radius, this.drawColor);
 
         this.drawDetails();
     },

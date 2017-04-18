@@ -26,7 +26,7 @@ Post.prototype = {
     contains: function(point){
         point = camera.transformPoint(point);
         //console.log(this.TAG+"Checking at "+pointString(point));
-        return Math.sqrt((point.x-this.position.x)**2+(point.y-this.position.y)**2) < sizes.postRadius*4;
+        return distance(point, this.position) < sizes.postRadius*4;
     },
 
     isNeighbor: function(post){
