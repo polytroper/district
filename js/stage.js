@@ -371,6 +371,7 @@ function SandboxStage(){
         y: 0.25
     }
     this.addRowButton.position = this.addRowPosition0;
+    this.addRowButton.disabledColor = colors.teamNeutral;
 
     this.subtractRowButton = new Button();
     this.subtractRowButton.radius = 0.04;
@@ -404,6 +405,7 @@ function SandboxStage(){
         y: 0.05
     }
     this.addColumnButton.position = this.addColumnPosition0;
+    this.addColumnButton.disabledColor = colors.teamNeutral;
 
     this.subtractColumnButton = new Button();
     this.subtractColumnButton.radius = 0.04;
@@ -420,6 +422,7 @@ function SandboxStage(){
         y: 0.05
     }
     this.subtractColumnButton.position = this.subtractColumnPosition0;
+    this.subtractColumnButton.disabledColor = colors.teamNeutral;
 
     this.addGroupButton = new Button();
     this.addGroupButton.radius = 0.04;
@@ -437,6 +440,7 @@ function SandboxStage(){
         y: 0.05
     }
     this.addGroupButton.position = this.addGroupPosition0;
+    this.addGroupButton.disabledColor = colors.teamNeutral;
 
     this.subtractGroupButton = new Button();
     this.subtractGroupButton.radius = 0.04;
@@ -453,6 +457,7 @@ function SandboxStage(){
         y: 0.05
     }
     this.subtractGroupButton.position = this.subtractGroupPosition0;
+    this.subtractGroupButton.disabledColor = colors.teamNeutral;
 
     this.linkButton = new Button();
     this.linkButton.radius = 0.05;
@@ -471,6 +476,7 @@ function SandboxStage(){
         y: 0.5
     }
     this.linkButton.position = this.linkPosition0;
+    this.linkButton.disabledColor = colors.teamNeutral;
 
     this.scoreLeftButton = new Button();
     this.scoreLeftButton.radius = 0.03;
@@ -488,6 +494,7 @@ function SandboxStage(){
         y: 0.9
     }
     this.scoreLeftButton.position = this.scoreLeftPosition0;
+    this.scoreLeftButton.disabledColor = colors.teamNeutral;
 
     this.scoreRightButton = new Button();
     this.scoreRightButton.radius = 0.03;
@@ -505,6 +512,7 @@ function SandboxStage(){
         y: 0.9
     }
     this.scoreRightButton.position = this.scoreRightPosition0;
+    this.scoreRightButton.disabledColor = colors.teamNeutral;
 
     this.mutable = true;
     this.mutableProgress = 0;

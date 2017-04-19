@@ -10,6 +10,7 @@ function Button(){
     this.baseColor = colors.menu.base;
     this.touchColor = colors.menu.touch;
     this.clickColor = colors.menu.click;
+    this.disabledColor = null;
 
     this.click = false; 
     this.touch = false; 
@@ -36,7 +37,7 @@ Button.prototype = {
             if (this.click) this.drawColor = this.clickColor;
             else if (this.touch) this.drawColor = this.touchColor;
         }
-        else this.drawColor = colors.teamNeutral;
+        else this.drawColor = this.disabledColor == null ? this.baseColor : this.disabledColor;
         
         (this.world ? camera: port).drawCircle(this.position, this.radius, this.drawColor);
 
