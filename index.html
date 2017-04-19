@@ -33,5 +33,11 @@
             game.innerHTML = "<embed src=\""+embedURL+"\" width=\"768px\" height=\"768px\" style=\"border:1px solid black\"></embed>"
         </script>
 
+        <div id="footer-container"></div>
+        <script type="text/javascript">
+        $(document).ready(function() {
+        $('#footer-container').load('/footer.html');
+        });
+        </script>
     </body>
 </html>
