@@ -1,24 +1,5 @@
 <!DOCTYPE html>
-<style>
-html{
-    width:100%;
-    height:100%;
-    margin: 0;
-    padding: 0;
-    vertical-align: center;
-    text-align: center;
-}
-body{
-    width:100%;
-    height:100%;
-    background-color:#FFFFFF;
-    margin: 0;
-    padding: 0;
-    vertical-align: center;
-    text-align: center;
-}
-</style>
-    <html>
+<html>
     <head>
         <title>District</title>
         <script src="http://code.jquery.com/jquery.min.js"></script>
@@ -34,12 +15,15 @@ body{
         });
         </script>
 
-        <h1>District</h1>
 
-        <div id="game"></div>
+        <div class="game">
+            <h2>District</h2>
+
+            <div id="district"></div>
+        </div>
 
         <script type="text/javascript">
-            var game = document.getElementById('game');
+            var game = document.getElementById('district');
             var url = window.location.href;
             var query = url.split('?')[1];
             if (query == undefined) query = "";
@@ -47,7 +31,6 @@ body{
 
             var embedURL = "./game.html"+query;
             game.innerHTML = "<embed src=\""+embedURL+"\" width=\"768px\" height=\"768px\" style=\"border:1px solid black\"></embed>"
-
         </script>
 
     </body>
