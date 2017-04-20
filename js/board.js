@@ -135,7 +135,12 @@ Board.prototype = {
         for (var x = 0; x < this.xSize; x++) {
             this.pawns.push([]);
             for (var y = 0; y < this.ySize; y++) {
-                pawn = new Pawn(this, x, y, layout[y][x]);
+                pawn = new Pawn({
+                    board: this,
+                    xIndex: x,
+                    yIndex: y,
+                    teamIndex: layout[y][x]
+                });
 
                 this.pawns[x].push(pawn);
                 this.pawnList.push(pawn);
@@ -165,24 +170,16 @@ Board.prototype = {
         return qs;
     },
 
-    placePawns: function(){
-        var pawn;
-        for (var x = 0; x < this.xSize; x++) {
-            this.pawns.push([]);
-            for (var y = 0; y < this.ySize; y++) {
-                pawn = new Pawn(this, x, y, this.getRandomTeam());
-                this.pawns[x].push(pawn);
-                this.pawnList.push(pawn);
-            }
-        }
-    },
-
     placePosts: function(){
         var post;
         for (var x = 0; x < this.xSize+1; x++) {
             this.posts.push([]);
             for (var y = 0; y < this.ySize+1; y++) {
-                post = new Post(this, x, y);
+                post = new Post({
+                    board: this,
+                    xIndex: x,
+                    yIndex: y,
+                });
                 this.posts[x].push(post);
                 this.postList.push(post);
             }
@@ -192,22 +189,12 @@ Board.prototype = {
     placeBorderFences: function(){
         var fence;
         for (var x = 0; x < this.xSize; x++) {
-            fence = new Fence(this, this.posts[x][0], this.posts[x+1][0]);
-            fence.isBorder = true;
-            this.fences.push(fence);
-
-            fence = new Fence(this, this.posts[x][this.ySize], this.posts[x+1][this.ySize]);
-            fence.isBorder = true;
-            this.fences.push(fence);
+            this.placeFence(this.posts[x][0], this.posts[x+1][0], true);
+            this.placeFence(this.posts[x][this.ySize], this.posts[x+1][this.ySize], true);
         }
         for (var y = 0; y < this.ySize; y++) {
-            fence = new Fence(this, this.posts[0][y], this.posts[0][y+1]);
-            fence.isBorder = true;
-            this.fences.push(fence);
-
-            fence = new Fence(this, this.posts[this.xSize][y], this.posts[this.xSize][y+1]);
-            fence.isBorder = true;
-            this.fences.push(fence);
+            this.placeFence(this.posts[0][y], this.posts[0][y+1], true);
+            this.placeFence(this.posts[this.xSize][y], this.posts[this.xSize][y+1], true);
         }
     },
 
@@ -283,12 +270,15 @@ Board.prototype = {
         var fence = this.getFenceFromPosts(post0, post1);
         if (fence == null) {
             console.log("Linking "+post0.TAG+" and "+post1.TAG);
-            this.fences.push(new Fence(this, post0, post1));
+            this.placeFence(post0, post1, false);
         }
         else if (!fence.isBorder) {
             console.log("Unlinking "+post0.TAG+" and "+post1.TAG);
+            this.removeFence(fence);
+            /*
             var fenceIndex = this.fences.indexOf(fence);
             this.fences.splice(fenceIndex, 1);
+            */
         }
     },
 
@@ -304,6 +294,15 @@ Board.prototype = {
             if (this.postList[i].contains(point)) return this.postList[i];
         }
         return null;
+    },
+
+    placeFence: function(post0, post1, border){
+        this.fences.push(Fence({
+            board: this,
+            post0: post0,
+            post1: post1,
+            isBorder: border
+        }));
     },
 
     removeFence: function(fence){

@@ -71,3 +71,121 @@ Button.prototype = {
         this.click = false;
     }
 }
+
+function BasicButton(spec){
+    var {
+        radius = 0.1,
+        world = false,
+        spring = false,
+
+        baseColor = colors.menu.base,
+        touchColor = colors.menu.touch,
+        clickColor = colors.menu.click,
+        disabledColor = baseColor,
+
+        show = true,
+        enabled = true,
+
+        onClick = function(){},
+        drawDetails = function(){},
+    } = spec,
+
+    mover = Mover(
+        Object.assign({
+            state: show,
+        }, spec)
+    ),
+    position = mover.position,
+
+    touch = false,
+    click = false,
+
+    showProgress = show?1:0,
+
+    drawColor = baseColor,
+
+    draw = function(){
+        drawColor = baseColor;
+        if (enabled) {
+            if (click) drawColor = clickColor;
+            else if (touch) drawColor = touchColor;
+        }
+        else drawColor = disabledColor;
+        
+        (world ? camera: port).drawCircle(position, radius, drawColor);
+
+        console.log("Drawing! Position="+pointString(position));
+
+        drawDetails(this);
+    },
+
+    update = function(){
+        mover.update();
+        this.position = mover.position;
+
+    },
+
+    setShow = mover.setState,
+
+    setEnabled = function(ENABLED){
+        enabled = ENABLED;
+    },
+
+    contains = function(point){
+        return distance((world ? camera: port).transformPoint(point), mover.position) < radius;
+    },
+
+    onMouseMove = function(point){
+        touch = contains(point);
+    },
+
+    onMouseDown = function(point){
+        touch = contains(point);
+        if (touch && enabled) {
+            click = true;
+            onClick();
+        }
+    },
+
+    onMouseUp = function(point){
+        touch = contains(point);
+        if (touch && enabled && !click) {
+            onClick();
+        }
+        click = false;
+    };
+
+    var tr = Object.seal({
+        // Fields
+        radius,
+        baseColor,
+        touchColor,
+        clickColor,
+        disabledColor,
+
+        mover,
+        position,
+
+        // States
+        enabled,
+
+        // Methods
+        draw,
+        drawDetails,
+        update,
+
+        setShow,
+        setEnabled,
+
+        onClick,
+        contains,
+        onMouseMove,
+        onMouseDown,
+        onMouseUp,
+    });
+
+    mouseListeners.push(tr);
+    updateListeners.push(tr);
+
+    return tr;
+}
