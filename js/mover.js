@@ -1,3 +1,4 @@
+// Movers are convenient way to animate 2D motion with a number of smoothing types.
 function Mover(spec){
 	var {
 		position0,
@@ -27,6 +28,15 @@ function Mover(spec){
 				position = lerpPoint(position0, position1, progress);
 			}
 		}
+        //console.log("Updating! state="+state+", progress="+progress+", position="+pointString(position));
+	},
+
+	getPosition = function(){
+		return position;
+	},
+
+	getProgress = function(){
+		return progress;
 	},
 
 	setState = function(STATE){
@@ -41,14 +51,11 @@ function Mover(spec){
 		lerpType,
 		smoothing,
 
-		// States
-		state,
-		position,
-		progress,
-
 		// Methods
 
 		update,
 		setState,
+		getPosition,
+		getProgress,
 	});
 }

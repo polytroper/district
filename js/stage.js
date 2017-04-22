@@ -31,7 +31,7 @@ OpeningStage.prototype = {
         if (this.touch) color = colors.post.touch;
         camera.drawCircle(this.position, sizes.postRadius, color);
 
-        if (!this.lock) this.dragPosition = camera.transformPoint(mousePoint);
+        if (!this.lock) this.dragPosition = camera.untransformPoint(mousePoint);
 
         if ((this.click && !this.lock) || this.fade) {
             camera.drawLine(this.position, this.dragPosition, sizes.fenceWidth, va(64, 1-this.fadeProgress));
@@ -70,8 +70,8 @@ OpeningStage.prototype = {
     },
 
     onMouseMove: function(point){
-        point = camera.transformPoint(point);
-        this.touch = Math.sqrt((point.x-this.position.x)**2+(point.y-this.position.y)**2) < sizes.postRadius*4;
+        point = camera.untransformPoint(point);
+        this.touch = distance(point, this.position) < sizes.postRadius*4;
 
         if (this.touch && click && this.active) {
             this.click = true;
@@ -82,7 +82,7 @@ OpeningStage.prototype = {
     },
 
     onMouseDown: function(point){
-        point = camera.transformPoint(point);
+        point = camera.untransformPoint(point);
         this.touch = Math.sqrt((point.x-this.position.x)**2+(point.y-this.position.y)**2) < sizes.postRadius*4;
         
         if (this.touch && this.active) {
@@ -94,7 +94,7 @@ OpeningStage.prototype = {
     },
 
     onMouseUp: function(point){
-        point = camera.transformPoint(point);
+        point = camera.untransformPoint(point);
         this.touch = Math.sqrt((point.x-this.position.x)**2+(point.y-this.position.y)**2) < sizes.postRadius*4;
         
         if (this.click && this.active && !this.lock) {
@@ -519,8 +519,10 @@ function SandboxStage(){
 
     this.board = null;
     this.validGroupCounts = [];
-}
 
+    this.refreshBoard();
+}
+/*
 SandboxStage.prototype = {
     draw: function(){
         this.board.draw();
@@ -712,14 +714,18 @@ SandboxStage.prototype = {
 
         this.goalScore = Math.min(this.goalScore, this.groupCount);
 
-        this.board = new Board(this);
+        this.board = Board(this);
         this.size = this.board.size;
 
         this.refreshButtons();
 
-        this.board.setMutable(this.mutable);
-        this.board.setActive(this.active);
-        this.fov = this.board.fov;
-        if (this.active) camera.fov = this.fov;
+        if (this.active) {
+            this.board.setMutable(this.mutable);
+            this.board.setActive(this.active);
+            this.fov = this.board.fov;
+            if (this.active) camera.fov = this.fov;
+        }
+
     }
 }
+*/

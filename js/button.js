@@ -50,7 +50,7 @@ Button.prototype = {
     },
 
     contains: function(point){
-        return distance((this.world ? camera: port).transformPoint(point), this.position) < this.radius;
+        return distance((this.world ? camera: port).untransformPoint(point), this.position) < this.radius;
     },
 
     onMouseMove: function(event){
@@ -87,7 +87,7 @@ function BasicButton(spec){
         enabled = true,
 
         onClick = function(){},
-        drawDetails = function(){},
+        drawDetails = function(info){},
     } = spec,
 
     mover = Mover(
@@ -114,15 +114,14 @@ function BasicButton(spec){
         
         (world ? camera: port).drawCircle(position, radius, drawColor);
 
-        console.log("Drawing! Position="+pointString(position));
+        //console.log("Drawing! Position="+pointString(position));
 
-        drawDetails(this);
+        drawDetails({position, radius, drawColor});
     },
 
     update = function(){
         mover.update();
-        this.position = mover.position;
-
+        position = mover.getPosition();
     },
 
     setShow = mover.setState,
@@ -132,7 +131,8 @@ function BasicButton(spec){
     },
 
     contains = function(point){
-        return distance((world ? camera: port).transformPoint(point), mover.position) < radius;
+        point = (world ? camera:port).untransformPoint(point);
+        return distance(point, position) < radius;
     },
 
     onMouseMove = function(point){
@@ -155,30 +155,17 @@ function BasicButton(spec){
         click = false;
     };
 
-    var tr = Object.seal({
+    var tr = Object.freeze({
         // Fields
         radius,
-        baseColor,
-        touchColor,
-        clickColor,
-        disabledColor,
-
-        mover,
-        position,
-
-        // States
-        enabled,
 
         // Methods
         draw,
-        drawDetails,
         update,
 
         setShow,
         setEnabled,
 
-        onClick,
-        contains,
         onMouseMove,
         onMouseDown,
         onMouseUp,
