@@ -114,8 +114,8 @@ function Camera(){
         drawBoxXY: function(px, py, sx, sy, color){
             px = this.transformX(px);
             py = this.transformY(py);
-            sx = this.unscaleX(sx);
-            sy = this.unscaleY(sy);
+            sx = this.scaleX(sx);
+            sy = this.scaleY(sy);
             view.drawBoxXY(px, py, sx, sy, color);
         },
 
@@ -171,8 +171,8 @@ function Camera(){
         drawImageXY: function(image, px, py, sx, sy){
             px = this.transformX(px);
             py = this.transformY(py);
-            sx = this.unscaleX(sx);
-            sy = this.unscaleY(sy);
+            sx = this.scaleX(sx);
+            sy = this.scaleY(sy);
 
             view.drawImageXY(image, px, py, sx, sy);
         },
@@ -182,6 +182,12 @@ function Camera(){
             tip = this.transformPoint(tip);
 
             view.drawPointer(center, tip, color);
+        },
+
+        drawStripes: function(position, size, index, total, color){
+            position = this.transformPoint(position);
+            size = this.scalePoint(size);
+            view.drawStripes(position, size, index, total, color);
         },
 
         untransformX: function(x){
@@ -216,33 +222,33 @@ function Camera(){
             return point;
         },
 
-        scaleX: function(x){
+        unscaleX: function(x){
             return x*this.fov/view.height;
         },
 
-        scaleY: function(y){
+        unscaleY: function(y){
             return y*this.fov/view.height;
         },
 
-        unscaleX: function(x){
+        scaleX: function(x){
             return view.height*x/this.fov;
         },
 
-        unscaleY: function(y){
+        scaleY: function(y){
             return view.height*y/this.fov;
-        },
-
-        scalePoint: function(point){
-            return {
-                x: this.scaleX(point.x),
-                y: this.scaleY(point.y)
-            };
         },
 
         unscalePoint: function(point){
             return {
                 x: this.unscaleX(point.x),
                 y: this.unscaleY(point.y)
+            };
+        },
+
+        scalePoint: function(point){
+            return {
+                x: this.scaleX(point.x),
+                y: this.scaleY(point.y)
             };
         }
     }

@@ -33,11 +33,11 @@ function Balance(){
     mover = Mover({
         position0: {
             x: 0.5,
-            y: 1.22
+            y: 1.225
         },
         position1: {
             x: 0.5,
-            y: 0.92
+            y: 0.925
         }
     }),
 
@@ -72,8 +72,8 @@ function Balance(){
         port.drawPie(position, 0.065, 4/6, 3/4, colors.teams[1]);
         port.drawCircle(position, 0.06, "white");
 
-        port.drawLine(left, right, 0.0075, colors.balance.arm);
-        port.drawLine(center, bottom, 0.0075, colors.balance.arm);
+        port.drawLine(left, right, 0.007, colors.balance.arm);
+        port.drawLine(center, bottom, 0.007, colors.balance.arm);
 
         // Draw the big arrow pointer
 
@@ -140,7 +140,10 @@ function Balance(){
     },
 
     drawPan = function(position, score, color, direction){
-        var width = (Math.max(score, repCount)*(sizes.counterSize+sizes.counterGap)-sizes.counterGap)/repCount;
+        var repSize = sizes.counterSize/repCount;
+        var repGap = sizes.counterGap/repCount;
+
+        var width = (Math.max(score, repCount)*(repSize+repGap)-repGap);
 
         port.drawPie(position, panThickness, direction/4+3/4, -direction/4+3/4, color);
 
@@ -204,40 +207,46 @@ function Balance(){
     },
 
     requestPanSlot = function(panIndex, modifier = 1){
+        var repSize = sizes.counterSize/repCount;
+        var repGap = sizes.counterGap/repCount;
+
         // Number of reps on the pan (including fractional part for falling reps)
         var panScore = panScores[panIndex];
 
         // Half of the pan's total width
-        var panOffset = (panScore*sizes.counterSize+Math.max(0, panScore-1)*sizes.counterGap)/(2*repCount);
+        var panOffset = (panScore*repSize+Math.max(0, panScore-1)*repGap)/2;
         // Gap between pan and reps
         var yOffset = (panIndex == 3 ? 1 : -1)*panThickness*1;
 
         var tr = {
             x: panPositions[panIndex].x+panSlots[panIndex]-panOffset,
-            y: panPositions[panIndex].y-(panIndex < 3 ? sizes.counterSize/repCount : 0)+yOffset,
+            y: panPositions[panIndex].y-(panIndex < 3 ? repSize : 0)+yOffset,
         }
 
         //console.log("Slot requested for pan "+panIndex+" at position "+pointString(panPositions[panIndex])+", returning "+pointString(tr));
 
         // Widen pan for next rep. Modifier is used for bottom pan to account for rising rep
-        panSlots[panIndex] += modifier*(sizes.counterSize+sizes.counterGap)/repCount;
+        panSlots[panIndex] += modifier*(repSize+repGap);
 
         return tr;
     },
 
     requestPanEndSlot = function(panIndex){
+        var repSize = sizes.counterSize/repCount;
+        var repGap = sizes.counterGap/repCount;
+
         // Number of reps on the pan (EXCLUDING fractional part for falling reps)
         var panScore = Math.ceil(panScores[panIndex]);
-        var panOffset = (panScore*sizes.counterSize+Math.max(0, panScore-1)*sizes.counterGap)/(2*repCount);
+        var panOffset = (panScore*repSize+Math.max(0, panScore-1)*repGap)/2;
         var yOffset = (panIndex == 3 ? 1 : -1)*panThickness*1;
         var tr = {
             x: panPositions[panIndex].x+panSlots[panIndex]-panOffset,
-            y: panPositions[panIndex].y-(panIndex < 3 ? sizes.counterSize/repCount : 0)+yOffset,
+            y: panPositions[panIndex].y-(panIndex < 3 ? repSize : 0)+yOffset,
         }
 
         //console.log("Slot requested for pan "+panIndex+" at position "+pointString(panPositions[panIndex])+", returning "+pointString(tr));
 
-        panSlots[panIndex] += (sizes.counterSize+sizes.counterGap)/repCount;
+        panSlots[panIndex] += repSize+repGap;
 
         return tr;
     },

@@ -81,6 +81,31 @@ function View(){
             context.lineTo(point1.x, point1.y);
             context.fillStyle = color;
             context.fill();
-        }
+        },
+
+        drawStripes: function(position, size, index, total, color){
+            var x0 = position.x+size.x*index/total;
+            var x1 = position.x+size.x*(index+1)/total;
+
+            var y0 = position.y+size.y*index/total;
+            var y1 = position.y+size.y*(index+1)/total;
+
+            //console.log("STRIPING: x0=%s, x1=%s, y0=%s, y1=%s, color=%s", x0, x1, y0, y1, color);
+            context.fillStyle = color;
+            
+            context.beginPath();
+            context.moveTo(x0, position.y);
+            context.lineTo(x1+1, position.y);
+            context.lineTo(position.x, y1+1);
+            context.lineTo(position.x, y0);
+            context.fill();
+            
+            context.beginPath();
+            context.moveTo(x0-1, position.y+size.y+1);
+            context.lineTo(x1, position.y+size.y+1);
+            context.lineTo(position.x+size.x+1, y1);
+            context.lineTo(position.x+size.x+1, y0-1);
+            context.fill();
+        },
     }
 }

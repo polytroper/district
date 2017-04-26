@@ -522,7 +522,7 @@ function SandboxStage(){
 
     this.refreshBoard();
 }
-/*
+
 SandboxStage.prototype = {
     draw: function(){
         this.board.draw();
@@ -728,4 +728,3 @@ SandboxStage.prototype = {
 
     }
 }
-*/

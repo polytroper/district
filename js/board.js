@@ -394,7 +394,9 @@ function Board(spec){
             }
         }
 
-        validGroups.sort(function(a, b){return a.getAnimationProgress()-b.getAnimationProgress()});
+        validGroups.sort(function(a, b){
+            return b.getAnimationProgress()-a.getAnimationProgress();
+        });
 
         groups = validGroups;
 
@@ -494,6 +496,7 @@ function Board(spec){
 
         invert,
         extractLayout,
+        resetFences,
 
         getActive,
         getDragPost,
@@ -503,6 +506,7 @@ function Board(spec){
         setActive,
         setScore,
         setMutable,
+        setGroupCount,
 
         onMouseMove,
         onMouseDown,

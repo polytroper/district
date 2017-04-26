@@ -20,86 +20,14 @@ function Group(spec){
 
     riseProgress = 0,
     tallyProgress = 0,
+    holdProgress = 0,
+    splitProgress = 0,
+    hangProgress = 0,
     fallProgress = 0,
 
     ratio = 0,
 
     //console.log("Creating group of "+pawns.length+" pawns, valid="+valid);
-
-    draw = function(){
-        if (valid) {
-            for (var i = 0; i < pawns.length; i++) {
-                drawPawn(pawns[i]);
-            }
-        }
-    },
-
-    drawPawn = function(pawn){
-        var size = {
-            x: sizes.pawnRadius*3+camera.scaleX(2),
-            y: sizes.pawnRadius*3+camera.scaleY(2)
-        };
-        var position = {
-            x: pawn.position.x-size.x/2-camera.scaleX(1),
-            y: pawn.position.y-size.y/2-camera.scaleY(1),
-        };
-
-        var color;
-        if (winTeam < 0) color = colors.groupNeutral;
-        else color = colors.teamsLight[winTeam];
-
-        camera.drawBox(position, size, color);
-    },
-
-    drawReps = function(balance){
-        var bottomSlot;
-        if (riseProgress < 1) {
-            bottomSlot = balance.requestPanSlot(3, 1-riseProgress);
-            //console.log("Bottom slot="+pointString(bottomSlot));
-        }
-
-        var tallyOrigin = balance.getTallyOrigin();
-
-        for (var i = 0; i < reps.length; i++) {
-            var point;
-
-            if (riseProgress < 1) {
-                var point0 = {
-                    x: bottomSlot.x,
-                    y: bottomSlot.y+i*(sizes.counterSize+sizes.counterGap)/repCount
-                }
-                var point1 = getTallyPoint(tallyOrigin, i, repCount);
-                point = smoothLerpPoint(point0, point1, riseProgress);
-            }
-            else if (tallyProgress < 1) {
-                point = getTallyPoint(tallyOrigin, i, repCount);
-            }
-            else if (fallProgress < 1) {
-                var point0 = getTallyPoint(tallyOrigin, i, repCount);
-                var point1 = balance.requestPanEndSlot(reps[i].team);
-                point = smoothLerpPoint(point0, point1, fallProgress);
-            }
-            else {
-                point = balance.requestPanSlot(reps[i].team);
-            }
-
-            reps[i].drawAt(point);
-        }
-    },
-
-    drawTally = function(progress){
-
-        for (var i = 0; i < reps.length; i++) {
-
-        }
-    },
-
-    getTallyPoint = function(origin, index, total){
-        return {
-            x: origin.x+(index-total/2)*(sizes.counterSize+0*sizes.counterGap)/total,
-            y: origin.y
-        }
-    },
 
     update = function(){
 
@@ -108,9 +36,14 @@ function Group(spec){
     animate = function(){
         if (phantom || fallProgress == 1) return false;
 
-        riseProgress = tickProgress(true, riseProgress, 0.2);
-        tallyProgress = tickProgress(riseProgress == 1, tallyProgress, 0.4);
-        fallProgress = tickProgress(tallyProgress == 1, fallProgress, 0.2);
+        var multiple = reps.length > 1;
+
+        riseProgress = tickProgress(true, riseProgress, 0.3);
+        tallyProgress = tickProgress(riseProgress == 1, tallyProgress, Math.sqrt(pawns.length/5));
+        holdProgress = tickProgress(tallyProgress == 1, holdProgress, 0.2);
+        splitProgress = tickProgress(holdProgress == 1, splitProgress, multiple ? 0.2 : 0);
+        hangProgress = tickProgress(splitProgress == 1, hangProgress, multiple ? 0.2 : 0);
+        fallProgress = tickProgress(hangProgress == 1, fallProgress, 0.2);
 
         for (var i = 0; i < reps.length; i++) {
             reps[i].setFallProgress(fallProgress);
@@ -120,7 +53,207 @@ function Group(spec){
     },
 
     getAnimationProgress = function(){
-        return riseProgress+tallyProgress+fallProgress;
+        return riseProgress+tallyProgress+holdProgress+splitProgress+hangProgress+fallProgress;
+    },
+
+    draw = function(){
+        if (valid && fallProgress > 0) {
+            if (reps.length == 1) {
+                for (var i = 0; i < pawns.length; i++) {
+                    fillPawn(pawns[i]);
+                }
+            }
+            if (reps.length > 1) {
+                for (var i = 0; i < pawns.length; i++) {
+                    stripePawn(pawns[i]);
+                }
+            }
+        }
+    },
+
+    fillPawn = function(pawn){
+        var boxSize = {
+            x: sizes.pawnRadius*3+camera.unscaleX(2),
+            y: sizes.pawnRadius*3+camera.unscaleY(2)
+        };
+        var boxPosition = {
+            x: pawn.position.x-boxSize.x/2+camera.unscaleX(1),
+            y: pawn.position.y-boxSize.y/2+camera.unscaleY(1),
+        };
+        
+        var color;
+        if (reps[0].team > 1) color = colors.groupNeutral;
+        else color = colors.teamsLight[reps[0].team];
+
+        camera.drawBox(boxPosition, boxSize, color);
+    },
+
+    stripePawn = function(pawn){
+        var boxSize = {
+            x: sizes.pawnRadius*3,
+            y: sizes.pawnRadius*3
+        };
+        var boxPosition = {
+            x: pawn.position.x-boxSize.x/2,
+            y: pawn.position.y-boxSize.y/2,
+        };
+        
+        for (var i = 0; i < reps.length; i++) {
+            camera.drawStripes(boxPosition, boxSize, i, reps.length, colors.teamsLight[reps[i].team]);
+        }
+    },
+
+    drawReps = function(balance){
+        var repSize = sizes.counterSize/repCount;
+        var repGap = sizes.counterGap/repCount;
+
+        var bottomSlot;
+        if (riseProgress < 1) {
+            bottomSlot = balance.requestPanSlot(3, 1-riseProgress);
+            //console.log("Bottom slot="+pointString(bottomSlot));
+        }
+
+        var tallyOrigin = balance.getTallyOrigin();
+
+        var point;
+        var size;
+        if (riseProgress < 1) {
+            for (var i = 0; i < reps.length; i++) {
+                var point0 = {
+                    x: bottomSlot.x,
+                    y: bottomSlot.y+i*(repSize+repGap)
+                }
+                var point1 = getTallyPoint(tallyOrigin, i, repCount);
+
+                point = smoothLerpPoint(point0, point1, riseProgress);
+
+                size = lerp(repSize, sizes.counterSize, riseProgress);
+
+                reps[i].drawAt(point, size);
+            }
+
+        }
+        else if (tallyProgress < 1 || holdProgress < 1) {
+            drawTally(tallyOrigin, tallyProgress);
+        }
+        else if (splitProgress < 1 || hangProgress < 1) {
+            var r = "RepRatios: ";
+            for (var i = 0; i < reps.length; i++) {
+                var repRatio = remapClamp(i/reps.length, (i+1)/reps.length, 0, 1, ratio);
+
+                point = getTallyPoint(tallyOrigin, i, repCount, splitProgress*repGap*repCount*4);
+
+                size = sizes.counterSize;
+
+                reps[i].drawSplit(point, size, repRatio);
+
+                //reps[i].drawAt(point, size);
+
+                r += repRatio+", ";
+            }
+            console.log(r);
+        }
+        else if (fallProgress < 1) {
+            for (var i = 0; i < reps.length; i++) {
+                var point0 = getTallyPoint(tallyOrigin, i, repCount, repGap*repCount*4);
+                var point1 = balance.requestPanEndSlot(reps[i].team);
+
+                point = smoothLerpPoint(point0, point1, fallProgress);
+
+                size = lerp(sizes.counterSize, repSize, fallProgress);
+
+                reps[i].drawAt(point, size);
+            }
+        }
+        else {
+            for (var i = 0; i < reps.length; i++) {
+                point = balance.requestPanSlot(reps[i].team);
+
+                size = repSize;
+
+                reps[i].drawAt(point, size);
+            }
+        }
+    },
+
+    drawTally = function(origin, progress){
+        var repSize = sizes.counterSize;
+        var repGap = sizes.counterGap;
+
+        var x0 = origin.x-repSize*repCount/2;
+        var x1 = origin.x+repSize*repCount/2;
+        var y0 = origin.y;//-sizes.counterSize/repCount/2;
+        var y1 = origin.y+repSize;
+
+
+        port.drawBox({x: x0, y: y0}, {x: repSize*repCount, y: repSize}, "black");
+
+        //console.log("DIRSTRIBUTING");
+        var redTally = 0;
+        var blueTally = 0;
+
+        var p;
+        var report = "Distribution: "
+        for (var i = 0; i < pawns.length; i++) {
+            p = distribute(i, pawns.length, progress, 0.25);
+            report += trunc(p)+", ";
+            drawTallyPawn(origin, pawns[i], p);
+            if (p >= 1) {
+                if (pawns[i].getTeam() == 0) redTally++;
+                else blueTally++;
+            }
+        }
+
+        var bluePosition = {
+            x: x0,
+            y: y0
+        }
+        var blueSize = {
+            x: unlerp(0, pawns.length, blueTally)*repSize*repCount,
+            y: repSize
+        }
+
+        if (blueTally > 0) {
+            port.drawBox(bluePosition, blueSize, colors.teams[1]);
+        }
+
+        var redPosition = {
+            x: bluePosition.x+blueSize.x,
+            y: y0
+        }
+        var redSize = {
+            x: unlerp(0, pawns.length, redTally)*repSize*repCount,
+            y: repSize
+        }
+
+        if (redTally > 0) {
+            port.drawBox(redPosition, redSize, colors.teams[0]);
+        }
+
+        //console.log(report);
+
+
+    },
+
+    drawTallyPawn = function(origin, pawn, progress){
+        var pawnPosition = port.untransformPoint(camera.transformPoint(pawn.position));
+        //var radius = camera.scale(pawns);
+        var radius = lerp(port.untransform(camera.scaleY(sizes.pawnRadius)), 0*sizes.counterSize/repCount/2, progress);
+        var point = smoothLerpPoint(pawnPosition, origin, progress);
+        var color = colors.teamsDark[pawn.getTeam()];
+        port.drawCircle(point, radius, color);
+
+        //console.log("Drawing pawn tally animation. progress="+progress+", pawnPosition="+pointString(pawnPosition)+", point="+pointString(point));
+    },
+
+    getTallyPoint = function(origin, index, total, gap = 0){
+        var repSize = sizes.counterSize;
+        var repGap = sizes.counterGap;
+
+        return {
+            x: origin.x+(index-total/2)*(repSize+gap)+gap/2,
+            y: origin.y
+        }
     },
 
     trace = function(fences, pawn){
@@ -227,6 +360,8 @@ function Group(spec){
 
         // If this group is valid, create reps in proportion to scores using Largest Remainder Method (Hare Quota)
         if (valid) {
+            pawns.sort(function(a, b){return b.getTeam()-a.getTeam()});
+
             console.log("Group is valid! Computing scores...");
 
             // Calculate overall ratio
@@ -292,6 +427,9 @@ function Group(spec){
 
             }
 
+            reps.sort(function(a, b){return b.team-a.team});
+
+
             if (reps.length != repCount) console.log("UH OH THIS GROUP COMPUTED "+reps.length+" REPS WHEN IT SHOULD HAVE COMPUTED "+repCount+"!!!");
         }
         else {
@@ -340,13 +478,28 @@ function Rep(spec) {
 
     fallProgress = 0,
 
-    drawAt = function(point){
-        var size = {x: sizes.counterSize/group.repCount, y: sizes.counterSize/group.repCount}
+    drawAt = function(point, size){
+        var size = {x: size, y: size}
         //console.log(TAG+": drawing at "+pointString(point)+" with size "+pointString(size));
         //size = {x: 1, y: 1}
         var color;
         if (fallProgress == 0) color = "black";
         else color = colors.teams[team];
+        port.drawBox(point, size, color);
+    },
+
+    drawSplit = function(point, width, ratio){
+
+        console.log("Drawing rep with ratio=%s at position %s", ratio, pointString(point));
+        var size = {x: ratio*width, y: width}
+        var color = colors.teams[1];
+        //if (ratio != 0) 
+        port.drawBox(point, size, color);
+
+        point.x += ratio*width;
+        size.x = (1-ratio)*width;
+        color = colors.teams[0];
+        //if (ratio != 1)
         port.drawBox(point, size, color);
     },
 
@@ -375,6 +528,7 @@ function Rep(spec) {
 
         // Methods
         drawAt,
+        drawSplit,
         update,
         animate,
 

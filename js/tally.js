@@ -23,6 +23,7 @@ function Tally(spec) {
 	var tally = Object.freeze({
 		// Fields
 		group,
+		balance,
 		reps,
 
 		// Methods

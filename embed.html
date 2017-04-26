@@ -314,7 +314,7 @@ canvas {
                 }, 1000/FPS);
 
                 stage = stages[0];
-
+                /*
                 var sandboxString = "?=sandbox";
                 var url = window.location.href;
                 var slice = url.slice(url.length-sandboxString.length);
@@ -328,6 +328,13 @@ canvas {
                         stages.unshift(queryBoard);
                         stage = queryBoard;
                     }
+                }
+                */
+                var queryBoard = getQueryBoard();
+                if (queryBoard != null) {
+                    console.log("Adding queryBoard to stages");
+                    stages.unshift(queryBoard);
+                    stage = queryBoard;
                 }
 
                 stageIndex = stages.indexOf(stage);
@@ -516,9 +523,11 @@ canvas {
                 var team = parseInt(getQueryString("t"));
 
                 var groups = parseInt(getQueryString("g"));
+                var reps = parseInt(getQueryString("r"));
+
                 var pawns = getQueryString("p");
 
-                if (isNaN(xCount) || isNaN(yCount) || isNaN(score) || isNaN(team) || isNaN(groups)) return null;
+                if (isNaN(xCount) || isNaN(yCount) || isNaN(score) || isNaN(team) || isNaN(groups) || isNaN(reps)) return null;
 
                 if (pawns == null) return null;
                 if (pawns.length != xCount*yCount) return null;
@@ -526,10 +535,14 @@ canvas {
 
                 return Board({
                     groupCount: groups,
+                    repCount: reps,
+
                     goalScore: score,
                     goalTeam: team,
+
                     layout: pawns,
                     showNext: false,
+
                     position: {
                         x: -32,
                         y: -16
@@ -549,20 +562,6 @@ canvas {
                         layout[y].push(parsedInt);
                     }
                 }
-                /*
-                var pawn;
-                for (var x = 0; x < this.xSize; x++) {
-                    this.pawns.push([]);
-                    for (var y = 0; y < this.ySize; y++) {
-                        this.teamCount = Math.max(layout[y][x]+1, this.teamCount);
-
-                        pawn = new Pawn(this, x, y, layout[y][x]);
-
-                        this.pawns[x].push(pawn);
-                        this.pawnList.push(pawn);
-                    }
-                }
-                */
                 return layout;
             }
 

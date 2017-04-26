@@ -43,6 +43,12 @@ function Port(){
             view.drawPointer(center, tip, color);
         },
 
+        drawStripes: function(position, size, index, total, color){
+            position = this.transformPoint(position);
+            size = this.transformPoint(size);
+            view.drawStripes(position, size, index, total, color);
+        },
+
         transformPoint: function(point){
             point = {
                 x: view.height*point.x,
@@ -57,6 +63,15 @@ function Port(){
                 y: point.y/view.height
             };
             return point;
+        },
+
+        untransform: function(x){
+            return x/view.height;
+        },
+
+        transform: function(x){
+            return x*view.height;
         }
+
     }
 }
