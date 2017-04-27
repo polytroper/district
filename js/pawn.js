@@ -1,94 +1,123 @@
-function Pawn(board, x, y, team){
-    this.board = board;
-    this.xIndex = x;
-    this.yIndex = y;
-    this.teamIndex = team;
+function Pawn(spec){
+    var {
+        board,
+        xIndex,
+        yIndex,
+        teamIndex
+    } = spec,
+    TAG ="Pawn("+xIndex+", "+yIndex+")",
 
-    this.neighbors = [];
-    this.posts = [];
+    down = false,
+    touch = false,
+    mutable = false,
 
-    this.position = {
-        x: this.board.position.x+(this.xIndex-(this.board.xSize-1)/2)*sizes.pawnRadius*3,
-        y: this.board.position.y+(this.yIndex-(this.board.ySize-1)/2)*sizes.pawnRadius*3
-    };
+    neighbors = [],
 
-    this.TAG = "Pawn("+this.xIndex+", "+this.yIndex+")";
-
-    this.mutable = false;
-    this.touch = false;
-    this.down = false;
-
-
-    return this;
-};
-
-Pawn.prototype = {
-    draw: function(){
-        //console.log(this.TAG+"Drawing at "+xyString(this.centerX, this.centerY));
-
-        var color = colors.teams[this.teamIndex];
-        if (this.mutable) {
-            if (this.touch) color = colors.teamsDark[this.teamIndex];
-        }
-
-        camera.drawCircle(this.position, sizes.pawnRadius, color);
+    position = {
+        x: board.position.x+(xIndex-(board.xSize-1)/2)*sizes.pawnRadius*3,
+        y: board.position.y+(yIndex-(board.ySize-1)/2)*sizes.pawnRadius*3
     },
 
-    setMutable: function(mutable){
-        if (mutable != this.mutable) {
-            this.mutable = mutable;
-            if (this.mutable) {
+    draw = function(){
+        //console.log(this.TAG+"Drawing at "+xyString(this.centerX, this.centerY));
+
+        var color = colors.teams[teamIndex];
+        if (mutable) {
+            if (touch) color = colors.teamsDark[teamIndex];
+        }
+
+        camera.drawCircle(position, sizes.pawnRadius, color);
+    },
+
+    // Called when the board is created to make a convenient local mapping between neighboring pawns.
+    findNeighbors = function(){
+        neighbors.length = 0;
+        if (xIndex > 0) neighbors.push(board.pawns[xIndex-1][yIndex]);
+        if (xIndex < board.xSize-1) neighbors.push(board.pawns[xIndex+1][yIndex]);
+        if (yIndex > 0) neighbors.push(board.pawns[xIndex][yIndex-1]);
+        if (yIndex < board.ySize-1) neighbors.push(board.pawns[xIndex][yIndex+1]);
+    },
+
+    // Used exclusively in the sandbox to make pawns convertible by tapping.
+    setMutable = function(MUTABLE){
+        if (mutable != MUTABLE) {
+            mutable = MUTABLE;
+            if (mutable) {
                 mouseListeners.push(this);
                 updateListeners.push(this);
             }
             else {
                 mouseListeners.splice(mouseListeners.indexOf(this), 1);
                 updateListeners.splice(updateListeners.indexOf(this), 1);
-                this.touch = false;
+                touch = false;
+                down = false;
             }
         }
     },
 
-    update: function(){
-        //console.log(this.TAG+"Drawing at "+xyString(this.centerX, this.centerY));
-
+    update = function(){
 
     },
 
-    onMouseDown: function(point){
-        this.touch = this.contains(point);
-        if (this.touch) this.down = true;
+    // Inverts the pawn's team, called only on boards after the "choice" stage if player selects Team 1 to rebalance the puzzles
+    invert = function(){
+        if (teamIndex < 2) teamIndex = 1-teamIndex;
     },
 
-    onMouseUp: function(point){
-        this.touch = this.contains(point);
+    // Retrieves the team
+    getTeam = function(){
+        return teamIndex;
+    },
 
-        if (this.touch && (this.board.dragPost == null || this.down)) {
-            this.teamIndex = 1-this.teamIndex;
-            this.board.compute();
+    // Checks if the pawn contains a point (pretty much just wherever the mouse is)
+    contains = function(point){
+        point = camera.untransformPoint(point);
+        return distance(position, point) < sizes.pawnRadius;
+    },
+
+    onMouseDown = function(point){
+        touch = contains(point);
+        if (touch) down = true;
+    },
+
+    onMouseUp = function(point){
+        touch = contains(point);
+
+        if (touch && (board.getDragPost() == null || down)) {
+            teamIndex = 1-teamIndex;
+            board.compute();
         }
-        this.down = false;
+        down = false;
     },
 
-    onMouseMove: function(point){
-        this.touch = this.contains(point);
+    onMouseMove = function(point){
+        touch = contains(point);
 
-        if (!this.touch) this.down = false;
-    },
+        if (!touch) down = false;
+    };
 
-    contains: function(point){
-        point = camera.transformPoint(point);
-        return distance(this.position, point) < sizes.pawnRadius;
-    },
+    console.log("%s: team=%s", TAG, teamIndex);
 
-    findNeighbors: function(){
-        if (this.xIndex > 0) this.neighbors.push(this.board.pawns[this.xIndex-1][this.yIndex]);
-        if (this.xIndex < this.board.xSize-1) this.neighbors.push(this.board.pawns[this.xIndex+1][this.yIndex]);
-        if (this.yIndex > 0) this.neighbors.push(this.board.pawns[this.xIndex][this.yIndex-1]);
-        if (this.yIndex < this.board.ySize-1) this.neighbors.push(this.board.pawns[this.xIndex][this.yIndex+1]);
-    },
+    return Object.freeze({
+        // Fields
+        TAG,
+        position,
+        neighbors,
+        xIndex,
+        yIndex,
 
-    invert: function(){
-        if (this.teamIndex < 2) this.teamIndex = 1-this.teamIndex;
-    }
-};
+        // Methods
+        draw,
+        update,
+        getTeam,
+
+        findNeighbors,
+        setMutable,
+        invert,
+
+        contains,
+        onMouseMove,
+        onMouseDown,
+        onMouseUp,
+    });
+}

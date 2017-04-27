@@ -1,190 +1,304 @@
 function Balance(){
-    this.scores = [];
+    var //No spec for Balance
+    scores = [],
+    groups = [],
+    reps = [],
+    repCount = 1,
 
-    this.leftScore = 0;
-    this.rightScore = 0;
-    this.middleScore = 0;
-    this.totalScore = 0;
+    panPositions,
+    panWidths = [0, 0, 0, 0],
+    panScores = [0, 0, 0, 0],
+    panSlots = [0, 0, 0, 0],
 
-    this.ratio = -1;
-    this.goalTeam = -1;
-    this.goalScore = -1;
+    leftWeight = 0,
+    rightWeight = 0,
+    middleWeight = 0,
 
-    this.maxAngle = Math.PI/6;
-    this.targetAngle = 0;
-    this.currentAngle = 0;
+    ratio = -1,
+    goalTeam = -1,
+    goalScore = -1,
 
-    this.armLength = 0.125;
+    maxAngle = Math.PI/6,
+    targetAngle = 0,
+    currentAngle = 0,
 
-    this.panThickness = 0.008;
+    armLength = 0.125,
+    panThickness = 0.008,
 
-    this.position = {
-        x: 0.5,
-        y: 1.21
-    }
+    tallyOrigin = {
+        x: view.aspect/2,
+        y: 0.81
+    },
 
-    this.position0 = {
-        x: 0.5,
-        y: 1.21
-    }
-    this.position1 = {
-        x: 0.5,
-        y: 0.91
-    }
+    mover = Mover({
+        position0: {
+            x: 0.5,
+            y: 1.225
+        },
+        position1: {
+            x: 0.5,
+            y: 0.925
+        }
+    }),
 
-    this.show = false;
-    this.showProgress = 0;
-    this.showDuration = 1;
-}
+    position = mover.position,
 
-Balance.prototype = {
-    draw: function(){
-        if (this.showProgress == 0) return;
-        //console.log("Drawing balance at "+pointString(this.position));
+    draw = function(){
+        if (mover.getProgress == 0) return;
+        //console.log("Drawing balance at "+pointString(position));
+
+        // Define important positions
+
         var center = {
-            x: this.position.x,
-            y: this.position.y
+            x: position.x,
+            y: position.y
         }
         var left = {
-            x: this.position.x-this.armLength*Math.cos(this.currentAngle),
-            y: this.position.y-this.armLength*Math.sin(this.currentAngle)
+            x: position.x-armLength*Math.cos(currentAngle),
+            y: position.y-armLength*Math.sin(currentAngle)
         }
         var right = {
-            x: this.position.x+this.armLength*Math.cos(this.currentAngle),
-            y: this.position.y+this.armLength*Math.sin(this.currentAngle)
+            x: position.x+armLength*Math.cos(currentAngle),
+            y: position.y+armLength*Math.sin(currentAngle)
         }
         var bottom = {
-            x: this.position.x,
-            y: this.position.y+0.045
+            x: position.x,
+            y: position.y+0.035
         }
 
-        port.drawPie(this.position, 0.065, 3/4, 5/6, colors.teams[0]);
-        port.drawPie(this.position, 0.065, 4/6, 3/4, colors.teams[1]);
-        //port.drawPie(this.position, 0.06, 0.25, 0.25-(this.maxAngle/Math.PI), colors.teams[1]);
-        port.drawCircle(this.position, 0.06, "white");
+        // Draw the meter
 
-        port.drawLine(left, right, 0.01, colors.balance.arm);
-        port.drawLine(center, bottom, 0.01, colors.balance.arm);
+        port.drawPie(position, 0.065, 3/4, 5/6, colors.teams[0]);
+        port.drawPie(position, 0.065, 4/6, 3/4, colors.teams[1]);
+        port.drawCircle(position, 0.06, "white");
+
+        port.drawLine(left, right, 0.007, colors.balance.arm);
+        port.drawLine(center, bottom, 0.007, colors.balance.arm);
+
+        // Draw the big arrow pointer
 
         var pointerPosition = {
-            x: this.position.x,
-            y: this.position.y-0.05
+            x: position.x,
+            y: position.y-0.05
         }
-        pointerPosition = rotateAround(pointerPosition, this.position, this.currentAngle);
-        port.drawLine(this.position, pointerPosition, 0.005, colors.balance.arm);
+        pointerPosition = rotateAround(pointerPosition, position, currentAngle);
+        port.drawLine(position, pointerPosition, 0.005, colors.balance.arm);
 
         var pointerTip = {
-            x: this.position.x,
-            y: this.position.y-0.06
+            x: position.x,
+            y: position.y-0.06
         }
-        pointerTip = rotateAround(pointerTip, this.position, this.currentAngle);
+        pointerTip = rotateAround(pointerTip, position, currentAngle);
         port.drawPointer(pointerPosition, pointerTip, "black");
 
-        if (this.ratio >= 0) {
-            var ratioPointerAngle = lerp(this.maxAngle, -this.maxAngle, this.ratio);
-            var ratioPointerPosition = {
-                x: this.position.x,
-                y: this.position.y-0.07
-            }
-            ratioPointerPosition = rotateAround(ratioPointerPosition, this.position, ratioPointerAngle);
+        // Draw the ratio pointer (unused right now)
 
-            var ratioPointerTip = lerpPoint(ratioPointerPosition, this.position, 0.1);
+        if (ratio >= 0) {
+            var ratioPointerAngle = lerp(maxAngle, -maxAngle, ratio);
+            var ratioPointerPosition = {
+                x: position.x,
+                y: position.y-0.07
+            }
+            ratioPointerPosition = rotateAround(ratioPointerPosition, position, ratioPointerAngle);
+
+            var ratioPointerTip = lerpPoint(ratioPointerPosition, position, 0.1);
             port.drawPointer(ratioPointerPosition, ratioPointerTip, "black");
         }
 
-        if (this.goalScore >= 0) {
-            var teamSwitch = (this.goalTeam*2-1);
-            var goalPointerAngle = lerp(this.maxAngle*teamSwitch, -this.maxAngle*teamSwitch, ((this.goalScore)/this.totalScore+1)/2);
-            //var goalPointerAngle = lerp(this.maxAngle*this.goalTeam, -this.maxAngle*(1-this.goalTeam), (this.goalScore)/this.totalScore);
-            var goalPointerPosition = {
-                x: this.position.x,
-                y: this.position.y-0.08
-            }
-            goalPointerPosition = rotateAround(goalPointerPosition, this.position, goalPointerAngle);
+        // Draw the goal pointer
 
-            var goalPointerTip = lerpPoint(goalPointerPosition, this.position, 0.125);
+        if (goalScore >= 0) {
+            var teamSwitch = (goalTeam*2-1);
+            var goalPointerAngle = lerp(maxAngle*teamSwitch, -maxAngle*teamSwitch, ((goalScore)/reps.length+1)/2);
+            //var goalPointerAngle = lerp(maxAngle*goalTeam, -maxAngle*(1-goalTeam), (goalScore)/reps.length);
+            var goalPointerPosition = {
+                x: position.x,
+                y: position.y-0.08
+            }
+            goalPointerPosition = rotateAround(goalPointerPosition, position, goalPointerAngle);
+
+            var goalPointerTip = lerpPoint(goalPointerPosition, position, 0.125);
 
             var c = colors.teamNeutral;
-            if (this.goalScore != 0) c = colors.teams[this.goalTeam];
+            if (goalScore != 0) c = colors.teams[goalTeam];
             port.drawPointer(goalPointerPosition, goalPointerTip, c);
         }
 
-        var incompleteScore = this.totalScore-this.leftScore-this.rightScore-this.middleScore;
-        this.drawPan(bottom, incompleteScore, "black", -1);
+        // Draw the score pans
 
-        this.drawPan(center, this.middleScore, colors.teamNeutral, 1);
-        this.drawPan(right, this.rightScore, colors.teams[0], 1);
-        this.drawPan(left, this.leftScore, colors.teams[1], 1);
-
-
-        /*
-        var groupCount = this.board.groupCount;
-        var width = groupCount*(sizes.counterSize+sizes.counterGap)-sizes.counterGap;
-
-        var pos = {
-            x: 0.5-width/2,
-            y: this.position.y
+        panPositions = [right, left, center, bottom];
+        for (var i = 0; i < 4; i++) {
+            drawPan(panPositions[i], panScores[i], i==3?"black":colors.teams[i], i==3?-1:1);
         }
 
+        // Draw the actual groups/reps
+        panSlots = [0, 0, 0, 0];
 
-
-        for (var i = 0; i < this.scores.length; i++) {
-            for (var j = 0; j < this.scores[i]; j++) {
-
-                pos.x += sizes.
-            }
+        for (var i = 0; i < groups.length; i++) {
+            groups[i].drawReps(this);
         }
-        */
     },
 
-    drawPan: function(position, score, color, direction){
-        var width = Math.max(score, 1)*(sizes.counterSize+sizes.counterGap)-sizes.counterGap;
+    drawPan = function(position, score, color, direction){
+        var repSize = sizes.counterSize/repCount;
+        var repGap = sizes.counterGap/repCount;
 
-        port.drawPie(position, this.panThickness, direction/4+3/4, -direction/4+3/4, color);
+        var width = (Math.max(score, repCount)*(repSize+repGap)-repGap);
 
+        port.drawPie(position, panThickness, direction/4+3/4, -direction/4+3/4, color);
+
+        /*
         var size = {x: sizes.counterSize, y: sizes.counterSize}
         var pos = {
             x: position.x-width/2,
-            y: position.y-sizes.counterSize*(direction+1)/2-direction*this.panThickness*5/4
+            y: position.y-sizes.counterSize*(direction+1)/2-direction*panThickness*5/4
         }
         for (var i = 0; i < score; i++) {
             port.drawBox(pos, size, color);
             pos.x += sizes.counterSize+sizes.counterGap;
         }
+        */
 
-        port.drawLine({x: position.x-width/2, y: position.y-direction*this.panThickness/3}, {x: position.x+width/2, y: position.y-direction*this.panThickness/3}, this.panThickness, colors.balance.pan);
+        port.drawLine(
+            {x: position.x-width/2, y: position.y-direction*panThickness/3},
+            {x: position.x+width/2, y: position.y-direction*panThickness/3},
+            panThickness,
+            colors.balance.pan
+        );
 
     },
 
-    update: function(){
-        this.showProgress = tickProgress(this.show, this.showProgress, this.showDuration);
+    update = function(){
+        // Update position
+        mover.update();
+        position = mover.getPosition();
 
-        this.position = smoothLerpPoint(this.position0, this.position1, this.showProgress);
 
+        // Animate groups (which animate reps)
+        for (var i = 0; i < groups.length; i++) {
+            if (groups[i].animate()) break;
+        }
+
+        // Add up "scores" (number of reps on each pan). Bottom pan score is calculated from groups instead of reps since it stacks reps vertically by group.
+        panScores = [0, 0, 0, 0];
+
+        for (var i = 0; i < groups.length; i++) {
+            panScores[3] += 1-groups[i].getRiseProgress();
+        }
+
+        for (var i = 0; i < reps.length; i++) {
+            panScores[reps[i].team] += reps[i].getFallProgress();
+        }
+
+        leftWeight = Math.floor(panScores[1]);
+        rightWeight = Math.floor(panScores[0]);
+        middleWeight = Math.floor(panScores[2]);
+        var totalWeight = leftWeight+rightWeight+middleWeight;
+
+        if (reps.length == 0) targetAngle = 0;
+        else targetAngle = maxAngle*(rightWeight-leftWeight)/reps.length;
+        //console.log("Target Angle="+targetAngle+", reps="+reps.length);
+
+        // Make the scales sway if the board is not complete
         var wobble = Math.sin(time)*0.1;
-        if (this.totalScore == this.middleScore+this.leftScore+this.rightScore) wobble = 0;
+        if (reps.length == totalWeight) wobble = 0;
 
-        this.currentAngle = lerp(this.currentAngle, this.targetAngle+wobble, 0.03);
-
+        currentAngle = lerp(currentAngle, targetAngle+wobble, 0.03);
     },
 
-    setScores: function(left, right, middle, total){
-        this.leftScore = left;
-        this.rightScore = right;
-        this.middleScore = middle;
-        this.totalScore = total;
+    requestPanSlot = function(panIndex, modifier = 1){
+        var repSize = sizes.counterSize/repCount;
+        var repGap = sizes.counterGap/repCount;
 
-        this.targetAngle = this.maxAngle*(right-left)/total;
+        // Number of reps on the pan (including fractional part for falling reps)
+        var panScore = panScores[panIndex];
+
+        // Half of the pan's total width
+        var panOffset = (panScore*repSize+Math.max(0, panScore-1)*repGap)/2;
+        // Gap between pan and reps
+        var yOffset = (panIndex == 3 ? 1 : -1)*panThickness*1;
+
+        var tr = {
+            x: panPositions[panIndex].x+panSlots[panIndex]-panOffset,
+            y: panPositions[panIndex].y-(panIndex < 3 ? repSize : 0)+yOffset,
+        }
+
+        //console.log("Slot requested for pan "+panIndex+" at position "+pointString(panPositions[panIndex])+", returning "+pointString(tr));
+
+        // Widen pan for next rep. Modifier is used for bottom pan to account for rising rep
+        panSlots[panIndex] += modifier*(repSize+repGap);
+
+        return tr;
     },
 
-    setGoal: function(team, score){
-        console.log("Setting goal to "+(team == 0 ? "red": "blue")+", "+score);
-        this.goalTeam = team;
-        this.goalScore = score;
+    requestPanEndSlot = function(panIndex){
+        var repSize = sizes.counterSize/repCount;
+        var repGap = sizes.counterGap/repCount;
+
+        // Number of reps on the pan (EXCLUDING fractional part for falling reps)
+        var panScore = Math.ceil(panScores[panIndex]);
+        var panOffset = (panScore*repSize+Math.max(0, panScore-1)*repGap)/2;
+        var yOffset = (panIndex == 3 ? 1 : -1)*panThickness*1;
+        var tr = {
+            x: panPositions[panIndex].x+panSlots[panIndex]-panOffset,
+            y: panPositions[panIndex].y-(panIndex < 3 ? repSize : 0)+yOffset,
+        }
+
+        //console.log("Slot requested for pan "+panIndex+" at position "+pointString(panPositions[panIndex])+", returning "+pointString(tr));
+
+        panSlots[panIndex] += repSize+repGap;
+
+        return tr;
     },
 
-    setRatio: function(ratio){
+    getTallyOrigin = function(){
+        return tallyOrigin;
+    },
+
+    setShow = function(show){
+        mover.setState(show);
+    },
+
+    setGroups = function(GROUPS, REPCOUNT){
+        groups = GROUPS;
+        reps.length = 0;
+        groups.forEach(function(group){
+            reps = reps.concat(group.reps);
+        });
+
+        repCount = REPCOUNT;
+
+        console.log("Balance: accepting "+groups.length+" groups with "+reps.length+" reps");
+    },
+
+    setGoal = function(team, score){
+        console.log("Setting goal to "+(team == 0 ? "red" : "blue")+", "+score);
+        goalTeam = team;
+        goalScore = score;
+    },
+
+    setRatio = function(ratio){
         console.log("Setting ratio to "+ratio);
-        this.ratio = ratio;
-    }
+        ratio = ratio;
+    };
+
+
+    return Object.freeze({
+        // Fields
+        groups,
+        reps,
+
+        // Methods
+        draw,
+        update,
+
+        requestPanSlot,
+        requestPanEndSlot,
+        getTallyOrigin,
+
+        setGroups,
+        setRatio,
+        setGoal,
+        setShow,
+    });
 }

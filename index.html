@@ -5,7 +5,7 @@
         <script src="http://code.jquery.com/jquery.min.js"></script>
 
         <link rel="icon" type="image/png" href="/favicon.png"/>
-        <link rel="stylesheet" href="/css/main.css">
+        <link rel="stylesheet" href="./css/district.css">
     </head>
     <body>
         <div id="nav-container"></div>
@@ -15,22 +15,116 @@
         });
         </script>
 
-
-        <div class="game">
-            <h3>DISTRICT</h3>
-
-            <div id="district"></div>
+        <div class="deck" id="deck">
         </div>
 
-        <script type="text/javascript">
-            var game = document.getElementById('district');
-            var url = window.location.href;
-            var query = url.split('?')[1];
-            if (query == undefined) query = "";
-            else query = "?"+query;
+        <div class="advance" id="advance" onclick="advance()">
+            <a href="javascript:void(0)">Next...</a>
+        </div>
 
-            var embedURL = "./game.html"+query;
-            game.innerHTML = "<embed src=\""+embedURL+"\" width=\"768px\" height=\"768px\" style=\"border:1px solid black\"></embed>"
+
+        <script type="text/javascript">
+            var slides = [
+                {
+                    title: "Welcom to Timville",
+                    description: "Alice and Bob start a town. Alice likes red carpets. Bob likes blue. They split the floor into 2 separately-carpeted districts. Everyone is happy.",
+                    query: "?=&x=2&y=1&s=-1&t=0&g=2&r=1&p=01",
+                },
+                {
+                    title: "Democracy is Born",
+                    description: "Two friends move in, so a vote is held for new carpets. Both districts tie, so grey is picked as a compromise.",
+                    query: "?=&x=2&y=2&s=-1&t=0&g=2&r=1&p=0110",
+                },
+                {
+                    title: "Timville Expands",
+                    description: "A third group is added to accomodate new arrivals, but overall Timville remains pretty balanced.",
+                    query: "?=&x=2&y=3&s=0&t=0&g=3&r=1&p=001011",
+                },
+                {
+                    title: "Red Carpeters Take Charge",
+                    description: "Borders are redrawn once again, but this time red gains power. From now on, they get to divide up the floor. They were elected, after all.",
+                    query: "?=&x=3&y=3&s=1&t=1&g=3&r=1&p=100101001",
+                },
+                {
+                    title: "Cracking",
+                    description: "Timville is perfectly split on their preferred color, but somehow red ends up with most of the floor.",
+                    query: "?=&x=4&y=3&s=2&t=0&g=4&r=1&p=000000111111",
+                },
+                {
+                    title: "Packing",
+                    description: "The share of Red voters begins to dwindle, but their share of the floor does not.",
+                    query: "?=&x=5&y=3&s=1&t=0&g=3&r=1&p=001110011100111",
+                },
+                {
+                    title: "Linking",
+                    description: "The red population gets even smaller and begins to fracture. Nonetheless, clever floor plans keep most of the carpet nice and red.",
+                    query: "?=&x=6&y=3&s=1&t=0&g=3&r=1&p=001100011110110011",
+                },
+                {
+                    title: "God Intervenes.",
+                    description: "\"Hey wait a minute,\" says God, \"This sucks. New rule: from now on, each district picks two colors. Put them in stripes on the floor or something.\"",
+                    query: "?=&x=6&y=3&s=0&t=0&g=3&r=2&p=001100011110110011",
+                },
+                /*
+                {
+                    title: "Another Title!",
+                    description: "Hey look at that another description too what are the odds",
+                    query: "?=&x=5&y=4&s=0&t=0&g=4&r=1&p=00011000111100011000",
+                },
+                */
+            ];
+
+            appendSlide = function(spec){
+                var deck = document.getElementById("deck");
+
+                var slide = document.createElement('div');
+                slide.className = "slide";
+                deck.appendChild(slide);
+
+                var words = document.createElement('div');
+                words.className = "words";
+                slide.appendChild(words);
+
+                var title = document.createElement('div');
+                title.className = "title";
+                title.innerHTML = spec.title;
+                words.appendChild(title);
+
+                var description = document.createElement('div');
+                description.className = "description";
+                description.innerHTML = spec.description;
+                words.appendChild(description);
+
+                var puzzle = document.createElement('div');
+                puzzle.className = "puzzle";
+                slide.appendChild(puzzle);
+
+                var embedURL = "./embed.html"+spec.query;
+                puzzle.innerHTML = "<iframe id=\"frame\" src=\""+embedURL+"\" width=\"768px\" height=\"768px\" style=\"border:1px solid black\"></iframe>";
+
+                setTimeout(function(){
+                    puzzle.querySelector("#frame").contentWindow.setCompletionCallback(advance);
+                }, 1000);
+
+                //puzzle.querySelector("#frame").contentWindow.setCompletionCallback(advance);
+
+                return slide;
+            }
+
+            advance = function(){
+                if (slides.length > 0) {
+                    var slide = appendSlide(slides.shift());
+                    slide.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                    });
+                    if (slides.length == 0) {
+                        document.getElementById("advance").style.visibility = "hidden";
+                    }
+                }
+            }
+
+            //advance();
         </script>
 
         <div id="footer-container"></div>

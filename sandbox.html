@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>District</title>
+        <script src="http://code.jquery.com/jquery.min.js"></script>
+
+        <link rel="icon" type="image/png" href="/favicon.png"/>
+        <link rel="stylesheet" href="/css/main.css">
+    </head>
+    <body>
+        <div id="nav-container"></div>
+        <script type="text/javascript">
+        $(document).ready(function() {
+        $('#nav-container').load('/nav.html');
+        });
+        </script>
+
+
+        <div class="game">
+            <h3>DISTRICT</h3>
+
+            <div id="district"></div>
+        </div>
+
+        <script type="text/javascript">
+            var game = document.getElementById('district');
+            var url = window.location.href;
+            var query = url.split('?')[1];
+            if (query == undefined) query = "";
+            else query = "?"+query;
+
+            var embedURL = "./embed.html"+query;
+            game.innerHTML = "<embed src=\""+embedURL+"\" width=\"768px\" height=\"768px\" style=\"border:1px solid black\"></embed>"
+        </script>
+
+        <div id="footer-container"></div>
+        <script type="text/javascript">
+        $(document).ready(function() {
+        $('#footer-container').load('/footer.html');
+        });
+        </script>
+    </body>
+</html>

@@ -1,163 +1,339 @@
-function Board(puzzle){
-    this.xSize = 0;
-    this.ySize = 0;
+function Board(spec){
+    var {
+        layout,
+        position = {x: 0, y: 0},
 
-    this.pawns = [];
-    this.posts = [];
-    this.fences = [];
-    this.groups = [];
-    this.pawnList = [];
-    this.postList = [];
+        groupCount,
+        repCount = 1,
 
-    this.active = false;
-    this.dragPost = null;
+        goalTeam = -1,
+        goalScore = -1,
 
-    this.showNext = (puzzle.showNext === undefined ? true : puzzle.showNext);
-    this.showReset = (puzzle.showReset === undefined ? true : puzzle.showReset);
+        showNext = true,
+        showReset = true,
 
-    this.goalTeam = (puzzle.goalTeam === undefined ? -1 : puzzle.goalTeam);
-    this.goalScore = (puzzle.goalScore === undefined ? -1 : puzzle.goalScore);
-    this.secondScore = (puzzle.secondScore === undefined ? this.goalScore : puzzle.secondScore);
+        mutable = false,
+    } = spec,
 
+    xSize = layout[0].length,
+    ySize = layout.length,
+    dimensions = {
+        x: xSize,
+        y: ySize,
+        total: xSize*ySize,
+    },
 
-    this.winner = -1;
-    this.playerTeam = 0;
-    this.playerScore = 0;
-    this.scores = [];
-    this.fractions = [];
-    this.teamCount = 2;
+    TAG = "Board("+xSize+", "+ySize+"): ",
 
-    this.valid = false;
-    this.complete = false;
+    pawns = [],
+    posts = [],
+    fences = [],
+    groups = [],
+    pawnList = [],
+    postList = [],
 
-    this.teamCount = 2;
-    this.groupCount = puzzle.groupCount;
+    active = false,
+    dragPost = null,
 
-    this.position = puzzle.position;
+    fractions = [],
 
-    this.readLayout(puzzle.layout);
-    this.TAG = "Board("+this.xSize+", "+this.ySize+"): ";
+    valid = false,
+    complete = false,
 
-    //this.placePawns();
-    this.placePosts();
-    this.placeBorderFences();
+    pawnCount = xSize*ySize,
+    groupSize = pawnCount/groupCount,
 
-    this.pawnCount = this.xSize*this.ySize;
-    this.groupSize = this.pawnCount/this.groupCount;
+    size = {
+        x: (xSize)*3*sizes.pawnRadius+sizes.postRadius*2,
+        y: (ySize)*3*sizes.pawnRadius+sizes.postRadius*2,
+    },
 
-    this.ratio = 0;
-    for (var i = 0; i < this.pawnList.length; i++) {
-        this.pawnList[i].findNeighbors();
-        this.ratio += this.pawnList[i].teamIndex;
-    }
-    this.ratio /= this.pawnCount;
+    ratio,
+    fov,
 
-    this.size = {
-        x: (this.xSize)*3*sizes.pawnRadius+sizes.postRadius*2,
-        y: (this.ySize)*3*sizes.pawnRadius+sizes.postRadius*2,
-    };
+    draw = function(){
+        //console.log(TAG+"Drawing at "+pointString(position));
 
-    this.fov = Math.max(this.size.x, this.size.y)*5/3;
+        for (var i = 0; i < groups.length; i++) {groups[i].draw();}
+        for (var i = 0; i < pawnList.length; i++) {pawnList[i].draw();}
+        for (var i = 0; i < postList.length; i++) {postList[i].draw();}
+        for (var i = 0; i < fences.length; i++) {fences[i].draw();}
 
-    return this;
-};
-
-Board.prototype = {
-    draw: function(){
-        //console.log(this.TAG+"Drawing at "+pointString(this.position));
-
-        for (var i = 0; i < this.groups.length; i++) {this.groups[i].draw();}
-        for (var i = 0; i < this.pawnList.length; i++) {this.pawnList[i].draw();}
-        for (var i = 0; i < this.postList.length; i++) {this.postList[i].draw();}
-        for (var i = 0; i < this.fences.length; i++) {this.fences[i].draw();}
-
-        if (this.dragPost != null) {
-            camera.drawLine(this.dragPost.position, camera.transformPoint(mousePoint), sizes.fenceWidth, colors.fence.drag);
+        if (dragPost != null) {
+            camera.drawLine(dragPost.position, camera.untransformPoint(mousePoint), sizes.fenceWidth, colors.fence.drag);
         }
     },
 
-    invert: function(){
-        for (var i = 0; i < this.pawnList.length; i++) {
-            this.pawnList[i].invert();
+    update = function(){
+
+    },
+
+    invert = function(){
+        for (var i = 0; i < pawnList.length; i++) {
+            pawnList[i].invert();
         }
-        this.ratio = 1-this.ratio;
+        ratio = 1-ratio;
     },
 
-    switchScores: function(){
-        var s = this.secondScore;
-        this.secondScore = this.goalScore;
-        this.goalScore = s;
+    switchScores = function(){
+        var s = secondScore;
+        secondScore = goalScore;
+        goalScore = s;
     },
 
-    setScore: function(team, score){
-        this.goalTeam = team;
-        this.goalScore = score;
-        menu.balance.setGoal(this.goalTeam, this.goalScore);
-        this.compute();
+    setScore = function(team, score){
+        goalTeam = team;
+        goalScore = score;
+        menu.balance.setGoal(goalTeam, goalScore);
+        compute();
     },
 
-    setGroupCount: function(groups){
-        this.groupCount = groups;
-        this.groupSize = this.pawnList.length/this.groupCount;
-        menu.setPrompt("Draw groups of "+this.groupSize);
-        this.compute();
+    setGroupCount = function(groups){
+        groupCount = groups;
+        groupSize = pawnList.length/groupCount;
+
+        repCount = Math.min(repCount, getMaxReps());
+
+        menu.setPrompt("Draw groups of "+groupSize);
+
+        groups.length = 0;
+
+        compute();
     },
 
-    setActive: function(value){
-        this.active = value;
+    setRepCount = function(REPCOUNT){
+        repCount = REPCOUNT;
+        groups.length = 0;
+        if (goalScore > getMaxScore()) setScore(goalTeam, getMaxScore());
+        compute();
+    },
+
+    setMutable = function(MUTABLE){
+        mutable = MUTABLE;
+        for (var i = 0; i < pawnList.length; i++) {
+            pawnList[i].setMutable(mutable);
+        }
+    },
+
+    setActive = function(value){
+        active = value;
 
         if (value) {
-            this.compute();
-            //menu.setPrompt("Make "+this.groupCount+" groups of "+this.groupSize);
-            menu.setPrompt("Draw groups of "+this.groupSize);
+            compute();
+            //menu.setPrompt("Make "+groupCount+" groups of "+groupSize);
             menu.setShowPrompt(true);
-            menu.setShowNext(this.complete && this.showNext);
+            menu.setShowNext(complete && showNext);
             //menu.setShowReset(stages.indexOf(this) > stages.indexOf(choiceStage));
-            menu.setShowReset(this.showReset);
+            menu.setShowReset(showReset);
             menu.setShowBalance(true);
-            //menu.balance.setRatio(this.ratio);
-            menu.balance.setGoal(this.goalTeam < 0 ? playerTeam : this.goalTeam, this.goalScore);
+            //menu.balance.setRatio(ratio);
+            menu.balance.setGoal(goalTeam, goalScore);
+
+            menu.setShowEditor(mutable);
         }
         else {
             menu.setShowPrompt(false);
             menu.setShowNext(false);
             menu.setShowReset(false);
             menu.setShowBalance(false);
-            this.dragPost = null;
+
+            menu.setShowEditor(false);
+
+            dragPost = null;
         }
     },
 
-    readLayout: function(layout) {
-        this.xSize = layout[0].length;
-        this.ySize = layout.length;
+    setLayout = function(LAYOUT){
+        layout = LAYOUT;
+
+        groups.length = 0;
+        fences.length = 0;
+
+        pawns.length = 0;
+        posts.length = 0;
+
+        pawnList.length = 0;
+        postList.length = 0;
+
+        xSize = layout[0].length;
+        ySize = layout.length;
+
+        dimensions.x = xSize;
+        dimensions.y = ySize;
+        dimensions.total = xSize*ySize;
+
+        size.x = (xSize)*3*sizes.pawnRadius+sizes.postRadius*2;
+        size.y = (ySize)*3*sizes.pawnRadius+sizes.postRadius*2;
+
+        fov = Math.max(size.x, size.y)*5/3;
 
         var pawn;
-        for (var x = 0; x < this.xSize; x++) {
-            this.pawns.push([]);
-            for (var y = 0; y < this.ySize; y++) {
-                pawn = new Pawn(this, x, y, layout[y][x]);
+        for (var x = 0; x < xSize; x++) {
+            pawns.push([]);
+            for (var y = 0; y < ySize; y++) {
+                pawn = Pawn({
+                    board: {
+                        position,
+                        xSize,
+                        ySize,
+                        compute,
+                        pawns,
+                        getDragPost,
+                    },
+                    xIndex: x,
+                    yIndex: y,
+                    teamIndex: layout[y][x]
+                });
 
-                this.pawns[x].push(pawn);
-                this.pawnList.push(pawn);
+                pawns[x].push(pawn);
+                pawnList.push(pawn);
             }
+        }
+
+        ratio = 0;
+        for (var i = 0; i < pawnList.length; i++) {
+            pawnList[i].findNeighbors();
+            ratio += pawnList[i].teamIndex;
+        }
+        ratio /= pawnCount;
+
+        placePosts();
+        placeBorderFences();
+
+        setMutable(mutable);
+
+        correctGroupCount();
+        groupSize = pawnList.length/groupCount;
+        //menu.setPrompt("Draw groups of "+groupSize);
+
+        compute();
+
+        menu.setPrompt("Draw "+groupCount+" groups of "+groupSize);
+        camera.fov = fov;
+    },
+
+    scoreLeft = function(){
+        var team = goalTeam;
+        var score = goalScore;
+        if (team == 1) {
+            score++;
+        }
+        else if (score == 0) {
+            team = 1;
+            score++;
+        }
+        else {
+            score--;
+        }
+        score = Math.min(score, groupCount*repCount);
+        setScore(team, score);
+    },
+
+    scoreRight = function(){
+        var team = goalTeam;
+        var score = goalScore;
+        if (team == 0) {
+            score++;
+        }
+        else if (score == 0) {
+            team = 0;
+            score++;
+        }
+        else {
+            score--;
+        }
+        score = Math.min(score, groupCount*repCount);
+        setScore(team, score);
+    },
+
+    correctGroupCount = function(){
+        if (!divisible(pawnList.length, groupCount)) {
+            if (groupCount < lowestFactor(dimensions.total)) addGroup();
+            else subtractGroup();
         }
     },
 
-    getQueryString: function(){
+    addGroup = function(){
+        if (groupCount == dimensions.total) return;
+        do {
+            groupCount++;
+        } while (!divisible(pawnList.length, groupCount));
+        groupSize = pawnList.length/groupCount;
+        menu.setPrompt("Draw "+groupCount+" groups of "+groupSize);
+
+        setScore(goalTeam, Math.min(goalScore, groupCount));
+        compute();
+    },
+
+    subtractGroup = function(){
+        if (groupCount == 1) return;
+        do {
+            groupCount--;
+        } while (!divisible(pawnList.length, groupCount));
+        groupSize = pawnList.length/groupCount;
+        menu.setPrompt("Draw "+groupCount+" groups of "+groupSize);
+        //menu.setPrompt("Draw groups of "+groupSize);
+
+        setScore(goalTeam, Math.min(goalScore, groupCount));
+        compute();
+    },
+
+    getDragPost = function(){
+        return dragPost;
+    },
+
+    getActive = function(){
+        return active;
+    },
+
+    getFov = function(){
+        return fov;
+    },
+
+    getGroupCount = function(){
+        return groupCount;
+    },
+
+    getGroupSize = function(){
+        return groupSize;
+    },
+
+    getRepCount = function(){
+        return repCount;
+    },
+
+    getGoalScore = function(){
+        return goalScore;
+    },
+
+    getGoalTeam = function(){
+        return goalTeam;
+    },
+
+    getMaxScore = function(){
+        return groupCount*repCount;
+    },
+
+    getMaxReps = function(){
+        return Math.min(groupSize, 3);
+    },
+
+    getQueryString = function(){
         var qs = "?=";
         
-        qs += "&x="+this.xSize;
-        qs += "&y="+this.ySize;
+        qs += "&x="+xSize;
+        qs += "&y="+ySize;
 
-        qs += "&s="+this.goalScore;
-        qs += "&t="+this.goalTeam;
+        qs += "&s="+goalScore;
+        qs += "&t="+goalTeam;
 
-        qs += "&g="+this.groupCount;
+        qs += "&g="+groupCount;
+        qs += "&r="+repCount;
 
         var pString = "";
-        for (var j = 0; j < this.ySize; j++) {
-            for (var i = 0; i < this.xSize; i++) {
-                pString += this.pawns[i][j].teamIndex;
+        for (var j = 0; j < ySize; j++) {
+            for (var i = 0; i < xSize; i++) {
+                pString += pawns[i][j].getTeam();
             }
         }
         qs += "&p="+pString;
@@ -165,101 +341,88 @@ Board.prototype = {
         return qs;
     },
 
-    placePawns: function(){
-        var pawn;
-        for (var x = 0; x < this.xSize; x++) {
-            this.pawns.push([]);
-            for (var y = 0; y < this.ySize; y++) {
-                pawn = new Pawn(this, x, y, this.getRandomTeam());
-                this.pawns[x].push(pawn);
-                this.pawnList.push(pawn);
-            }
-        }
-    },
-
-    placePosts: function(){
+    placePosts = function(){
         var post;
-        for (var x = 0; x < this.xSize+1; x++) {
-            this.posts.push([]);
-            for (var y = 0; y < this.ySize+1; y++) {
-                post = new Post(this, x, y);
-                this.posts[x].push(post);
-                this.postList.push(post);
+        for (var x = 0; x < xSize+1; x++) {
+            posts.push([]);
+            for (var y = 0; y < ySize+1; y++) {
+                post = new Post({
+                    board: {
+                        position,
+                        xSize,
+                        ySize,
+                        getActive,
+                    },
+                    xIndex: x,
+                    yIndex: y,
+                });
+                posts[x].push(post);
+                postList.push(post);
             }
         }
     },
 
-    placeBorderFences: function(){
+    placeBorderFences = function(){
         var fence;
-        for (var x = 0; x < this.xSize; x++) {
-            fence = new Fence(this, this.posts[x][0], this.posts[x+1][0]);
-            fence.isBorder = true;
-            this.fences.push(fence);
-
-            fence = new Fence(this, this.posts[x][this.ySize], this.posts[x+1][this.ySize]);
-            fence.isBorder = true;
-            this.fences.push(fence);
+        for (var x = 0; x < xSize; x++) {
+            placeFence(posts[x][0], posts[x+1][0], true);
+            placeFence(posts[x][ySize], posts[x+1][ySize], true);
         }
-        for (var y = 0; y < this.ySize; y++) {
-            fence = new Fence(this, this.posts[0][y], this.posts[0][y+1]);
-            fence.isBorder = true;
-            this.fences.push(fence);
-
-            fence = new Fence(this, this.posts[this.xSize][y], this.posts[this.xSize][y+1]);
-            fence.isBorder = true;
-            this.fences.push(fence);
+        for (var y = 0; y < ySize; y++) {
+            placeFence(posts[0][y], posts[0][y+1], true);
+            placeFence(posts[xSize][y], posts[xSize][y+1], true);
         }
     },
 
-    getFractions: function(){
+    getFractions = function(){
         var fractions = [];
         
-        while (fractions.length < this.teamCount) fractions.push(0);
+        while (fractions.length < 2) fractions.push(0);
 
-        for (var i = 0; i < this.pawnList.length; i++) {
-            fractions[this.pawnList[i].teamIndex] += 1/this.pawnList.length;
+        for (var i = 0; i < pawnList.length; i++) {
+            fractions[pawnList[i].teamIndex] += 1/pawnList.length;
         }
 
         return fractions;
     },
 
-    onMouseDown: function(point){
-        var touchPost = this.getTouchPost(point);
-        if (touchPost != null && this.active) {
-            this.dragPost = touchPost;
+    onMouseDown = function(point){
+        var touchPost = getTouchPost(point);
+        if (touchPost != null && active) {
+            dragPost = touchPost;
         }
     },
 
-    onMouseUp: function(point){
-        this.dragPost = null;
+    onMouseUp = function(point){
+        dragPost = null;
     },
 
-    onMouseMove: function(point){
-        if (this.dragPost == null && click && this.active) {
-            var touchPost = this.getTouchPost(point);
+    onMouseMove = function(point){
+        if (dragPost == null && click && active) {
+            var touchPost = getTouchPost(point);
             if (touchPost != null) {
-                this.dragPost = touchPost;
+                dragPost = touchPost;
             }
         }
         
-        if (this.dragPost != null) {
-            var touchPost = this.getTouchPost(point);
-            if (touchPost != null && touchPost != this.dragPost && this.chainEligible(touchPost)) {
-                this.chainPosts(this.dragPost, touchPost);
-                this.dragPost = touchPost;
-                this.compute();
+        if (dragPost != null) {
+            var touchPost = getTouchPost(point);
+            if (touchPost != null && touchPost != dragPost && chainEligible(touchPost)) {
+                chainPosts(dragPost, touchPost);
+                dragPost = touchPost;
+                compute();
             }
         }
     },
 
-    chainEligible: function(post){
+    chainEligible = function(post){
         if (post == null) return false;
-        return this.dragPost.xIndex == post.xIndex || this.dragPost.yIndex == post.yIndex;
+        return dragPost.xIndex == post.xIndex || dragPost.yIndex == post.yIndex;
     },
 
-    chainPosts: function(post0, post1){
-        if (post0.xIndex > post1.xIndex) {this.chainPosts(post1, post0); return;}
-        if (post0.yIndex > post1.yIndex) {this.chainPosts(post1, post0); return;}
+    chainPosts = function(post0, post1){
+        if (post0.xIndex > post1.xIndex) {chainPosts(post1, post0); return;}
+        if (post0.yIndex > post1.yIndex) {chainPosts(post1, post0); return;}
 
         var x = post0.xIndex;
         var y = post0.yIndex;
@@ -267,139 +430,223 @@ Board.prototype = {
 
         if (post0.xIndex < post1.xIndex) {
             x++;
-            linkPost = this.posts[x][y];
+            linkPost = posts[x][y];
         }
         if (post0.yIndex < post1.yIndex) {
             y++;
-            linkPost = this.posts[x][y];
+            linkPost = posts[x][y];
         }
         if (post0 != linkPost) {
-            this.linkPosts(post0, linkPost);
-            this.chainPosts(linkPost, post1);
+            linkPosts(post0, linkPost);
+            chainPosts(linkPost, post1);
         }
     },
 
-    linkPosts: function(post0, post1){
-        var fence = this.getFenceFromPosts(post0, post1);
+    linkPosts = function(post0, post1){
+        var fence = getFenceFromPosts(post0, post1);
         if (fence == null) {
             console.log("Linking "+post0.TAG+" and "+post1.TAG);
-            this.fences.push(new Fence(this, post0, post1));
+            placeFence(post0, post1, false);
         }
         else if (!fence.isBorder) {
             console.log("Unlinking "+post0.TAG+" and "+post1.TAG);
-            var fenceIndex = this.fences.indexOf(fence);
-            this.fences.splice(fenceIndex, 1);
+            removeFence(fence);
+            /*
+            var fenceIndex = fences.indexOf(fence);
+            fences.splice(fenceIndex, 1);
+            */
         }
     },
 
-    getFenceFromPosts: function(post0, post1){
-        for (var i = 0; i < this.fences.length; i++) {
-            if (this.fences[i].containsPosts(post0, post1)) {return this.fences[i];}
-        }
-        return null;
-    },
-
-    getTouchPost: function(point){
-        for (var i = 0; i < this.postList.length; i++) {
-            if (this.postList[i].contains(point)) return this.postList[i];
+    getFenceFromPosts = function(post0, post1){
+        for (var i = 0; i < fences.length; i++) {
+            if (fences[i].containsPosts(post0, post1)) {return fences[i];}
         }
         return null;
     },
 
-    removeFence: function(fence){
-        var fenceIndex = this.fences.indexOf(fence);
-        this.fences.splice(fenceIndex, 1);
+    getTouchPost = function(point){
+        for (var i = 0; i < postList.length; i++) {
+            if (postList[i].contains(point)) return postList[i];
+        }
+        return null;
     },
 
-    resetFences: function(){
+    placeFence = function(post0, post1, border){
+        fences.push(Fence({
+            board: this,
+            post0: post0,
+            post1: post1,
+            isBorder: border
+        }));
+    },
+
+    removeFence = function(fence){
+        var fenceIndex = fences.indexOf(fence);
+        fences.splice(fenceIndex, 1);
+    },
+
+    resetFences = function(){
         var newFences = [];
-        for (var i = 0; i < this.fences.length; i++) {
-            if (this.fences[i].isBorder) {
-                newFences.push(this.fences[i]);
+        for (var i = 0; i < fences.length; i++) {
+            if (fences[i].isBorder) {
+                newFences.push(fences[i]);
             }
         }
-        this.fences = newFences;
-        this.compute();
+        fences = newFences;
+        compute();
     },
 
-    isComplete: function(){
-        if (groups.length != groupCount) return false;
-        return true;
-    },
-
-    update: function(){
-
-    },
-
-    setMutable: function(mutable){
-        for (var i = 0; i < this.pawnList.length; i++) {
-            this.pawnList[i].setMutable(mutable);
-        }
-    },
-
-    extractLayout: function(){
+    extractLayout = function(){
         var layout = [];
 
-        for (var x = 0; x < this.xSize; x++) {
-            for (var y = 0; y < this.ySize; y++) {
+        for (var x = 0; x < xSize; x++) {
+            for (var y = 0; y < ySize; y++) {
                 if (layout.length <= y) layout.push([]);
-                layout[y].push(this.pawns[x][y].teamIndex);
+                layout[y].push(pawns[x][y].getTeam());
             }
         }
         return layout;
     },
 
-    compute: function() {
-        console.log("Computing board...");
-        this.groups = [];
-        this.scores = [];
+    getGoalTeam = function(){
+        return goalTeam < 0 ? playerTeam : goalTeam;
+    },
 
-        var group = null;
+    compute = function() {
+        console.log("COMPUTING BOARD...");
+
+        // Crawl across all pawns and create a new group each time an un-crawled pawn is found, starting the trace from that pawn. Mark each newly-traced pawn as crawled. Repeat.
         var crawledPawns = [];
+        var balanceGroups = [];
+        var validGroups = [];
 
-        for (var i = 0; i < this.pawnList.length; i++) {
-            if (!crawledPawns.includes(this.pawnList[i])) {
-                group = new Group(this, this.pawnList[i]);
-                for (var j = 0; j < group.pawns.length; j++) {
-                    crawledPawns.push(group.pawns[j]);
+        valid = true;
+        for (var i = 0; i < pawnList.length; i++) {
+            if (!crawledPawns.includes(pawnList[i])) {
+                console.log("Tracing new group...");
+                var newGroup = Group({
+                    pawnCount: groupSize,
+                    repCount: repCount,
+                });
+                
+                newGroup.trace(fences, pawnList[i]);
+                console.log("Trace complete. Group has "+newGroup.getPawns().length+" pawns");
+
+                newGroup.compute();
+
+                crawledPawns = crawledPawns.concat(newGroup.getPawns());
+
+                // Check if this group matches any previously-computed groups. If so, we keep the older group to preserve animation states. If not, we add that to the list of groups to animate.
+                var pushGroup = newGroup;
+                if (newGroup.getValid()) {
+                    for (var j = 0; j < groups.length; j++) {
+                        if (newGroup.matches(groups[j])) {
+                            pushGroup = groups[j];
+                            //pushGroup.completeAnimation();
+                            break;
+                        }
+                    }
+                    validGroups.push(pushGroup);
+                    balanceGroups.push(pushGroup);
                 }
-                this.groups.push(group);
+                else valid = false;
             }
         }
 
-        console.log("Board computed, "+this.groups.length+" groups.");
+        groups = validGroups;
 
-        while (this.scores.length < this.teamCount+1) this.scores.push(0);
+        while (balanceGroups.length < groupCount) {
+            var phantomGroup = Group({
+                pawnCount: groupSize,
+                repCount: repCount,
+                phantom: true,
+            });
+            phantomGroup.compute();
+            balanceGroups.push(phantomGroup);
+        }
 
-        for (var i = 0; i < this.groups.length; i++) {
-            if (this.groups[i].valid) {
-                if (this.groups[i].winTeam < 0) {this.scores[this.teamCount]++;}
-                else {this.scores[this.groups[i].winTeam]++;}
+        balanceGroups.sort(function(a, b){
+            return b.getAnimationProgress()-a.getAnimationProgress();
+        });
+
+
+//        console.log("Board computed, "+groups.length+" valid groups.");
+
+        var score = 0;
+        var team = getGoalTeam();
+        if (team >= 0) {
+            for (var i = 0; i < groups.length; i++) {
+                for (var j = 0; j < groups[i].reps.length; j++) {
+                    var s = groups[i].reps[j].team;
+                    if (s == team) score++;
+                    if (s == 1-team) score--;
+                }
             }
         }
 
+        complete = (score >= goalScore || goalScore < 0) && valid;
 
-/*
-        this.playerScore = this.scores[this.playerTeam];
-        for (var i = 0; i < this.scores.length; i++) {
+        console.log("Board computed, "+groups.length+" valid groups. Score="+score+"/"+goalScore+", Complete="+complete);
 
+        if (active) {
+            menu.balance.setGroups(balanceGroups, repCount);
+            menu.setShowNext(complete && completionCallback != null);
         }
-*/
-        var team = this.goalTeam < 0 ? playerTeam : this.goalTeam;
-        var score = this.scores[team]-this.scores[1-team];
+    };
 
-        this.valid = true;
-        for (var i = 0; i < this.groups.length; i++) {
-            if (!this.groups[i].valid) this.valid = false;
-        }
-        this.valid =  this.valid && this.groups.length == this.groupCount
+    setLayout(layout);
 
-        this.complete = (score >= this.goalScore || this.goalScore < 0) && this.valid;
-
-        if (this.active) {
-            menu.setShowNext(this.complete && this.showNext);
-            menu.balance.setScores(this.scores[1], this.scores[0], this.scores[2], this.groupCount);
-        }
+    return Object.freeze({
+        // Fields
+        position,
+        size,
+        dimensions,
         
-    }
+        pawns,
+        posts,
+        
+        pawnList,
+        postList,
+
+        // Methods
+
+        draw,
+        update,
+        compute,
+
+        scoreLeft,
+        scoreRight,
+
+        addGroup,
+        subtractGroup,
+
+        invert,
+        extractLayout,
+        resetFences,
+
+        getFov,
+        getActive,
+        getDragPost,
+        getQueryString,
+        getTouchPost,
+        getGroupCount,
+        getGroupSize,
+        getRepCount,
+        getGoalScore,
+        getGoalTeam,
+        getMaxScore,
+        getMaxReps,
+
+        setActive,
+        setScore,
+        setMutable,
+        setGroupCount,
+        setRepCount,
+        setLayout,
+
+        onMouseMove,
+        onMouseDown,
+        onMouseUp,
+    });
 };
