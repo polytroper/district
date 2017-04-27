@@ -23,7 +23,9 @@ canvas {
     <head>
         <title>District</title>
         <script language="javascript" src="./js/mover.js" type="text/javascript"></script>
+        <script language="javascript" src="./js/rep.js" type="text/javascript"></script>
         <script language="javascript" src="./js/view.js" type="text/javascript"></script>
+        <script language="javascript" src="./js/util.js" type="text/javascript"></script>
         <script language="javascript" src="./js/port.js" type="text/javascript"></script>
         <script language="javascript" src="./js/menu.js" type="text/javascript"></script>
         <script language="javascript" src="./js/post.js" type="text/javascript"></script>
@@ -62,9 +64,6 @@ canvas {
 
             var mouseListeners = [];
             var updateListeners = [];
-
-            var textX = 50;
-            var textY = 50;
 
             var sizes = {
                 pawnRadius: 1,
@@ -113,7 +112,8 @@ canvas {
                     base: '#18F2F2',
                     touch: '#F2BC18',
                     click: '#CCCCCC',
-                    prompt: '#404040'
+                    prompt: '#404040',
+                    disabled: '#808080',
                 },
 
                 balance: {
@@ -128,175 +128,12 @@ canvas {
 
             var borderSize = 1;
 
-            var mousePoint = {
-                x: 0,
-                y: 0
-            }
-
-            var mousePointWorld = {
-                x: 0,
-                y: 0
-            }
-
-            var startFov = 12;
-
-            var startPosition = {
-                x: 0,
-                y: -16
-            }
-
-            var puzzles = [
-                {
-                    groupCount: 2,
-                    showReset: false,
-                    layout: [
-                        [0, 1],
-                    ],
-                },
-                {
-                    groupCount: 2,
-                    showReset: false,
-                    layout: [
-                        [1, 0],
-                        [0, 1],
-                    ],
-                },
-                {
-                    repCount: 2,
-                    groupCount: 3,
-                    showReset: false,
-                    layout: [
-                        [0, 0, 0],
-                        [0, 1, 0],
-                        [1, 1, 1],
-                    ],
-                },
-                /*
-                {
-                    groupCount: 3,
-                    showReset: false,
-                    layout: [
-                        [0, 0],
-                        [0, 1],
-                        [1, 1],
-                    ],
-                },
-                */
-                {
-                    goalScore: 1,
-                    secondScore: 1,
-                    groupCount: 3,
-                    layout: [
-                        [0, 1, 1],
-                        [0, 1, 0],
-                        [1, 1, 0],
-                    ],
-                },
-                {
-                    goalScore: 2,
-                    secondScore: 2,
-                    groupCount: 4,
-                    layout: [
-                        [0, 0, 0, 0],
-                        [0, 0, 1, 1],
-                        [1, 1, 1, 1],
-                    ],
-                },
-                {
-                    goalScore: 1,
-                    secondScore: 1,
-                    groupCount: 4,
-                    layout: [
-                        [0, 0, 0, 0],
-                        [0, 0, 0, 0],
-                        [1, 1, 1, 1],
-                        [1, 1, 1, 1],
-                    ],
-                },
-                {
-                    goalScore: 1,
-                    secondScore: 3,
-                    groupCount: 3,
-                    layout: [
-                        [0, 0, 1, 1, 1],
-                        [0, 0, 1, 1, 1],
-                        [0, 0, 1, 1, 1],
-                    ],
-                },
-                {
-                    goalScore: 1,
-                    secondScore: 2,
-                    groupCount: 3,
-                    layout: [
-                        [0, 0, 1, 1, 0, 0],
-                        [0, 1, 1, 1, 1, 0],
-                        [1, 1, 0, 0, 1, 1],
-                    ],
-                },
-                /*
-                {
-                    goalScore: 2,
-                    secondScore: 4,
-                    groupCount: 4,
-                    layout: [
-                        [0, 1, 1, 1, 0, 0],
-                        [0, 1, 1, 1, 0, 0],
-                        [0, 1, 1, 1, 1, 1],
-                        [0, 1, 1, 1, 1, 1],
-                        [0, 1, 1, 1, 1, 1],
-                        [0, 0, 0, 0, 0, 0],
-                    ],
-                },
-                */
-            ];
-
-            var puzzlePositions = [
-                {x: 0, y: 0},
-                {x: 0, y: 32},
-                {x: -32, y: 32},
-                {x: 0, y: 64},
-                {x: 32, y: 96},
-                {x: 0, y: 128},
-                {x: 32, y: 128},
-                {x: 64, y: 128},
-                {x: 64, y: 96},
-                {x: 96, y: 32},
-                {x: 96, y: 64},
-                {x: 128, y: 64},
-            ];
-
-            var stages = [];
-            var stage = null;
-            var stageIndex = 0;
-
-            var boards = [];
-
-            for (var i = 0; i < puzzles.length; i++) {
-                puzzles[i].position = puzzlePositions[i];
-            }
-
-            //var sandboxStage = new SandboxStage();
-            var openingStage = new OpeningStage();
-            var choiceStage = new ChoiceStage();
-            var endStage = new EndStage();
-
-            stages.push(openingStage);
-
-            for (var i = 0; i < puzzles.length; i++) {
-                boards.push(Board(puzzles[i]));
-                stages.push(boards[i]);
-            }
-
-            var choiceStageIndex = stages.indexOf(boards[3]);
-            stages.splice(choiceStageIndex, 0, choiceStage);
-            stages.push(endStage);
-            //stages.push(sandboxStage);
+            var mousePoint = {x: 0, y: 0}
+            var mousePointWorld = {x: 0, y: 0}
 
             var time = 0;
             var deltaTime;
             var drawTime = 0;
-
-            var playerTeam = -1;
 
             var click = false;
             var dirty = false;
@@ -306,6 +143,27 @@ canvas {
             var port = Port();
             var camera = Camera();
 
+            var board;
+            var defaultBoardSpec = {
+                goalTeam: 0,
+                goalScore: 0,
+                groupCount: 4,
+                mutable: true,
+                layout: [
+                    [0, 0, 1, 1],
+                    [0, 0, 1, 1],
+                    [0, 0, 1, 1],
+                    [0, 0, 1, 1],
+                ],
+            }
+            var sandbox = false;
+
+            var completionCallback;
+            window.setCompletionCallback = function(callback){
+                console.log("Completion callback has been provided!");
+                completionCallback = callback;
+            }
+
             function start() {
                 var FPS = 60;
                 deltaTime = 1/FPS;
@@ -313,42 +171,24 @@ canvas {
                   update();
                 }, 1000/FPS);
 
-                stage = stages[0];
-                /*
-                var sandboxString = "?=sandbox";
-                var url = window.location.href;
-                var slice = url.slice(url.length-sandboxString.length);
-                if (slice == sandboxString) {
-                    stage = sandboxStage;
-                }
-                else {
-                    var queryBoard = getQueryBoard();
-                    if (queryBoard != null) {
-                        console.log("Adding queryBoard to stages");
-                        stages.unshift(queryBoard);
-                        stage = queryBoard;
-                    }
-                }
-                */
                 var queryBoard = getQueryBoard();
                 if (queryBoard != null) {
-                    console.log("Adding queryBoard to stages");
-                    stages.unshift(queryBoard);
-                    stage = queryBoard;
+                    console.log("Loading queryboard");
+                    board = queryBoard;
+                }
+                else {
+                    board = Board(defaultBoardSpec);
+                    board.setMutable(true);
                 }
 
-                stageIndex = stages.indexOf(stage);
-                stage.setActive(true);
+                board.setActive(true);
 
-
-
-                camera.position = stage.position;
-                camera.fov = stage.fov;
+                camera.position = board.position;
+                camera.fov = board.getFov();
 
                 update();
 
                 window.requestAnimationFrame(step);
-
             }
 
             function step(timestamp) {
@@ -365,45 +205,15 @@ canvas {
                 for (var i = 0; i < updateListeners.length; i++) {
                     updateListeners[i].update();
                 }
-                for (var i = 0; i < stages.length; i++) {
-                    if (camera.isVisible(stages[i].position, stages[i].size)) {
-                        stages[i].update();
-                    }
-                }
+                board.update();
                 dirty = true;
             }
 
             function draw() {
                 clear();
-                for (var i = 0; i < stages.length; i++) {
-                    if (camera.isVisible(stages[i].position, stages[i].size)) {
-                        stages[i].draw();
-                    }
-                }
+                board.draw();
                 menu.draw();
                 //drawBorder();
-            }
-
-            function nextStage(){
-                stage.setActive(false);
-
-                stageIndex = (stageIndex+1)%stages.length;
-                stage = stages[stageIndex];
-
-                camera.transitionTo(stage.position, stage.fov, completeTransition);
-            }
-
-            function setStageIndex(index){
-                stage.setActive(false);
-
-                stageIndex = index;
-                stage = stages[stageIndex];
-
-                camera.transitionTo(stage.position, stage.fov, completeTransition);
-            }
-
-            function completeTransition(){
-                if (stage != null) stage.setActive(true);
             }
 
             function clear(){
@@ -419,14 +229,6 @@ canvas {
                 context.stroke();
             }
 
-            function roundTwo(){
-                console.log("Starting round two");
-
-                for (var i = 0; i < boards.length; i++) {
-                    boards[i].switchScores();
-                }
-            }
-
             function onMouseDown(event){
                 click = true;
 
@@ -437,7 +239,7 @@ canvas {
                     mouseListeners[i].onMouseDown(mousePoint);
                 }
 
-                stage.onMouseDown(mousePoint);
+                board.onMouseDown(mousePoint);
             }
 
             function onMouseUp(event){
@@ -447,7 +249,7 @@ canvas {
                     mouseListeners[i].onMouseUp(mousePoint);
                 }
 
-                stage.onMouseUp(mousePoint);
+                board.onMouseUp(mousePoint);
             }
 
             function onMouseMove(event){
@@ -458,7 +260,7 @@ canvas {
                     mouseListeners[i].onMouseMove(mousePoint);
                 }
 
-                stage.onMouseMove(mousePoint);
+                board.onMouseMove(mousePoint);
             }
 
             function onTouchStart(event){
@@ -527,8 +329,10 @@ canvas {
 
                 var pawns = getQueryString("p");
 
-                if (isNaN(xCount) || isNaN(yCount) || isNaN(score) || isNaN(team) || isNaN(groups) || isNaN(reps)) return null;
-
+                if (isNaN(xCount) || isNaN(yCount) || isNaN(score) || isNaN(team) || isNaN(groups) || isNaN(reps)) {
+                    console.log("Tried to load queryBoard, but some int failed to parse. x=%s, y=%s, score=%s, team=%s, groups=%s, reps=%s", xCount, yCount, score, team, groups, reps);
+                    return null;
+                }
                 if (pawns == null) return null;
                 if (pawns.length != xCount*yCount) return null;
                 pawns = parseQueryLayout(xCount, yCount, pawns);
@@ -563,116 +367,6 @@ canvas {
                     }
                 }
                 return layout;
-            }
-
-            function clamp01(value){
-                return Math.max(0, Math.min(value, 1));
-            }
-
-            function smooth01(value){
-                //return clamp01((1-Math.cos(value*Math.PI))/2);
-                return ((1-Math.cos(value*Math.PI))/2);
-            }
-
-            function lerp(a, b, t){
-                //t = clamp01(t);
-                return (1-t)*a+t*b;
-            }
-
-            function unlerp(a, b, t){
-                //t = clamp01(t);
-                return (t-a)/(b-a);
-            }
-
-            function remap(a0, b0, a1, b1, t){
-                return lerp(a1, b1, unlerp(a0, b0, t));
-            }
-
-            function remapClamp(a0, b0, a1, b1, t){
-                return lerp(a1, b1, clamp01(unlerp(a0, b0, t)));
-            }
-
-            function addPoints(a, b){
-                return {
-                    x: a.x+b.x,
-                    y: a.y+b.y
-                }
-            }
-
-            function subtractPoints(a, b){
-                return {
-                    x: a.x-b.x,
-                    y: a.y-b.y
-                }
-            }
-
-            function rotatePoint(p, a){
-                return {
-                    x: p.x*Math.cos(a)+p.y*-Math.sin(a),
-                    y: p.x*Math.sin(a)+p.y*Math.cos(a)
-                }
-            }
-
-            function rotateAround(p, c, a){
-                return addPoints(rotatePoint(subtractPoints(p, c), a), c);
-            }
-
-            function lerpPoint(a, b, t){
-                return {
-                    x: lerp(a.x, b.x, t),
-                    y: lerp(a.y, b.y, t)
-                }
-            }
-
-            function smoothLerp(a, b, t){
-                return lerp(a, b, smooth01(t));
-            }
-
-            function smoothLerpPoint(a, b, t){
-                return lerpPoint(a, b, smooth01(t));
-            }
-
-            function tickProgress(flag, progress, duration){
-                if (progress == flag?1:0) return progress;
-                if (flag) progress += deltaTime/duration;
-                else progress -= deltaTime/duration;
-                return clamp01(progress);
-            }
-
-            function rgba(r, g, b, a){
-                return "rgba("+[r, g, b, a]+")";
-            }
-
-            function va(v, a){
-                //return "rgba("+v+", "+v+", "+v+", "+a+")";
-                return "rgba("+[v, v, v, a]+")";
-            }
-
-            function pointString(point){
-                return "("+trunc(point.x)+", "+trunc(point.y)+")";
-            }
-
-            function xyString(x, y){
-                return "("+x+", "+y+")";
-            }
-
-            function distance(a, b){
-                return Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2);
-            }
-            function trunc(x, p=2){
-                return Math.round(x*Math.pow(10, p))/Math.pow(10, p);
-            }
-
-            function manhattan(a, b){
-                return Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
-            }
-
-            function distribute(index, total, progress, overlap = 0){
-                var fraction = 1/total;
-                var duration = lerp(fraction, 1, overlap);
-                var start = lerp(index*fraction, 0, overlap);
-                var end = start+duration;
-                return remapClamp(start, end, 0, 1, progress);
             }
 
             start();

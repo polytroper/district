@@ -38,18 +38,30 @@ function Group(spec){
 
         var multiple = reps.length > 1;
 
-        riseProgress = tickProgress(true, riseProgress, 0.3);
-        tallyProgress = tickProgress(riseProgress == 1, tallyProgress, Math.sqrt(pawns.length/5));
-        holdProgress = tickProgress(tallyProgress == 1, holdProgress, 0.2);
-        splitProgress = tickProgress(holdProgress == 1, splitProgress, multiple ? 0.2 : 0);
-        hangProgress = tickProgress(splitProgress == 1, hangProgress, multiple ? 0.2 : 0);
-        fallProgress = tickProgress(hangProgress == 1, fallProgress, 0.2);
+        riseProgress = tickProgress(true, riseProgress, 0.15*repCount);
+        tallyProgress = tickProgress(riseProgress == 1, tallyProgress, Math.sqrt(pawns.length/6));
+        holdProgress = tickProgress(tallyProgress == 1, holdProgress, 0.1);
+        splitProgress = tickProgress(holdProgress == 1, splitProgress, multiple ? 0.1 : 0);
+        hangProgress = tickProgress(splitProgress == 1, hangProgress, multiple ? 0.1 : 0);
+        fallProgress = tickProgress(hangProgress == 1, fallProgress, 0.15*repCount);
 
         for (var i = 0; i < reps.length; i++) {
             reps[i].setFallProgress(fallProgress);
         }
 
-        return true;
+        return fallProgress == 0;
+    },
+
+    completeAnimation = function(){
+        riseProgress = 1;
+        tallyProgress = 1;
+        holdProgress = 1;
+        splitProgress = 1;
+        hangProgress = 1;
+        fallProgress = 1;
+        for (var i = 0; i < reps.length; i++) {
+            reps[i].setFallProgress(1);
+        }
     },
 
     getAnimationProgress = function(){
@@ -125,9 +137,9 @@ function Group(spec){
                 }
                 var point1 = getTallyPoint(tallyOrigin, i, repCount);
 
-                point = smoothLerpPoint(point0, point1, riseProgress);
 
-                size = lerp(repSize, sizes.counterSize, riseProgress);
+                point = smoothLerpPoint(point0, point1, distribute(i, reps.length, riseProgress, 0.3));
+                size = lerp(repSize, sizes.counterSize, distribute(i, reps.length, riseProgress, 0.6));
 
                 reps[i].drawAt(point, size);
             }
@@ -142,7 +154,6 @@ function Group(spec){
                 var repRatio = remapClamp(i/reps.length, (i+1)/reps.length, 0, 1, ratio);
 
                 point = getTallyPoint(tallyOrigin, i, repCount, splitProgress*repGap*repCount*4);
-
                 size = sizes.counterSize;
 
                 reps[i].drawSplit(point, size, repRatio);
@@ -158,9 +169,8 @@ function Group(spec){
                 var point0 = getTallyPoint(tallyOrigin, i, repCount, repGap*repCount*4);
                 var point1 = balance.requestPanEndSlot(reps[i].team);
 
-                point = smoothLerpPoint(point0, point1, fallProgress);
-
-                size = lerp(sizes.counterSize, repSize, fallProgress);
+                point = smoothLerpPoint(point0, point1, distribute(i, reps.length, fallProgress, 0.3));
+                size = lerp(sizes.counterSize, repSize, distribute(i, reps.length, fallProgress, 0.6));
 
                 reps[i].drawAt(point, size);
             }
@@ -168,7 +178,6 @@ function Group(spec){
         else {
             for (var i = 0; i < reps.length; i++) {
                 point = balance.requestPanSlot(reps[i].team);
-
                 size = repSize;
 
                 reps[i].drawAt(point, size);
@@ -198,7 +207,7 @@ function Group(spec){
             p = distribute(i, pawns.length, progress, 0.25);
             report += trunc(p)+", ";
             drawTallyPawn(origin, pawns[i], p);
-            if (p >= 1) {
+            if (p >= 0.9) {
                 if (pawns[i].getTeam() == 0) redTally++;
                 else blueTally++;
             }
@@ -311,6 +320,10 @@ function Group(spec){
 
     matches = function(group){
         otherPawns = group.getPawns();
+
+        if (scores[0] != group.scores[0]) return false;
+        if (scores[1] != group.scores[1]) return false;
+
         if (pawns.length != otherPawns.length) return false;
 
         for (var i = 0; i < otherPawns.length; i++) {
@@ -335,7 +348,7 @@ function Group(spec){
         // Calculate overall proportions
         var maxIndex = -1;
         var maxScore = 0;
-        scores = [];
+        scores.length = 0;
         while (scores.length < 2) {scores.push(0);}
 
         var team;
@@ -427,7 +440,11 @@ function Group(spec){
 
             }
 
-            reps.sort(function(a, b){return b.team-a.team});
+            reps.sort(function(a, b){
+                var a = a.team == 2 ? 0.5 : a.team;
+                var b = b.team == 2 ? 0.5 : b.team;
+                return b-a;
+            });
 
 
             if (reps.length != repCount) console.log("UH OH THIS GROUP COMPUTED "+reps.length+" REPS WHEN IT SHOULD HAVE COMPUTED "+repCount+"!!!");
@@ -443,6 +460,7 @@ function Group(spec){
         reps,
         phantom,
         repCount,
+        scores,
 
         // Methods
         draw,
@@ -462,77 +480,6 @@ function Group(spec){
         getFallProgress,
         getRiseProgress,
         getAnimationProgress,
+        completeAnimation,
     });
 };
-
-function Rep(spec) {
-    var {
-        group,
-        team,
-        repIndex,
-    } = spec,
-
-    TAG = "[Rep "+repIndex+"]",
-
-    phantom = group.phantom,
-
-    fallProgress = 0,
-
-    drawAt = function(point, size){
-        var size = {x: size, y: size}
-        //console.log(TAG+": drawing at "+pointString(point)+" with size "+pointString(size));
-        //size = {x: 1, y: 1}
-        var color;
-        if (fallProgress == 0) color = "black";
-        else color = colors.teams[team];
-        port.drawBox(point, size, color);
-    },
-
-    drawSplit = function(point, width, ratio){
-
-        console.log("Drawing rep with ratio=%s at position %s", ratio, pointString(point));
-        var size = {x: ratio*width, y: width}
-        var color = colors.teams[1];
-        //if (ratio != 0) 
-        port.drawBox(point, size, color);
-
-        point.x += ratio*width;
-        size.x = (1-ratio)*width;
-        color = colors.teams[0];
-        //if (ratio != 1)
-        port.drawBox(point, size, color);
-    },
-
-    update = function(){
-
-    },
-
-    getFallProgress = function(){
-        return fallProgress;
-    },
-
-    setFallProgress = function(FALLPROGRESS){
-        fallProgress = FALLPROGRESS;
-    },
-
-    animate = function(){
-
-    };
-
-    return Object.freeze({
-        // Fields
-        TAG,
-        group,
-        team,
-        phantom,
-
-        // Methods
-        drawAt,
-        drawSplit,
-        update,
-        animate,
-
-        setFallProgress,
-        getFallProgress,
-    });
-}

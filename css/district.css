@@ -1,0 +1,75 @@
+@import url(http://fonts.googleapis.com/css?family=Raleway:400,200);
+
+body {
+    font-family: Raleway, sans-serif;
+    font-weight: 100;
+    vertical-align: center;
+    text-align: center;
+}
+
+a {
+    color: #808080;
+    text-decoration: none;
+}
+
+/** DECK **/
+.deck {
+
+    width: 100%;
+    margin: auto;
+
+    display: block;
+}
+
+.advance {
+    font-size: 28px;
+
+}
+
+/** SLIDE **/
+
+.slide {
+
+    width: 1088px;
+    height: 800px;
+
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 32px;
+    padding-bottom: 32px;
+
+    display: block;
+
+    text-align: center;
+    vertical-align: center;
+}
+
+.slide > .words {
+    width: 256px;
+    text-align: center;
+    vertical-align: center;
+    float: left;
+    display: inline;
+}
+
+.slide > .words > .title {
+    text-align: left;
+
+    font-size: 28px;
+    font-weight: bold;
+
+    margin-bottom: 16px;
+}
+
+.slide > .words > .description {
+    text-align: left;
+
+    font-size: 24px;
+}
+
+.slide > .puzzle {
+    width: 768px;
+    height: 768px;
+    float: right;
+    display: inline;
+}

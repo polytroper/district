@@ -1,6 +1,8 @@
 function Board(spec){
     var {
-        position,
+        layout,
+        position = {x: 0, y: 0},
+
         groupCount,
         repCount = 1,
 
@@ -10,11 +12,16 @@ function Board(spec){
         showNext = true,
         showReset = true,
 
-        layout,
+        mutable = false,
     } = spec,
 
     xSize = layout[0].length,
     ySize = layout.length,
+    dimensions = {
+        x: xSize,
+        y: ySize,
+        total: xSize*ySize,
+    },
 
     TAG = "Board("+xSize+", "+ySize+"): ",
 
@@ -57,6 +64,10 @@ function Board(spec){
         }
     },
 
+    update = function(){
+
+    },
+
     invert = function(){
         for (var i = 0; i < pawnList.length; i++) {
             pawnList[i].invert();
@@ -81,13 +92,27 @@ function Board(spec){
         groupCount = groups;
         groupSize = pawnList.length/groupCount;
 
+        repCount = Math.min(repCount, getMaxReps());
+
         menu.setPrompt("Draw groups of "+groupSize);
+
+        groups.length = 0;
+
         compute();
     },
 
     setRepCount = function(REPCOUNT){
         repCount = REPCOUNT;
+        groups.length = 0;
+        if (goalScore > getMaxScore()) setScore(goalTeam, getMaxScore());
         compute();
+    },
+
+    setMutable = function(MUTABLE){
+        mutable = MUTABLE;
+        for (var i = 0; i < pawnList.length; i++) {
+            pawnList[i].setMutable(mutable);
+        }
     },
 
     setActive = function(value){
@@ -96,27 +121,51 @@ function Board(spec){
         if (value) {
             compute();
             //menu.setPrompt("Make "+groupCount+" groups of "+groupSize);
-            menu.setPrompt("Draw groups of "+groupSize);
             menu.setShowPrompt(true);
             menu.setShowNext(complete && showNext);
             //menu.setShowReset(stages.indexOf(this) > stages.indexOf(choiceStage));
             menu.setShowReset(showReset);
             menu.setShowBalance(true);
             //menu.balance.setRatio(ratio);
-            menu.balance.setGoal(goalTeam < 0 ? playerTeam : goalTeam, goalScore);
+            menu.balance.setGoal(goalTeam, goalScore);
+
+            menu.setShowEditor(mutable);
         }
         else {
             menu.setShowPrompt(false);
             menu.setShowNext(false);
             menu.setShowReset(false);
             menu.setShowBalance(false);
+
+            menu.setShowEditor(false);
+
             dragPost = null;
         }
     },
 
-    readLayout = function(layout) {
+    setLayout = function(LAYOUT){
+        layout = LAYOUT;
+
+        groups.length = 0;
+        fences.length = 0;
+
+        pawns.length = 0;
+        posts.length = 0;
+
+        pawnList.length = 0;
+        postList.length = 0;
+
         xSize = layout[0].length;
         ySize = layout.length;
+
+        dimensions.x = xSize;
+        dimensions.y = ySize;
+        dimensions.total = xSize*ySize;
+
+        size.x = (xSize)*3*sizes.pawnRadius+sizes.postRadius*2;
+        size.y = (ySize)*3*sizes.pawnRadius+sizes.postRadius*2;
+
+        fov = Math.max(size.x, size.y)*5/3;
 
         var pawn;
         for (var x = 0; x < xSize; x++) {
@@ -140,6 +189,93 @@ function Board(spec){
                 pawnList.push(pawn);
             }
         }
+
+        ratio = 0;
+        for (var i = 0; i < pawnList.length; i++) {
+            pawnList[i].findNeighbors();
+            ratio += pawnList[i].teamIndex;
+        }
+        ratio /= pawnCount;
+
+        placePosts();
+        placeBorderFences();
+
+        setMutable(mutable);
+
+        correctGroupCount();
+        groupSize = pawnList.length/groupCount;
+        //menu.setPrompt("Draw groups of "+groupSize);
+
+        compute();
+
+        menu.setPrompt("Draw "+groupCount+" groups of "+groupSize);
+        camera.fov = fov;
+    },
+
+    scoreLeft = function(){
+        var team = goalTeam;
+        var score = goalScore;
+        if (team == 1) {
+            score++;
+        }
+        else if (score == 0) {
+            team = 1;
+            score++;
+        }
+        else {
+            score--;
+        }
+        score = Math.min(score, groupCount*repCount);
+        setScore(team, score);
+    },
+
+    scoreRight = function(){
+        var team = goalTeam;
+        var score = goalScore;
+        if (team == 0) {
+            score++;
+        }
+        else if (score == 0) {
+            team = 0;
+            score++;
+        }
+        else {
+            score--;
+        }
+        score = Math.min(score, groupCount*repCount);
+        setScore(team, score);
+    },
+
+    correctGroupCount = function(){
+        if (!divisible(pawnList.length, groupCount)) {
+            if (groupCount < lowestFactor(dimensions.total)) addGroup();
+            else subtractGroup();
+        }
+    },
+
+    addGroup = function(){
+        if (groupCount == dimensions.total) return;
+        do {
+            groupCount++;
+        } while (!divisible(pawnList.length, groupCount));
+        groupSize = pawnList.length/groupCount;
+        menu.setPrompt("Draw "+groupCount+" groups of "+groupSize);
+
+        setScore(goalTeam, Math.min(goalScore, groupCount));
+        compute();
+    },
+
+    subtractGroup = function(){
+        if (groupCount == 1) return;
+        do {
+            groupCount--;
+        } while (!divisible(pawnList.length, groupCount));
+        groupSize = pawnList.length/groupCount;
+        menu.setPrompt("Draw "+groupCount+" groups of "+groupSize);
+        //menu.setPrompt("Draw groups of "+groupSize);
+
+        setScore(goalTeam, Math.min(goalScore, groupCount));
+        compute();
     },
 
     getDragPost = function(){
@@ -148,6 +284,38 @@ function Board(spec){
 
     getActive = function(){
         return active;
+    },
+
+    getFov = function(){
+        return fov;
+    },
+
+    getGroupCount = function(){
+        return groupCount;
+    },
+
+    getGroupSize = function(){
+        return groupSize;
+    },
+
+    getRepCount = function(){
+        return repCount;
+    },
+
+    getGoalScore = function(){
+        return goalScore;
+    },
+
+    getGoalTeam = function(){
+        return goalTeam;
+    },
+
+    getMaxScore = function(){
+        return groupCount*repCount;
+    },
+
+    getMaxReps = function(){
+        return Math.min(groupSize, 3);
     },
 
     getQueryString = function(){
@@ -160,11 +328,12 @@ function Board(spec){
         qs += "&t="+goalTeam;
 
         qs += "&g="+groupCount;
+        qs += "&r="+repCount;
 
         var pString = "";
         for (var j = 0; j < ySize; j++) {
             for (var i = 0; i < xSize; i++) {
-                pString += pawns[i][j].teamIndex;
+                pString += pawns[i][j].getTeam();
             }
         }
         qs += "&p="+pString;
@@ -328,23 +497,13 @@ function Board(spec){
         compute();
     },
 
-    update = function(){
-
-    },
-
-    setMutable = function(mutable){
-        for (var i = 0; i < pawnList.length; i++) {
-            pawnList[i].setMutable(mutable);
-        }
-    },
-
     extractLayout = function(){
         var layout = [];
 
         for (var x = 0; x < xSize; x++) {
             for (var y = 0; y < ySize; y++) {
                 if (layout.length <= y) layout.push([]);
-                layout[y].push(pawns[x][y].teamIndex);
+                layout[y].push(pawns[x][y].getTeam());
             }
         }
         return layout;
@@ -384,6 +543,7 @@ function Board(spec){
                     for (var j = 0; j < groups.length; j++) {
                         if (newGroup.matches(groups[j])) {
                             pushGroup = groups[j];
+                            //pushGroup.completeAnimation();
                             break;
                         }
                     }
@@ -393,10 +553,6 @@ function Board(spec){
                 else valid = false;
             }
         }
-
-        validGroups.sort(function(a, b){
-            return b.getAnimationProgress()-a.getAnimationProgress();
-        });
 
         groups = validGroups;
 
@@ -409,6 +565,10 @@ function Board(spec){
             phantomGroup.compute();
             balanceGroups.push(phantomGroup);
         }
+
+        balanceGroups.sort(function(a, b){
+            return b.getAnimationProgress()-a.getAnimationProgress();
+        });
 
 
 //        console.log("Board computed, "+groups.length+" valid groups.");
@@ -431,55 +591,17 @@ function Board(spec){
 
         if (active) {
             menu.balance.setGroups(balanceGroups, repCount);
-            menu.setShowNext(complete && showNext);
+            menu.setShowNext(complete && completionCallback != null);
         }
-
-        /*
-        // Now lets compute some scores. First we reset the list of scores to three zeroes.
-        scores.length = 0;
-        while (scores.length < 3) scores.push(0);
-
-        // Loop over each group and tally up the score, while checking to make sure each group is valid.
-        var result;
-        valid = groups.length == groupCount;
-        for (var i = 0; i < groups.length; i++) {
-            if (groups[i].getValid()) {
-                result = groups[i].getWinner();
-                if (result.team < 0) {scores[2]++;}
-                else {scores[result.team]++;}
-            }
-            else valid = false;
-        }
-        var team = goalTeam < 0 ? playerTeam : goalTeam;
-        var score = scores[team]-scores[1-team];
-        complete = (score >= goalScore || goalScore < 0) && valid;
-        */
-
-        
     };
 
-    readLayout(layout);
-
-    placePosts();
-    placeBorderFences();
-
-    fov = Math.max(size.x, size.y)*5/3;
-    
-    ratio = 0;
-    for (var i = 0; i < pawnList.length; i++) {
-        pawnList[i].findNeighbors();
-        ratio += pawnList[i].teamIndex;
-    }
-    ratio /= pawnCount;
+    setLayout(layout);
 
     return Object.freeze({
         // Fields
         position,
         size,
-        fov,
-
-        xSize,
-        ySize,
+        dimensions,
         
         pawns,
         posts,
@@ -487,26 +609,41 @@ function Board(spec){
         pawnList,
         postList,
 
-
         // Methods
 
         draw,
         update,
         compute,
 
+        scoreLeft,
+        scoreRight,
+
+        addGroup,
+        subtractGroup,
+
         invert,
         extractLayout,
         resetFences,
 
+        getFov,
         getActive,
         getDragPost,
         getQueryString,
         getTouchPost,
+        getGroupCount,
+        getGroupSize,
+        getRepCount,
+        getGoalScore,
+        getGoalTeam,
+        getMaxScore,
+        getMaxReps,
 
         setActive,
         setScore,
         setMutable,
         setGroupCount,
+        setRepCount,
+        setLayout,
 
         onMouseMove,
         onMouseDown,

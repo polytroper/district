@@ -179,7 +179,7 @@ function Balance(){
             if (groups[i].animate()) break;
         }
 
-        // Add up "scores" (effectively widths) for each pan. Bottom pan score is calculated from groups, the rest are calculated from reps.
+        // Add up "scores" (number of reps on each pan). Bottom pan score is calculated from groups instead of reps since it stacks reps vertically by group.
         panScores = [0, 0, 0, 0];
 
         for (var i = 0; i < groups.length; i++) {
