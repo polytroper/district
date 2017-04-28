@@ -19,6 +19,11 @@ a {
     display: block;
 }
 
+.ruler > hr {
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
 .advance {
     font-size: 28px;
 
@@ -27,27 +32,27 @@ a {
 /** SLIDE **/
 
 .slide {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
 
-    width: 1088px;
-    height: 800px;
+    justify-content: center;
 
-    margin-left: auto;
-    margin-right: auto;
-    padding-top: 32px;
-    padding-bottom: 32px;
-
-    display: block;
+    margin-top: 32px;
+    margin-bottom: 32px;
 
     text-align: center;
-    vertical-align: center;
 }
 
 .slide > .words {
-    width: 256px;
+    order: 0;
+    flex-basis: 400px;
+    flex-grow: 0.2;
+    flex-shrink: 2;
+
+    margin: 8px 32px 8px 32px;
+
     text-align: center;
-    vertical-align: center;
-    float: left;
-    display: inline;
 }
 
 .slide > .words > .title {
@@ -56,7 +61,7 @@ a {
     font-size: 28px;
     font-weight: bold;
 
-    margin-bottom: 16px;
+    margin-bottom: 32px;
 }
 
 .slide > .words > .description {
@@ -65,9 +70,13 @@ a {
     font-size: 24px;
 }
 
+.slide > .words > .description > p {
+    margin-top: 0em;
+    margin-bottom: 0.7em;
+}
+
 .slide > .puzzle {
-    width: 768px;
-    height: 768px;
-    float: right;
-    display: inline;
+    order: 1;
+
+    margin: 8px 32px 8px 32px;
 }

@@ -41,12 +41,11 @@ canvas {
         <link rel="icon" type="image/png" href="/favicon.png"/>
     </head>
     <body>
-        <canvas width="768" height="768" id="gameCanvas">Canvas tag not supported</canvas>
-        <img id="baddistricts" width="0" height="0" src="./res/baddistricts.png">
+        <canvas width="600" height="600" id="gameCanvas">
+            Canvas tag not supported... gee, that's really too bad. You should use a different browser!
+        </canvas>
 
         <script type='text/javascript'>
-            var endStageImage = document.getElementById("baddistricts");
-
             var canvas = document.getElementById("gameCanvas");;
             var context = canvas.getContext("2d");
 
@@ -164,6 +163,11 @@ canvas {
                 completionCallback = callback;
             }
 
+            var pause = false;
+            window.setPause = function(PAUSE){
+                pause = PAUSE;
+            }
+
             function start() {
                 var FPS = 60;
                 deltaTime = 1/FPS;
@@ -200,6 +204,8 @@ canvas {
             }
 
             function update() {
+                if (pause) return;
+
                 time = time+deltaTime;
                 menu.update();
                 for (var i = 0; i < updateListeners.length; i++) {
