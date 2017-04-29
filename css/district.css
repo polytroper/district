@@ -80,3 +80,65 @@ a {
 
     margin: 8px 32px 8px 32px;
 }
+
+.slide > .choice {
+    order: 1;
+    align-self: center;
+    margin: 8px 32px 8px 32px;
+}
+.slide > .choice > .colorButton {
+    width: 128px;
+    height: 128px;
+    border-radius: 32px;
+
+    margin: 16px;
+
+    background-color: #000;
+
+    cursor: pointer;
+    transition: 0.2s;
+
+    display: inline-block;
+}
+
+.slide > .choice > .colorButton:hover {
+    opacity: 0.5;
+}
+
+.yinyang {
+    cursor: pointer;
+    align-self: center;
+
+    width: 96px;
+    height: 48px;
+    background: blue;
+    border-color: red;
+    border-style: solid;
+    border-width: 2px 2px 50px 2px;
+    border-radius: 100%;
+    position: relative;
+}
+
+.yinyang:before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    background: blue;
+    border: 18px solid red;
+    border-radius: 100%;
+    width: 12px;
+    height: 12px;
+}
+
+.yinyang:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background: red;
+    border: 18px solid blue;
+    border-radius:100%;
+    width: 12px;
+    height: 12px;
+}

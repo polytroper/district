@@ -72,8 +72,8 @@ function BasicButton(spec){
     onMouseDown = function(point){
         touch = contains(point);
         if (touch && enabled) {
-            click = true;
             onClick();
+            click = false;
         }
     },
 

@@ -69,16 +69,14 @@ function Board(spec){
     },
 
     invert = function(){
+        //console.log("Inverting board...");
+        if (goalTeam >= 0) {
+            setScore(1-goalTeam, goalScore);
+        }
         for (var i = 0; i < pawnList.length; i++) {
             pawnList[i].invert();
         }
         ratio = 1-ratio;
-    },
-
-    switchScores = function(){
-        var s = secondScore;
-        secondScore = goalScore;
-        goalScore = s;
     },
 
     setScore = function(team, score){
@@ -415,6 +413,10 @@ function Board(spec){
         }
     },
 
+    cancelDrag = function(){
+        dragPost = null;
+    },
+
     chainEligible = function(post){
         if (post == null) return false;
         return dragPost.xIndex == post.xIndex || dragPost.yIndex == post.yIndex;
@@ -648,5 +650,6 @@ function Board(spec){
         onMouseMove,
         onMouseDown,
         onMouseUp,
+        cancelDrag,
     });
 };

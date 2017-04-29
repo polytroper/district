@@ -46,7 +46,13 @@ function Menu(){
         },
 
         onClick: function(){
-            if (completionCallback != null) completionCallback();
+            if (completionCallback != null) {
+                completionCallback();
+                completionCallback = null;
+                menu.setShowNext(false);
+                click = false;
+                board.cancelDrag();
+            }
         },
 
         drawDetails: function(info){

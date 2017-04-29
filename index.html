@@ -21,70 +21,24 @@
         <div class="deck" id="deck">
         </div>
 
+        <!--
         <div class="advance" id="advance" onclick="advance()">
             <a href="javascript:void(0)">Next...</a>
         </div>
-
+        -->
 
         <script type="text/javascript">
             var slides = [];
+            var puzzleSlides = [];
             var puzzleWindows = [];
-
-            var slideSpecs = [
-                {
-                    title: "Welcome to Rugton",
-                    description:
-                    "<p>Alice and Bob start a town, but they have a problem. Alice likes Red carpets, but Bob likes Blue.</p><p>They decide to split the floor into 2 separate carpet districts.</p><p>For now, everyone is happy.</p>",
-                    query: "?=&x=2&y=1&s=-1&t=0&g=2&r=1&p=01",
-                },
-                {
-                    title: "Democracy is Born",
-                    description: "<p>Two friends move in, so a vote is held for new carpets.</p><p>Both districts tie, so they compromise on Grey.</p>",
-                    query: "?=&x=2&y=2&s=-1&t=0&g=2&r=1&p=0110",
-                },
-                {
-                    title: "Rugton Expands",
-                    description: "<p>A third group is added to accomodate new arrivals, and a new vote is held.</p><p>Overall, Rugtonians are pretty happy with their carpet.</p>",
-                    query: "?=&x=2&y=3&s=-1&t=0&g=3&r=1&p=001011",
-                },
-                {
-                    title: "Red Carpeters Take Charge",
-                    description: "<p>Borders are redrawn once again, but this time Red gains power.</p><p>From now on, they get to divide up the floor.</p><p>They were elected, after all.<p>",
-                    query: "?=&x=3&y=3&s=1&t=1&g=3&r=1&p=100101001",
-                },
-                {
-                    title: "Cracking",
-                    description: "<p>Rugton is perfectly split on their preferred color.</p><p>Somehow, the floor is still mostly Red. About 25% of Rugtonians feel kind of cheated.</p><p>Anti-Red sentiment begins to fester.</p>",
-                    query: "?=&x=4&y=3&s=2&t=0&g=4&r=1&p=000000111111",
-                },
-                {
-                    title: "Packing",
-                    description: "<p>The share of Red voters begins to dwindle.</p><p>Their share of the floor does not.</p>",
-                    query: "?=&x=5&y=3&s=1&t=0&g=3&r=1&p=001110011100111",
-                },
-                {
-                    title: "Linking",
-                    description: "<p>The Red population shrinks and fractures.</p><p>Nonetheless, the Red leadership finds a clever way to keep control of the floor.</p>",
-                    query: "?=&x=6&y=3&s=1&t=0&g=3&r=1&p=001100011110110011",
-                },
-                {
-                    title: "God Intervenes.",
-                    description: "<p>\"Hey wait a minute,\" says God,</p><p>\"This sucks. New rule: From now on, each district picks two colors. Put them in stripes on the floor or something.\"</p><p>This is a problem for Team Red.</p>",
-                    query: "?=&x=6&y=3&s=0&t=0&g=3&r=2&p=001100011110110011",
-                },
-                /*
-                {
-                    title: "Another Title!",
-                    description: "Hey look at that another description too what are the odds",
-                    query: "?=&x=5&y=4&s=0&t=0&g=4&r=1&p=00011000111100011000",
-                },
-                */
-            ];
 
             var slideIndex = 0;
             var slideTotal = slides.length;
 
-            appendSlide = function(spec){
+            var chosenColor = -1;
+            var invertPuzzles = false;
+
+            createBasicSlide = function(spec){
                 var deck = document.getElementById("deck");
 
                 if (slideIndex > 0) {
@@ -112,18 +66,80 @@
                 description.innerHTML = spec.description;
                 words.appendChild(description);
 
+                slides.push(slide);
+                slideIndex++;
+
+                return {
+                    slide,
+                    words,
+                    title,
+                    description,
+                }
+            }
+
+            appendChoiceSlide = function(spec){
+                var deck = document.getElementById("deck");
+
+                var {slide, words, title, description} = createBasicSlide(spec);
+
+                var choice = document.createElement('div');
+                choice.className = "choice";
+                slide.appendChild(choice);
+
+                var colorButton0 = document.createElement('div');
+                colorButton0.className = "colorButton";
+                colorButton0.style.backgroundColor = "red";
+                choice.appendChild(colorButton0);
+
+                var colorButton1 = document.createElement('div');
+                colorButton1.className = "colorButton";
+                colorButton1.style.backgroundColor = "blue";
+                choice.appendChild(colorButton1);
+                
+                colorButton0.addEventListener("click", function(){
+                    chooseColor(0, colorButton0, colorButton1);
+                });
+                colorButton1.addEventListener("click", function(){
+                    chooseColor(1, colorButton0, colorButton1);
+                });
+
+                return slide;
+            }
+
+            appendInterventionSlide = function(spec){
+                var deck = document.getElementById("deck");
+
+                var {slide, words, title, description} = createBasicSlide(spec);
+
+                var yinyang = document.createElement('div');
+                yinyang.className = "yinyang";
+                slide.appendChild(yinyang);
+                yinyang.addEventListener("click", function(){
+                    advance();
+                });
+
+                //yinyang.style.backgroundColor = ["red", "blue"][chosenColor];
+
+                return slide;
+            }
+
+            appendPuzzleSlide = function(spec){
+                var deck = document.getElementById("deck");
+
+                var {slide, words, title, description} = createBasicSlide(spec);
+
                 var puzzle = document.createElement('div');
                 puzzle.className = "puzzle";
                 slide.appendChild(puzzle);
 
                 var embedURL = "./embed.html"+spec.query;
-                puzzle.innerHTML = "<iframe id=\"frame\" src=\""+embedURL+"\" width=\"600px\" height=\"600px\" style=\"border:1px solid black\"></iframe>";
+                puzzle.innerHTML = "<iframe id=\"frame\" src=\""+embedURL+"\" width=\"640px\" height=\"640px\" style=\"border:1px solid black\"></iframe>";
 
                 var puzzleFrame = puzzle.querySelector("#frame");
                 puzzleFrame.addEventListener('load', function(){
                     puzzleFrame.contentWindow.setCompletionCallback(advance);
 
-                    slides.push(slide);
+                    puzzleSlides.push(slide);
                     puzzleWindows.push(puzzleFrame.contentWindow);
 
                     slide.addEventListener("mouseenter", function(event){
@@ -133,24 +149,110 @@
                         setActiveSlide(event.target);
                     });
 
+                    if (invertPuzzles) puzzleFrame.contentWindow.invertBoard();
+
                     setActiveSlide(slide);
                 });
-
-                slideIndex++;
 
                 return slide;
             }
 
+            var slideSpecs = [
+                {
+                    generator: appendPuzzleSlide,
+                    title: "Welcome to Shaggerton",
+                    description:
+                    "<p>Alice and Bob start a town, but they have a problem. Alice likes Red carpets, but Bob likes Blue.</p><p>They decide to split the floor into 2 separate carpet districts.</p><p>For now, everyone is happy in Shaggerton.</p>",
+                    query: "?=&x=2&y=1&s=-1&t=0&g=2&r=1&p=01",
+                },
+                {
+                    generator: appendPuzzleSlide,
+                    title: "Democracy is Born",
+                    description: "<p>Two friends move in, so a vote is held for new carpets.</p><p>Both districts tie, so they compromise on Grey.</p>",
+                    query: "?=&x=2&y=2&s=-1&t=0&g=2&r=1&p=0110",
+                },
+                {
+                    generator: appendPuzzleSlide,
+                    title: "Shaggerton Expands",
+                    description: "<p>A third group is added to accomodate new arrivals, and a new vote is held.</p><p>Overall, Shaggertonians are still pretty happy with their carpet.</p>",
+                    query: "?=&x=2&y=3&s=-1&t=0&g=3&r=1&p=001011",
+                },
+                {
+                    generator: appendChoiceSlide,
+                    title: "God gets Bored.",
+                    description: "<p>The Almighty is frankly annoyed that everyone is getting along so well. It's just not interesting.</p><p>Our lord picks a color to win the next election, just to shake things up.</p>",
+                },
+                {
+                    generator: appendPuzzleSlide,
+                    title: "WINTEAM Carpeters Take Charge",
+                    description: "<p>In a stunning turn of events, WINTEAM wins a supermajority of the floor.</p><p>From now on, they alone get to draw the districts.</p><p>They were elected, after all.<p>",
+                    query: "?=&x=3&y=3&s=1&t=0&g=3&r=1&p=011010110",
+                },
+                {
+                    generator: appendPuzzleSlide,
+                    title: "Cracking",
+                    description: "<p>Shaggerton is perfectly split on their preferred color.</p><p>Somehow, the floor is still mostly WINTEAM. About 25% of Shaggertonians feel kind of cheated.</p><p>Anti-WINTEAM sentiment begins to fester.</p>",
+                    query: "?=&x=4&y=3&s=2&t=0&g=4&r=1&p=000000111111",
+                },
+                {
+                    generator: appendPuzzleSlide,
+                    title: "Packing",
+                    description: "<p>At this point, the WINTEAM leaders start acting like right jabronis.</p><p>Their share of the voters begins to dwindle. Their share of the floor does not.</p>",
+                    query: "?=&x=5&y=3&s=1&t=0&g=3&r=1&p=001110011100111",
+                },
+                {
+                    generator: appendPuzzleSlide,
+                    title: "Linking",
+                    description: "<p>WINTEAM infighting causes their bloc to fracture.</p><p>LOSETEAM is hopeful that this is their shot, but foolishly so—WINTEAM pulls off another victory by redrawing the floor.</p><p>WINTEAM is extremely rude about it. LOSETEAM voters feel despondent.</p>",
+                    query: "?=&x=6&y=3&s=1&t=0&g=3&r=1&p=001100011110110011",
+                },
+                {
+                    generator: appendInterventionSlide,
+                    title: "God Intervenes... again.",
+                    description: "<p>\"Hey wait a minute,\" says God,</p><p>\"This sucks. New rule: From now on, each district picks two colors. Put them in stripes on the floor or something.\"</p><p>WINTEAM is unfazed by the new rule. LOSETEAM is busy doodling images of balance.</p>",
+                },
+                {
+                    generator: appendPuzzleSlide,
+                    title: "Balance is Restored",
+                    description: "<p>WINTEAM was not prepared for the consequences of electing multiple representatives.</p><p>They try their best to engineer the map in their favor, but ultimately LOSETEAM gains a roughly proportionate number of seats.</p>",
+                    query: "?=&x=6&y=3&s=-1&t=0&g=3&r=2&p=001100011110110011",
+                },
+            ];
+
+            chooseColor = function(color, button0, button1){
+                if (chosenColor < 0) {
+                    chosenColor = color;
+
+                    var colorNames = ["Red", "Blue"];
+                    slideSpecs.forEach(function(spec){
+                        var regexWin = /WINTEAM/g;
+                        var regexLose = /LOSETEAM/g;
+                        spec.title = spec.title.replace(regexWin, colorNames[chosenColor]);
+                        spec.description = spec.description.replace(regexWin, colorNames[chosenColor]);
+
+                        spec.title = spec.title.replace(regexLose, colorNames[1-chosenColor]);
+                        spec.description = spec.description.replace(regexLose, colorNames[1-chosenColor]);
+                    });
+
+                    invertPuzzles = color == 1;
+                    button0.onclick = null;
+                    button1.onclick = null;
+                    advance();
+                }
+            }
+
             setActiveSlide = function(targetSlide){
-                for (var i = 0; i < slides.length; i++) {
-                    if (slides[i] == targetSlide) puzzleWindows[i].setPause(false);
+                for (var i = 0; i < puzzleSlides.length; i++) {
+                    if (puzzleSlides[i] == targetSlide) puzzleWindows[i].setPause(false);
                     else puzzleWindows[i].setPause(true);
                 }
             }
 
             advance = function(){
                 if (slideSpecs.length > 0) {
-                    var slide = appendSlide(slideSpecs.shift());
+                    var spec = slideSpecs.shift();
+                    var slide = spec.generator(spec);
+
                     slide.scrollIntoView({
                         behavior: "smooth",
                         block: "start",
@@ -162,6 +264,7 @@
             }
 
             advance();
+
         </script>
 
         <div id="footer-container"></div>

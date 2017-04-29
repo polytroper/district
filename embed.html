@@ -41,7 +41,7 @@ canvas {
         <link rel="icon" type="image/png" href="/favicon.png"/>
     </head>
     <body>
-        <canvas width="600" height="600" id="gameCanvas">
+        <canvas width="640" height="640" id="gameCanvas">
             Canvas tag not supported... gee, that's really too bad. You should use a different browser!
         </canvas>
 
@@ -168,6 +168,10 @@ canvas {
                 pause = PAUSE;
             }
 
+            window.invertBoard = function(){
+                board.invert();
+            }
+
             function start() {
                 var FPS = 60;
                 deltaTime = 1/FPS;
@@ -216,6 +220,8 @@ canvas {
             }
 
             function draw() {
+                if (pause) return;
+
                 clear();
                 board.draw();
                 menu.draw();

@@ -96,7 +96,7 @@ function Pawn(spec){
         if (!touch) down = false;
     };
 
-    console.log("%s: team=%s", TAG, teamIndex);
+    //console.log("%s: team=%s", TAG, teamIndex);
 
     return Object.freeze({
         // Fields
