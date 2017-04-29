@@ -150,6 +150,8 @@
                     });
 
                     if (invertPuzzles) puzzleFrame.contentWindow.invertBoard();
+                    if (spec.muteGap == true) puzzleFrame.contentWindow.setDrawGap(false);
+                    if (spec.muteReset == true) puzzleFrame.contentWindow.setShowReset(false);
 
                     setActiveSlide(slide);
                 });
@@ -160,52 +162,81 @@
             var slideSpecs = [
                 {
                     generator: appendPuzzleSlide,
-                    title: "Welcome to Shaggerton",
+                    title: "Welcome to the Carpet Kingdom",
                     description:
-                    "<p>Alice and Bob start a town, but they have a problem. Alice likes Red carpets, but Bob likes Blue.</p><p>They decide to split the floor into 2 separate carpet districts.</p><p>For now, everyone is happy in Shaggerton.</p>",
-                    query: "?=&x=2&y=1&s=-1&t=0&g=2&r=1&p=01",
+                    "<p>Alice and Bob are opposing rulers of the Carpet Kingdom. Alice likes Red, but Bob likes Blue.</p><p>They split the floor into 2 separate carpet districts.</p><p>For now, everyone is happy.</p>",
+                    query: "?=&x=2&y=1&s=-1&t=-1&g=2&r=1&p=01",
+                    muteReset: true,
+                    muteGap: true,
                 },
                 {
                     generator: appendPuzzleSlide,
                     title: "Democracy is Born",
-                    description: "<p>Two friends move in, so a vote is held for new carpets.</p><p>Both districts tie, so they compromise on Grey.</p>",
-                    query: "?=&x=2&y=2&s=-1&t=0&g=2&r=1&p=0110",
+                    description: "<p>Two new subjects move in, so Alice and Bob invent democracy and hold a vote for color.</p><p>Both districts tie, so they compromise on Grey.</p>",
+                    query: "?=&x=2&y=2&s=-1&t=-1&g=2&r=1&p=0110",
+                    muteReset: true,
+                    muteGap: true,
                 },
                 {
                     generator: appendPuzzleSlide,
-                    title: "Shaggerton Expands",
-                    description: "<p>A third group is added to accomodate new arrivals, and a new vote is held.</p><p>Overall, Shaggertonians are still pretty happy with their carpet.</p>",
-                    query: "?=&x=2&y=3&s=-1&t=0&g=3&r=1&p=001011",
+                    title: "The Kingdom Expands",
+                    description: "<p>A third district is added to accomodate new arrivals, and another vote is held.</p><p>Most citizens are satisfied with the outcome.</p>",
+                    query: "?=&x=2&y=3&s=-1&t=-1&g=3&r=1&p=001011",
+                    muteReset: true,
+                    muteGap: true,
                 },
                 {
                     generator: appendChoiceSlide,
                     title: "God gets Bored.",
-                    description: "<p>The Almighty is frankly annoyed that everyone is getting along so well. It's just not interesting.</p><p>Our lord picks a color to win the next election, just to shake things up.</p>",
+                    description: "<p>The Almighty is frankly annoyed that everyone is getting along so well.</p><p>Our lord picks a color to win the next election, just to shake things up.</p>",
                 },
                 {
                     generator: appendPuzzleSlide,
                     title: "WINTEAM Carpeters Take Charge",
-                    description: "<p>In a stunning turn of events, WINTEAM wins a supermajority of the floor.</p><p>From now on, they alone get to draw the districts.</p><p>They were elected, after all.<p>",
+                    description: "<p>In a stunning turn of events, WINTEAM wins a supermajority of the floor.</p><p>This gives them the power to redraw the districts (they promise to be totally fair about it).<p>",
                     query: "?=&x=3&y=3&s=1&t=0&g=3&r=1&p=011010110",
+                    muteGap: true,
                 },
                 {
                     generator: appendPuzzleSlide,
-                    title: "Cracking",
-                    description: "<p>Shaggerton is perfectly split on their preferred color.</p><p>Somehow, the floor is still mostly WINTEAM. About 25% of Shaggertonians feel kind of cheated.</p><p>Anti-WINTEAM sentiment begins to fester.</p>",
+                    title: "Seeds of Discontent",
+                    description: "<p>The kingdom is perfectly split on their preferred color.</p><p>Yet somehow, the floor is still mostly WINTEAM. Much of the LOSETEAM population feels like their <b>votes didn't count</b>.</p>",
                     query: "?=&x=4&y=3&s=2&t=0&g=4&r=1&p=000000111111",
+                    muteGap: true,
                 },
                 {
                     generator: appendPuzzleSlide,
-                    title: "Packing",
-                    description: "<p>At this point, the WINTEAM leaders start acting like right jabronis.</p><p>Their share of the voters begins to dwindle. Their share of the floor does not.</p>",
+                    title: "Cracking & Packing",
+                    description: "<p>The WINTEAM leadership starts grouping a large chunk of LOSETEAM voters into one district, a technique they dub <b>\"Packing\"</b>.</p><p>They dristribute the leftover LOSETEAM voters between guaranteed WINTEAM districts, and nickname this process <b>\"Cracking\"</b>.</p>",
                     query: "?=&x=5&y=3&s=1&t=0&g=3&r=1&p=001110011100111",
+                    muteGap: true,
                 },
                 {
                     generator: appendPuzzleSlide,
                     title: "Linking",
-                    description: "<p>WINTEAM infighting causes their bloc to fracture.</p><p>LOSETEAM is hopeful that this is their shot, but foolishly so—WINTEAM pulls off another victory by redrawing the floor.</p><p>WINTEAM is extremely rude about it. LOSETEAM voters feel despondent.</p>",
+                    description: "<p>WINTEAM neighborhoods start to fracture, making it hard to draw <b>compact districts</b> around them.</p><p>They will have to be a bit more crafty to maintain power.</p>",
                     query: "?=&x=6&y=3&s=1&t=0&g=3&r=1&p=001100011110110011",
+                    muteGap: true,
                 },
+                {
+                    generator: appendPuzzleSlide,
+                    title: "God Becomes Concerned.",
+                    description: "<p>Concerned about WINTEAM's disproportionate power, God starts tracking the difference between the <b>vote percentage</b> and <b>floor percentage</b> for each color.</p><p>\"I shall call this metric... the <b>Efficiency Gap</b>\" says God.</p><p>In the next election, God is shocked to find an Efficiency Gap of <b>27%</b>.</p>",
+                    query: "?=&x=6&y=5&s=2&t=0&g=6&r=1&p=111000111000111111000111000111",
+                },
+                {
+                    generator: appendPuzzleSlide,
+                    title: "God Intervenes",
+                    description: "<p>God checks out a library book on Voting Systems, and comes across a system called <b>Proportional Representation</b>.</p><p>God decides to try it, using <b>half as many districts</b> but <b>two winners each</b>.</p><p>The Efficiency Gap drops dramatically.</p>",
+                    query: "?=&x=6&y=5&s=-1&t=-1&g=6&r=2&p=111000111000111111000111000111",
+                },
+                {
+                    generator: appendPuzzleSlide,
+                    title: "All is Well",
+                    description: "<p>God notices that <b>more representatives</b> means a <b>lower Efficiency Gap</b>.</p><p>Satisfied with this solution, God kicks back until the Carpet Kingdom is consumed by a civil war precipitated by their extremely polarizing Plurality-Rule voting system.</p>",
+                    query: "?=&x=6&y=5&s=-1&t=-1&g=6&r=3&p=111000111000111111000111000111",
+                },
+                /*
                 {
                     generator: appendInterventionSlide,
                     title: "God Intervenes... again.",
@@ -217,6 +248,7 @@
                     description: "<p>WINTEAM was not prepared for the consequences of electing multiple representatives.</p><p>They try their best to engineer the map in their favor, but ultimately LOSETEAM gains a roughly proportionate number of seats.</p>",
                     query: "?=&x=6&y=3&s=-1&t=0&g=3&r=2&p=001100011110110011",
                 },
+                */
             ];
 
             chooseColor = function(color, button0, button1){

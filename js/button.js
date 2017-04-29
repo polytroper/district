@@ -73,7 +73,7 @@ function BasicButton(spec){
         touch = contains(point);
         if (touch && enabled) {
             onClick();
-            click = false;
+            click = true;
         }
     },
 

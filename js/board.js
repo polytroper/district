@@ -48,7 +48,8 @@ function Board(spec){
         y: (ySize)*3*sizes.pawnRadius+sizes.postRadius*2,
     },
 
-    ratio,
+    voteRatio,
+    goalRatio,
     fov,
 
     draw = function(){
@@ -80,9 +81,24 @@ function Board(spec){
     },
 
     setScore = function(team, score){
+        /*
+        console.log("SETTING SCORE to %s, %s", team, score);
+        console.log("SETTING SCORE to %s, %s", team, score);
+        console.log("SETTING SCORE to %s, %s", team, score);
+        console.log("SETTING SCORE to %s, %s", team, score);
+        console.log("SETTING SCORE to %s, %s", team, score);
+        console.log("SETTING SCORE to %s, %s", team, score);
+        console.log("SETTING SCORE to %s, %s", team, score);
+        console.log("SETTING SCORE to %s, %s", team, score);
+        console.log("SETTING SCORE to %s, %s", team, score);
+        console.log("SETTING SCORE to %s, %s", team, score);
+        console.log("SETTING SCORE to %s, %s", team, score);
+        */
         goalTeam = team;
         goalScore = score;
         menu.balance.setGoal(goalTeam, goalScore);
+        goalRatio = ((goalScore*(goalTeam*2-1))/(repCount*groupCount)+1)/2;
+        menu.chart.setGoal(goalTeam, goalRatio);
         compute();
     },
 
@@ -188,12 +204,12 @@ function Board(spec){
             }
         }
 
-        ratio = 0;
+        voteRatio = 0;
         for (var i = 0; i < pawnList.length; i++) {
             pawnList[i].findNeighbors();
-            ratio += pawnList[i].teamIndex;
+            voteRatio += pawnList[i].teamIndex;
         }
-        ratio /= pawnCount;
+        voteRatio /= pawnList.length;
 
         placePosts();
         placeBorderFences();
@@ -206,7 +222,8 @@ function Board(spec){
 
         compute();
 
-        menu.setPrompt("Draw "+groupCount+" groups of "+groupSize);
+        //menu.setPrompt("Draw "+groupCount+" groups of "+groupSize);
+        menu.setPrompt("Draw groups of "+groupSize);
         camera.fov = fov;
     },
 
@@ -257,7 +274,8 @@ function Board(spec){
             groupCount++;
         } while (!divisible(pawnList.length, groupCount));
         groupSize = pawnList.length/groupCount;
-        menu.setPrompt("Draw "+groupCount+" groups of "+groupSize);
+        //menu.setPrompt("Draw "+groupCount+" groups of "+groupSize);
+        menu.setPrompt("Draw groups of "+groupSize);
 
         setScore(goalTeam, Math.min(goalScore, groupCount));
         compute();
@@ -269,8 +287,8 @@ function Board(spec){
             groupCount--;
         } while (!divisible(pawnList.length, groupCount));
         groupSize = pawnList.length/groupCount;
-        menu.setPrompt("Draw "+groupCount+" groups of "+groupSize);
-        //menu.setPrompt("Draw groups of "+groupSize);
+        //menu.setPrompt("Draw "+groupCount+" groups of "+groupSize);
+        menu.setPrompt("Draw groups of "+groupSize);
 
         setScore(goalTeam, Math.min(goalScore, groupCount));
         compute();
@@ -512,7 +530,7 @@ function Board(spec){
     },
 
     getGoalTeam = function(){
-        return goalTeam < 0 ? playerTeam : goalTeam;
+        return goalTeam;
     },
 
     compute = function() {
@@ -574,22 +592,40 @@ function Board(spec){
 
 
 //        console.log("Board computed, "+groups.length+" valid groups.");
+        var repRatio = 0;
 
         var score = 0;
-        var team = getGoalTeam();
-        if (team >= 0) {
-            for (var i = 0; i < groups.length; i++) {
-                for (var j = 0; j < groups[i].reps.length; j++) {
-                    var s = groups[i].reps[j].team;
+        var team = goalTeam;
+        for (var i = 0; i < groups.length; i++) {
+            for (var j = 0; j < groups[i].reps.length; j++) {
+                var s = groups[i].reps[j].team;
+                if (team >= 0) {
                     if (s == team) score++;
                     if (s == 1-team) score--;
                 }
+
+                if (s == 2) repRatio += 0.5;
+                else repRatio += s;
             }
         }
+        repRatio /= repCount*groupCount;
+
+        var voteRatio = 0;
+        for (var i = 0; i < pawnList.length; i++) {
+            voteRatio += pawnList[i].getTeam();
+        }
+        voteRatio /= pawnList.length;
 
         complete = (score >= goalScore || goalScore < 0) && valid;
 
         console.log("Board computed, "+groups.length+" valid groups. Score="+score+"/"+goalScore+", Complete="+complete);
+
+        var showChart = valid;
+        menu.setShowPrompt(!valid);
+        menu.chart.setShow(showChart);
+        if (showChart) {
+            menu.chart.setRatios(voteRatio, repRatio);
+        }
 
         if (active) {
             menu.balance.setGroups(balanceGroups, repCount);

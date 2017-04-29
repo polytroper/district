@@ -44,7 +44,7 @@ function Balance(){
     position = mover.position,
 
     draw = function(){
-        if (mover.getProgress == 0) return;
+        if (mover.getProgress() == 0) return;
         //console.log("Drawing balance at "+pointString(position));
 
         // Define important positions
@@ -107,9 +107,10 @@ function Balance(){
 
         // Draw the goal pointer
 
-        if (goalScore >= 0) {
+        if (goalTeam >= 0) {
             var teamSwitch = (goalTeam*2-1);
-            var goalPointerAngle = lerp(maxAngle*teamSwitch, -maxAngle*teamSwitch, ((goalScore)/reps.length+1)/2);
+            var goalPointerAngle = remap(-reps.length, reps.length, maxAngle*teamSwitch, -maxAngle*teamSwitch, goalScore);
+            //var goalPointerAngle = lerp(maxAngle*teamSwitch, -maxAngle*teamSwitch, ((goalScore)/reps.length+1)/2);
             //var goalPointerAngle = lerp(maxAngle*goalTeam, -maxAngle*(1-goalTeam), (goalScore)/reps.length);
             var goalPointerPosition = {
                 x: position.x,

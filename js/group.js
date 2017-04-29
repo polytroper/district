@@ -266,7 +266,7 @@ function Group(spec){
     },
 
     trace = function(fences, pawn){
-        console.log("Pushing pawn "+pawns.length);
+        //console.log("Pushing pawn "+pawns.length);
         pawns.push(pawn);
         for (var i = 0; i < pawn.neighbors.length; i++) {
             if (pawns.includes(pawn.neighbors[i])) {continue;}

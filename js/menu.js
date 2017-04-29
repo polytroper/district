@@ -376,6 +376,7 @@ function Menu(){
 
     showEditor = false,
 
+    chart = new Chart(),
     balance = new Balance(),
     promptString = "~ ~ ~",
 
@@ -403,11 +404,13 @@ function Menu(){
         linkButton.draw();
 
         balance.draw();
+        chart.draw();
     },
 
     update = function(){
         promptMover.update();
         balance.update();
+        chart.update();
     },
     
     setPrompt = function(prompt){
@@ -475,6 +478,7 @@ function Menu(){
     return Object.freeze({
         // Fields
         balance,
+        chart,
 
         // Methods
         draw,
