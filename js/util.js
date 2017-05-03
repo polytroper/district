@@ -100,6 +100,10 @@ function manhattan(a, b){
     return Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
 }
 
+approximately = function(v1, v2, epsilon = 0.001) {
+  return Math.abs(v1 - v2) < epsilon;
+};
+
 function distribute(index, total, progress, overlap = 0){
     var fraction = 1/total;
     var duration = lerp(fraction, 1, overlap);
@@ -108,7 +112,7 @@ function distribute(index, total, progress, overlap = 0){
     return remapClamp(start, end, 0, 1, progress);
 }
 
-function addRow(array){
+function addArrayRow(array){
     newRow = [];
     sourceRow = array[array.length-1];
     for (var i = 0; i < sourceRow.length; i++) {
@@ -118,12 +122,12 @@ function addRow(array){
     return array;
 }
 
-function subtractRow(array){
+function subtractArrayRow(array){
     array.pop();
     return array;
 }
 
-function addColumn(array){
+function addArrayColumn(array){
     var row;
     for (var i = 0; i < array.length; i++) {
         row = array[i];
@@ -132,7 +136,7 @@ function addColumn(array){
     return array;
 }
 
-function subtractColumn(array){
+function subtractArrayColumn(array){
     for (var i = 0; i < array.length; i++) {
         array[i].pop();
     }
@@ -148,4 +152,73 @@ function lowestFactor(a){
         if (divisible(a, i)) return i;
     }
     return a;
+}
+
+function getQueryString(field, url){
+    var href = url ? url : window.location.href;
+    var reg = new RegExp( '[?&]' + field + '=([^&#]*)', 'i' );
+    var string = reg.exec(href);
+    return string ? string[1] : null;
+}
+
+function getQueryBoard(){
+    var href = window.location.href;
+    if (!href.includes("?")) return null;
+    href = href.slice(href.indexOf("?")+2);
+    href = atob(href);
+    console.log("Decoding: "+href);
+    href = decodeURIComponent(href);
+    var spec = JSON.parse(href);
+    return Board(spec);
+    /*
+    var xCount = parseInt(getQueryString("x"));
+    var yCount = parseInt(getQueryString("y"));
+    
+    var score = parseInt(getQueryString("s"));
+    var team = parseInt(getQueryString("t"));
+
+    var groups = parseInt(getQueryString("g"));
+    var reps = parseInt(getQueryString("r"));
+
+    var pawns = getQueryString("p");
+
+    if (isNaN(xCount) || isNaN(yCount) || isNaN(score) || isNaN(team) || isNaN(groups) || isNaN(reps)) {
+        console.log("Tried to load queryBoard, but some int failed to parse. x=%s, y=%s, score=%s, team=%s, groups=%s, reps=%s", xCount, yCount, score, team, groups, reps);
+        return null;
+    }
+    if (pawns == null) return null;
+    if (pawns.length != xCount*yCount) return null;
+    pawns = parseQueryLayout(xCount, yCount, pawns);
+
+    return Board({
+        groupCount: groups,
+        repCount: reps,
+
+        goalScore: score,
+        goalTeam: team,
+
+        layout: pawns,
+        showNext: false,
+
+        position: {
+            x: -32,
+            y: -16
+        }
+    });
+    */
+}
+
+function parseQueryLayout(xCount, yCount, layoutString){
+    var layout = [];
+    var parsedInt;
+    for (var x = 0; x < xCount; x++) {
+//                        layout.push([]);
+        for (var y = 0; y < yCount; y++) {
+            if (layout.length < yCount) layout.push([]);
+            parsedInt = parseInt(layoutString[y*xCount+x]);
+            if (parsedInt !== 0 && parsedInt !== 1) return null;
+            layout[y].push(parsedInt);
+        }
+    }
+    return layout;
 }

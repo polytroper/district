@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="utf-8">
+
         <title>District</title>
         <script src="http://code.jquery.com/jquery.min.js"></script>
 
         <link rel="icon" type="image/png" href="/favicon.png"/>
         <link rel="stylesheet" href="/css/main.css">
+        <link rel="stylesheet" href="./css/district.css">
+
     </head>
     <body>
         <div id="nav-container"></div>
@@ -15,12 +19,234 @@
         });
         </script>
 
-
-        <div class="game">
+        <div class="page">
             <h3>DISTRICT</h3>
+            <div class="sandbox">
 
-            <div id="district"></div>
+                <div id="district"></div>
+
+                <div class="openContainer">
+                    <div class="open" onclick="openToolbox();">&#9776;</div>
+                </div>
+
+                <div class="tools" id="toolbox">
+                    <div class="container">
+                        <div class="close" onclick="closeToolbox();">&#x2716;</div>
+
+                        <div class="quantity">
+                            <div class="button" onclick="subtractRow();">&#10134;</div>
+                            <div class="button" onclick="addRow();">&#10133;</div>
+                            <div class="number" id="rowCounter">4 Rows</div>
+                        </div>
+
+                        <div class="spacer"></div>
+
+                        <div class="quantity">
+                            <div class="button" onclick="subtractColumn();">&#10134;</div>
+                            <div class="button" onclick="addColumn();">&#10133;</div>
+                            <div class="number" id="columnCounter">6 Columns</div>
+                        </div>
+
+                        <div class="spacer"></div>
+                        <hr>
+                        <div class="spacer"></div>
+
+                        <div class="quantity">
+                            <div class="button" onclick="scoreDown();">&#10134;</div>
+                            <div class="button" onclick="scoreUp();">&#10133;</div>
+                            <div class="button" id="scoreCounter" onclick="switchTeam();">0</div>
+                        </div>
+
+                        <div class="spacer"></div>
+
+                        <div class="quantity">
+                            <div class="button" onclick="subtractGroup();">&#10134;</div>
+                            <div class="button" onclick="addGroup();">&#10133;</div>
+                            <div class="number" id="groupCounter">0 Groups</div>
+                        </div>
+
+                        <div class="spacer"></div>
+
+                        <div class="quantity">
+                            <div class="button" onclick="subtractRep();">&#10134;</div>
+                            <div class="button" onclick="addRep();">&#10133;</div>
+                            <div class="number" id="repCounter">0 Reps</div>
+                        </div>
+
+                        <div class="spacer"></div>
+                        <hr>
+                        <div class="spacer"></div>
+
+                        <div class="url">
+                            <input class="field" id="linkField" type="text" readonly="true" onClick="this.select();" value="link...">
+                            <div class="name">Link:</div>
+                        </div>
+
+                        <div class="spacer"></div>
+                        
+                        <div class="url">
+                            <input class="field" id="embedField" type="text" readonly="true" onClick="this.select();" value="embed...">
+                            <div class="name">Embed:</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+        <script type="text/javascript">
+            var editing = false;
+            toggleToolbox = function(){
+                if (editing) closeToolbox();
+                else openToolbox();
+            }
+            closeToolbox = function(){
+                editing = false;
+                var toolbox = document.getElementById('toolbox');
+                toolbox.style.width = 0;
+                toolbox.style.marginLeft = 0;
+
+                if (board != null) {
+                    board.setMutable(false);
+                }
+            }
+            openToolbox = function(){
+                editing = true;
+                var toolbox = document.getElementById('toolbox');
+                toolbox.style.width = "280px";
+                toolbox.style.marginLeft = "16px";
+
+                if (board != null) {
+                    board.setMutable(true);
+                }
+            }
+
+            var board = null;
+            var embedWindow = null;
+
+            var rowCounter = document.getElementById('rowCounter');
+            var columnCounter = document.getElementById('columnCounter');
+            var scoreCounter = document.getElementById('scoreCounter');
+            var groupCounter = document.getElementById('groupCounter');
+            var repCounter = document.getElementById('repCounter');
+
+            var linkField = document.getElementById('linkField');
+            var embedField = document.getElementById('embedField');
+
+            addRow = function(){
+                console.log("Sandbox: Adding Row");
+                if (board != null) {
+                    board.addRow();
+                    refreshToolbox();
+                }
+            }
+            subtractRow = function(){
+                console.log("Sandbox: Subtracting Row");
+                if (board != null) {
+                    board.subtractRow();
+                    refreshToolbox();
+                }
+            }
+            addColumn = function(){
+                console.log("Sandbox: Adding Column");
+                if (board != null) {
+                    board.addColumn();
+                    refreshToolbox();
+                }
+            }
+            subtractColumn = function(){
+                console.log("Sandbox: Subtracting Column");
+                if (board != null) {
+                    board.subtractColumn();
+                    refreshToolbox();
+                }
+            }
+            scoreDown = function(){
+                console.log("Sandbox: Score Down");
+                if (board != null) {
+                    board.scoreDown();
+                    refreshToolbox();
+                }
+            }
+            scoreUp = function(){
+                console.log("Sandbox: Score Up");
+                if (board != null) {
+                    board.scoreUp();
+                    refreshToolbox();
+                }
+            }
+            switchTeam = function(){
+                console.log("Sandbox: Switch Team");
+                if (board != null) {
+                    board.switchTeam();
+                    refreshToolbox();
+                }
+            }
+            addGroup = function(){
+                console.log("Sandbox: Add Group");
+                if (board != null) {
+                    board.addGroup();
+                    refreshToolbox();
+                }
+            }
+            subtractGroup = function(){
+                console.log("Sandbox: Subtract Group");
+                if (board != null) {
+                    board.subtractGroup();
+                    refreshToolbox();
+                }
+            }
+            addRep = function(){
+                console.log("Sandbox: Add Rep");
+                if (board != null) {
+                    board.addRep();
+                    refreshToolbox();
+                }
+            }
+            subtractRep = function(){
+                console.log("Sandbox: Subtract Rep");
+                if (board != null) {
+                    board.subtractRep();
+                    refreshToolbox();
+                }
+            }
+
+            refreshToolbox = function(){
+                console.log("Refreshing Sandbox Toolbox");
+
+                rowCounter.innerHTML = board.dimensions.y+" Rows";
+                columnCounter.innerHTML = board.dimensions.x+" Columns";
+
+                var goalScore = board.getGoalScore();
+
+                var goalTeam = board.getGoalTeam();
+                if (goalTeam < 0) {
+                    scoreCounter.innerHTML = "&ndash;";
+                    scoreCounter.style.backgroundColor = "gray";
+                }
+                else {
+                    scoreCounter.innerHTML = (goalScore > 0 ? "+"+goalScore : goalScore);
+                    if (goalTeam == 0) scoreCounter.style.backgroundColor = "red";
+                    if (goalTeam == 1) scoreCounter.style.backgroundColor = "blue";
+                }
+
+                var groupCount = board.getGroupCount();
+                groupCounter.innerHTML = groupCount+" Group"+(groupCount == 1 ? "" : "s");
+
+                var repCount = board.getRepCount();
+                repCounter.innerHTML = repCount+" Rep"+(repCount == 1 ? "" : "s");
+
+                var url = window.location.href;
+                if (url.includes("?")) url = url.slice(0, url.indexOf("?"));
+                url += board.getQueryString();
+                linkField.value = url;
+
+                var url = embedWindow.location.href;
+                if (url.includes("?")) url = url.slice(0, url.indexOf("?"));
+                url += board.getQueryString();
+                embedField.value = "<embed src=\""+url+"\" width=\"640px\" height=\"640px\" style=\"border:1px solid black\"></embed>";
+
+
+            }
+        </script>
 
         <script type="text/javascript">
             var game = document.getElementById('district');
@@ -30,7 +256,18 @@
             else query = "?"+query;
 
             var embedURL = "./embed.html"+query;
-            game.innerHTML = "<embed src=\""+embedURL+"\" width=\"640px\" height=\"640px\" style=\"border:1px solid black\"></embed>"
+            game.innerHTML = "<iframe id=\"frame\" src=\""+embedURL+"\" width=\"640px\" height=\"640px\" style=\"border:1px solid black\"></iframe>";
+
+
+            var frame = game.querySelector("#frame");
+            frame.addEventListener('load', function(){
+                console.log("FRAME LOADED - Fetching board");
+                embedWindow = frame.contentWindow;
+                board = frame.contentWindow.getBoard();
+                board.setRefreshQueryCallback(refreshToolbox);
+                refreshToolbox();
+                openToolbox();
+            });
         </script>
 
         <div id="footer-container"></div>

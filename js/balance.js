@@ -121,7 +121,7 @@ function Balance(){
             var goalPointerTip = lerpPoint(goalPointerPosition, position, 0.125);
 
             var c = colors.teamNeutral;
-            if (goalScore != 0) c = colors.teams[goalTeam];
+            if (goalTeam >= 0) c = colors.teams[goalTeam];
             port.drawPointer(goalPointerPosition, goalPointerTip, c);
         }
 

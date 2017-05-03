@@ -21,7 +21,11 @@ canvas {
 </style>
     <html>
     <head>
+        <meta charset="utf-8">
+
         <title>District</title>
+        <script language="javascript" src="./js/values.js" type="text/javascript"></script>
+        <script language="javascript" src="./js/input.js" type="text/javascript"></script>
         <script language="javascript" src="./js/mover.js" type="text/javascript"></script>
         <script language="javascript" src="./js/chart.js" type="text/javascript"></script>
         <script language="javascript" src="./js/rep.js" type="text/javascript"></script>
@@ -40,7 +44,6 @@ canvas {
         <script language="javascript" src="./js/balance.js" type="text/javascript"></script>
 
         <link rel="icon" type="image/png" href="/favicon.png"/>
-        <meta charset="utf-8">
     </head>
     <body>
         <canvas width="640" height="640" id="gameCanvas">
@@ -64,76 +67,9 @@ canvas {
             canvas.addEventListener("touchmove", onTouchMove, false);
             context.textBaseline="middle"; 
 
-            var mouseListeners = [];
             var updateListeners = [];
 
-            var sizes = {
-                pawnRadius: 1,
-                postRadius: .3,
-                fenceWidth: .3,
-                counterSize: .025,
-                counterGap: .005,
-            }
-
-            var colors = {
-                teamNeutral: '#808080',
-                groupNeutral: 'rgb(192, 192, 192)',
-
-                teams: [
-                    'rgb(208, 32, 32)',
-                    'rgb(32, 32, 208)',
-                    'rgb(128, 128, 128)',
-                    'rgb(16, 16, 16)',
-                ],
-
-                teamsLight: [
-                    'rgb(224, 128, 128)',
-                    'rgb(128, 128, 224)',
-                    'rgb(192, 192, 192)',
-                    'rgb(32, 32, 32)',
-                ],
-
-                teamsDark: [
-                    'rgb(192, 16, 16)',
-                    'rgb(16, 16, 192)',
-                    'rgb(64, 64, 64)',
-                    'rgb(0, 0, 0)',
-                ],
-
-                post: {
-                    base: '#E6E6E6',
-                    touch: '#CCCCCC',
-                },
-
-                fence: {
-                    base: '#202020',
-                    drag: '#606060',
-                },
-
-                menu: {
-                    base: '#18F2F2',
-                    touch: '#F2BC18',
-                    click: '#CCCCCC',
-                    disabled: '#808080',
-                    prompt: '#404040',
-                    text: '#202020',
-                    chart: '#fff',
-                },
-
-                balance: {
-                    arm: '#404040',
-                    pan: '#202020',
-                }
-            }
-
-            var strings = {
-                center: "center",
-            }
-
             var borderSize = 1;
-
-            var mousePoint = {x: 0, y: 0}
-            var mousePointWorld = {x: 0, y: 0}
 
             var time = 0;
             var deltaTime;
@@ -185,6 +121,26 @@ canvas {
                 board.invert();
             }
 
+            window.getBoard = function(){
+                return board;
+            }
+
+            window.setBoardSpec = function(spec){
+                if (typeof(spec) === 'undefined') return;
+
+                board.setMutable(false);
+                console.log("SETTING NEW BOARD SPEC");
+                var updateIndex = updateListeners.indexOf(board);
+                var mouseIndex = mouseListeners.indexOf(board);
+                updateListeners.splice(updateIndex, 1);
+                mouseListeners.splice(mouseIndex, 1);
+
+                board = Board(spec);
+                camera.position = board.position;
+                camera.fov = board.getFov();
+                return board;
+            }
+
             function start() {
                 var FPS = 60;
                 deltaTime = 1/FPS;
@@ -199,13 +155,13 @@ canvas {
                 }
                 else {
                     board = Board(defaultBoardSpec);
-                    board.setMutable(true);
                 }
-
-                board.setActive(true);
 
                 camera.position = board.position;
                 camera.fov = board.getFov();
+
+                menu.setShowReset(true);
+                menu.setShowBalance(true);
 
                 update();
 
@@ -225,10 +181,11 @@ canvas {
 
                 time = time+deltaTime;
                 menu.update();
+                
                 for (var i = 0; i < updateListeners.length; i++) {
                     updateListeners[i].update();
                 }
-                board.update();
+                
                 dirty = true;
             }
 
@@ -238,160 +195,10 @@ canvas {
                 clear();
                 board.draw();
                 menu.draw();
-                //drawBorder();
             }
 
             function clear(){
-                //context.clearRect(borderSize, borderSize, CANVAS_WIDTH-borderSize*2, CANVAS_HEIGHT-borderSize*2);
                 context.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-            }
-
-            function drawBorder(){
-                context.beginPath();
-                context.rect(borderSize/2, borderSize/2, CANVAS_WIDTH-borderSize, CANVAS_HEIGHT-borderSize);
-                context.lineWidth = borderSize;
-                context.strokeStyle = '#000000';
-                context.stroke();
-            }
-
-            function onMouseDown(event){
-                click = true;
-
-                mousePoint = getMousePos(canvas, event);
-                mousePointWorld = camera.transformPoint(mousePoint);
-
-                for (var i = 0; i < mouseListeners.length; i++) {
-                    mouseListeners[i].onMouseDown(mousePoint);
-                }
-
-                board.onMouseDown(mousePoint);
-            }
-
-            function onMouseUp(event){
-                click = false;
-
-                for (var i = 0; i < mouseListeners.length; i++) {
-                    mouseListeners[i].onMouseUp(mousePoint);
-                }
-
-                board.onMouseUp(mousePoint);
-            }
-
-            function onMouseMove(event){
-                mousePoint = getMousePos(canvas, event);
-                mousePointWorld = camera.transformPoint(mousePoint);
-
-                for (var i = 0; i < mouseListeners.length; i++) {
-                    mouseListeners[i].onMouseMove(mousePoint);
-                }
-
-                board.onMouseMove(mousePoint);
-            }
-
-            function onTouchStart(event){
-                var touch = event.touches[0];
-                var mouseEvent = new MouseEvent("mousedown", {
-                    clientX: touch.clientX,
-                    clientY: touch.clientY
-                });
-                canvas.dispatchEvent(mouseEvent);
-                //onMouseDown(convertTouches(event));
-            }
-
-            function onTouchEnd(event){
-                var touch = event.touches[0];
-                var mouseEvent = new MouseEvent("mouseup");
-                canvas.dispatchEvent(mouseEvent);
-                //onMouseUp(convertTouches(event));
-            }
-
-            function onTouchMove(event){
-                var touch = event.touches[0];
-                var mouseEvent = new MouseEvent("mousemove", {
-                    clientX: touch.clientX,
-                    clientY: touch.clientY
-                });
-                canvas.dispatchEvent(mouseEvent);
-                //onMouseMove(convertTouches(event));
-            }
-
-            function onTouchCancel(event){
-                //onMouseUp(convertTouches(event));
-            }
-
-            function getMousePos(canvas, event){
-                var rect = canvas.getBoundingClientRect();
-                return {
-                    x: event.clientX - rect.left,
-                    y: event.clientY - rect.top
-                };
-            }
-
-            function convertTouches(event){
-                var touches = event.touches;
-                if (touches.length > 0) {
-                    event.clientX = touches[0].clientX;
-                    event.clientY = touches[0].clientY;
-                }
-            }
-
-            function getQueryString(field, url){
-                var href = url ? url : window.location.href;
-                var reg = new RegExp( '[?&]' + field + '=([^&#]*)', 'i' );
-                var string = reg.exec(href);
-                return string ? string[1] : null;
-            }
-
-            function getQueryBoard(){
-                var xCount = parseInt(getQueryString("x"));
-                var yCount = parseInt(getQueryString("y"));
-                
-                var score = parseInt(getQueryString("s"));
-                var team = parseInt(getQueryString("t"));
-
-                var groups = parseInt(getQueryString("g"));
-                var reps = parseInt(getQueryString("r"));
-
-                var pawns = getQueryString("p");
-
-                if (isNaN(xCount) || isNaN(yCount) || isNaN(score) || isNaN(team) || isNaN(groups) || isNaN(reps)) {
-                    console.log("Tried to load queryBoard, but some int failed to parse. x=%s, y=%s, score=%s, team=%s, groups=%s, reps=%s", xCount, yCount, score, team, groups, reps);
-                    return null;
-                }
-                if (pawns == null) return null;
-                if (pawns.length != xCount*yCount) return null;
-                pawns = parseQueryLayout(xCount, yCount, pawns);
-
-                return Board({
-                    groupCount: groups,
-                    repCount: reps,
-
-                    goalScore: score,
-                    goalTeam: team,
-
-                    layout: pawns,
-                    showNext: false,
-
-                    position: {
-                        x: -32,
-                        y: -16
-                    }
-                });
-            }
-
-            function parseQueryLayout(xCount, yCount, layoutString){
-                var layout = [];
-                var parsedInt;
-                for (var x = 0; x < xCount; x++) {
-//                        layout.push([]);
-                    for (var y = 0; y < yCount; y++) {
-                        if (layout.length < yCount) layout.push([]);
-                        parsedInt = parseInt(layoutString[y*xCount+x]);
-                        if (parsedInt !== 0 && parsedInt !== 1) return null;
-                        layout[y].push(parsedInt);
-                    }
-                }
-                return layout;
             }
 
             start();

@@ -5,8 +5,8 @@
         <script src="http://code.jquery.com/jquery.min.js"></script>
 
         <link rel="icon" type="image/png" href="/favicon.png"/>
-        <link rel="stylesheet" href="/css/main.css">
         <link rel="stylesheet" href="./css/district.css">
+        <link rel="stylesheet" href="/css/main.css">
 
         <meta charset="utf-8">
     </head>
@@ -106,19 +106,23 @@
                 return slide;
             }
 
-            appendInterventionSlide = function(spec){
+            appendGapSlide = function(spec){
                 var deck = document.getElementById("deck");
 
                 var {slide, words, title, description} = createBasicSlide(spec);
 
-                var yinyang = document.createElement('div');
-                yinyang.className = "yinyang";
-                slide.appendChild(yinyang);
-                yinyang.addEventListener("click", function(){
-                    advance();
-                });
+                var gap = document.createElement('div');
+                gap.className = "gap";
+                slide.appendChild(gap);
 
-                //yinyang.style.backgroundColor = ["red", "blue"][chosenColor];
+                gap.innerHTML = "<iframe id=\"frame\" src=\"./gap.html\" width=\"640px\" height=\"320px\" style=\"border:1px solid black\"></iframe>";
+
+                var gapFrame = gap.querySelector("#frame");
+                gapFrame.addEventListener('load', function(){
+                    gapFrame.contentWindow.setCompletionCallback(advance);
+
+                    if (invertPuzzles) gapFrame.contentWindow.invert();
+                });
 
                 return slide;
             }
@@ -132,11 +136,12 @@
                 puzzle.className = "puzzle";
                 slide.appendChild(puzzle);
 
-                var embedURL = "./embed.html"+spec.query;
+                var embedURL = "./embed.html";//+spec.query;
                 puzzle.innerHTML = "<iframe id=\"frame\" src=\""+embedURL+"\" width=\"640px\" height=\"640px\" style=\"border:1px solid black\"></iframe>";
 
                 var puzzleFrame = puzzle.querySelector("#frame");
                 puzzleFrame.addEventListener('load', function(){
+                    puzzleFrame.contentWindow.setBoardSpec(spec.board);
                     puzzleFrame.contentWindow.setCompletionCallback(advance);
 
                     puzzleSlides.push(slide);
@@ -149,9 +154,9 @@
                         setActiveSlide(event.target);
                     });
 
-                    if (invertPuzzles) puzzleFrame.contentWindow.invertBoard();
                     if (spec.muteGap == true) puzzleFrame.contentWindow.setDrawGap(false);
                     if (spec.muteReset == true) puzzleFrame.contentWindow.setShowReset(false);
+                    if (invertPuzzles) puzzleFrame.contentWindow.invertBoard();
 
                     setActiveSlide(slide);
                 });
@@ -165,7 +170,12 @@
                     title: "Welcome to the Carpet Kingdom",
                     description:
                     "<p>Alice and Bob are opposing rulers of the Carpet Kingdom. Alice likes Red, but Bob likes Blue.</p><p>They split the floor into 2 separate carpet districts.</p><p>For now, everyone is happy.</p>",
-                    query: "?=&x=2&y=1&s=-1&t=-1&g=2&r=1&p=01",
+                    board: {
+                        groupCount: 2,
+                        layout: [
+                            [0, 1],
+                        ],
+                    },
                     muteReset: true,
                     muteGap: true,
                 },
@@ -173,7 +183,13 @@
                     generator: appendPuzzleSlide,
                     title: "Democracy is Born",
                     description: "<p>Two new subjects move in, so Alice and Bob invent democracy and hold a vote for color.</p><p>Both districts tie, so they compromise on Grey.</p>",
-                    query: "?=&x=2&y=2&s=-1&t=-1&g=2&r=1&p=0110",
+                    board: {
+                        groupCount: 2,
+                        layout: [
+                            [0, 1],
+                            [1, 0],
+                        ],
+                    },
                     muteReset: true,
                     muteGap: true,
                 },
@@ -181,7 +197,14 @@
                     generator: appendPuzzleSlide,
                     title: "The Kingdom Expands",
                     description: "<p>A third district is added to accomodate new arrivals, and another vote is held.</p><p>Most citizens are satisfied with the outcome.</p>",
-                    query: "?=&x=2&y=3&s=-1&t=-1&g=3&r=1&p=001011",
+                    board: {
+                        groupCount: 3,
+                        layout: [
+                            [0, 0],
+                            [1, 0],
+                            [1, 1],
+                        ],
+                    },
                     muteReset: true,
                     muteGap: true,
                 },
@@ -194,61 +217,120 @@
                     generator: appendPuzzleSlide,
                     title: "WINTEAM Carpeters Take Charge",
                     description: "<p>In a stunning turn of events, WINTEAM wins a supermajority of the floor.</p><p>This gives them the power to redraw the districts (they promise to be totally fair about it).<p>",
-                    query: "?=&x=3&y=3&s=1&t=0&g=3&r=1&p=011010110",
+                    board: {
+                        groupCount: 3,
+                        goalScore: 1,
+                        goalTeam: 0,
+                        layout: [
+                            [0, 1, 1],
+                            [0, 1, 0],
+                            [1, 1, 0],
+                        ],
+                    },
                     muteGap: true,
                 },
                 {
                     generator: appendPuzzleSlide,
                     title: "Seeds of Discontent",
-                    description: "<p>The kingdom is perfectly split on their preferred color.</p><p>Yet somehow, the floor is still mostly WINTEAM. Much of the LOSETEAM population feels like their <b>votes didn't count</b>.</p>",
-                    query: "?=&x=4&y=3&s=2&t=0&g=4&r=1&p=000000111111",
+                    description: "<p>The kingdom is evenly split on color.</p><p>Yet somehow, the floor is still mostly WINTEAM. Much of the LOSETEAM population feels like their <b>votes didn't count</b>.</p>",
+                    board: {
+                        groupCount: 4,
+                        goalScore: 1,
+                        goalTeam: 0,
+                        layout: [
+                            [0, 0, 0, 0],
+                            [0, 0, 1, 1],
+                            [1, 1, 1, 1],
+                        ],
+                    },
                     muteGap: true,
                 },
                 {
                     generator: appendPuzzleSlide,
                     title: "Cracking & Packing",
                     description: "<p>The WINTEAM leadership starts grouping a large chunk of LOSETEAM voters into one district, a technique they dub <b>\"Packing\"</b>.</p><p>They dristribute the leftover LOSETEAM voters between guaranteed WINTEAM districts, and nickname this process <b>\"Cracking\"</b>.</p>",
-                    query: "?=&x=5&y=3&s=1&t=0&g=3&r=1&p=001110011100111",
+                    board: {
+                        groupCount: 3,
+                        goalScore: 1,
+                        goalTeam: 0,
+                        layout: [
+                            [0, 0, 1, 1, 1],
+                            [0, 0, 1, 1, 1],
+                            [0, 0, 1, 1, 1],
+                        ],
+                    },
                     muteGap: true,
                 },
                 {
                     generator: appendPuzzleSlide,
                     title: "Linking",
                     description: "<p>WINTEAM neighborhoods start to fracture, making it hard to draw <b>compact districts</b> around them.</p><p>They will have to be a bit more crafty to maintain power.</p>",
-                    query: "?=&x=6&y=3&s=1&t=0&g=3&r=1&p=001100011110110011",
+                    board: {
+                        groupCount: 3,
+                        goalScore: 1,
+                        goalTeam: 0,
+                        layout: [
+                            [0, 0, 1, 1, 0, 0],
+                            [0, 1, 1, 1, 1, 0],
+                            [1, 1, 0, 0, 1, 1],
+                        ],
+                    },
                     muteGap: true,
                 },
                 {
-                    generator: appendPuzzleSlide,
+                    generator: appendGapSlide,
                     title: "God Becomes Concerned.",
-                    description: "<p>Concerned about WINTEAM's disproportionate power, God starts tracking the difference between the <b>vote percentage</b> and <b>floor percentage</b> for each color.</p><p>\"I shall call this metric... the <b>Efficiency Gap</b>\" says God.</p><p>In the next election, God is shocked to find an Efficiency Gap of <b>27%</b>.</p>",
-                    query: "?=&x=6&y=5&s=2&t=0&g=6&r=1&p=111000111000111111000111000111",
+                    description: "<p>Worried about WINTEAM's disproportionate power, God starts tracking the difference between the <b>vote percentage</b> and <b>floor percentage</b> for each color.</p><p>\"I shall call this metric... the <b>Proportionality Gap</b>\" says God.</p>",
+                },
+                {
+                    generator: appendPuzzleSlide,
+                    title: "Mind the Gap",
+                    description: "<p>In the next election, God is shocked to find a Proportionality Gap of <b>27%</b>.</p><p>Clearly, this system gives far too much power to whoever draws the districts.</p>",
+                    board: {
+                        groupCount: 6,
+                        goalScore: 2,
+                        goalTeam: 0,
+                        layout: [
+                            [1, 1, 1, 0, 0, 0],
+                            [1, 1, 1, 0, 0, 0],
+                            [1, 1, 1, 1, 1, 1],
+                            [0, 0, 0, 1, 1, 1],
+                            [0, 0, 0, 1, 1, 1],
+                        ],
+                    },
                 },
                 {
                     generator: appendPuzzleSlide,
                     title: "God Intervenes",
-                    description: "<p>God checks out a library book on Voting Systems, and comes across a system called <b>Proportional Representation</b>.</p><p>God decides to try it, using <b>half as many districts</b> but <b>two winners each</b>.</p><p>The Efficiency Gap drops dramatically.</p>",
-                    query: "?=&x=6&y=5&s=-1&t=-1&g=6&r=2&p=111000111000111111000111000111",
+                    description: "<p>God checks out a library book on Voting Systems, and comes across an idea called <b>Proportional Representation</b>.</p><p>God decides to try using <b>half as many districts</b> with <b>two winners each</b>.</p><p>The Proportionality Gap drops dramatically.</p>",
+                    board: {
+                        groupCount: 3,
+                        repCount: 2,
+                        layout: [
+                            [1, 1, 1, 0, 0, 0],
+                            [1, 1, 1, 0, 0, 0],
+                            [1, 1, 1, 1, 1, 1],
+                            [0, 0, 0, 1, 1, 1],
+                            [0, 0, 0, 1, 1, 1],
+                        ],
+                    },
                 },
                 {
                     generator: appendPuzzleSlide,
                     title: "All is Well",
-                    description: "<p>God notices that <b>more representatives</b> means a <b>lower Efficiency Gap</b>.</p><p>Satisfied with this solution, God kicks back until the Carpet Kingdom is consumed by a civil war precipitated by their extremely polarizing Plurality-Rule voting system.</p>",
-                    query: "?=&x=6&y=5&s=-1&t=-1&g=6&r=3&p=111000111000111111000111000111",
+                    description: "<p>Encouraged by this trend, God tries adding a third winner. The Proportionality Gap drops even further.</p><p>(You have reached the end of the known universe)</p>",
+                    board: {
+                        groupCount: 3,
+                        repCount: 3,
+                        layout: [
+                            [1, 1, 1, 0, 0, 0],
+                            [1, 1, 1, 0, 0, 0],
+                            [1, 1, 1, 1, 1, 1],
+                            [0, 0, 0, 1, 1, 1],
+                            [0, 0, 0, 1, 1, 1],
+                        ],
+                    },
                 },
-                /*
-                {
-                    generator: appendInterventionSlide,
-                    title: "God Intervenes... again.",
-                    description: "<p>\"Hey wait a minute,\" says God,</p><p>\"This sucks. New rule: From now on, each district picks two colors. Put them in stripes on the floor or something.\"</p><p>WINTEAM is unfazed by the new rule. LOSETEAM is busy doodling images of balance.</p>",
-                },
-                {
-                    generator: appendPuzzleSlide,
-                    title: "Balance is Restored",
-                    description: "<p>WINTEAM was not prepared for the consequences of electing multiple representatives.</p><p>They try their best to engineer the map in their favor, but ultimately LOSETEAM gains a roughly proportionate number of seats.</p>",
-                    query: "?=&x=6&y=3&s=-1&t=0&g=3&r=2&p=001100011110110011",
-                },
-                */
             ];
 
             chooseColor = function(color, button0, button1){

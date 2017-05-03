@@ -252,6 +252,5 @@ function Camera(){
             };
         }
     }
-    updateListeners.push(tr);
     return tr;
 }

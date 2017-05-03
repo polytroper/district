@@ -12,7 +12,6 @@ a {
 
 /** DECK **/
 .deck {
-
     width: 100%;
     margin: auto;
 
@@ -33,9 +32,8 @@ a {
 
 .slide {
     display: flex;
-    flex-direction: row;
     flex-wrap: wrap;
-
+    flex-direction: row;
     justify-content: center;
 
     margin-top: 32px;
@@ -81,6 +79,12 @@ a {
     margin: 8px 32px 8px 32px;
 }
 
+.slide > .gap {
+    order: 1;
+
+    margin: 8px 32px 8px 32px;
+}
+
 .slide > .choice {
     order: 1;
     align-self: center;
@@ -105,40 +109,151 @@ a {
     opacity: 0.5;
 }
 
-.yinyang {
+/** SANDBOX **/
+
+.page {
+    width: 100%;
+    margin: auto;
+    text-align: center;
+}
+
+.sandbox {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.openContainer {
+    width: 0;
+    height: 0;
+    z-index: 0;
+}
+
+.open {
+    width: 40px;
+    height: 40px;
+    margin-left: 16px;
+
+    position: absolute;
+
+    font-size: 36px;
+    overflow: visible;
     cursor: pointer;
-    align-self: center;
-
-    width: 96px;
-    height: 48px;
-    background: blue;
-    border-color: red;
-    border-style: solid;
-    border-width: 2px 2px 50px 2px;
-    border-radius: 100%;
-    position: relative;
+    transition: 0.2s;
+    color: #bbb;
+    z-index: 0;
 }
 
-.yinyang:before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 0;
-    background: blue;
-    border: 18px solid red;
-    border-radius: 100%;
-    width: 12px;
-    height: 12px;
+.open:hover {
+    color: #888;
+
 }
 
-.yinyang:after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    background: red;
-    border: 18px solid blue;
-    border-radius:100%;
-    width: 12px;
-    height: 12px;
+.sandbox > .tools {
+    width: 0px;
+    background: #444;
+    overflow: hidden;
+    margin-left: 0px;
+    transition: 0.5s;
+    z-index: 1;
+}
+
+.sandbox > .tools > .container {
+    width: 280px;
+    z-index: 1;
+}
+
+.sandbox > .tools > .container > hr {
+}
+
+.sandbox > .tools > .container > .close {
+    float: right;
+
+    font-size: 32px;
+    margin-right: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+    color: #bbb;
+}
+
+.sandbox > .tools > .container > .close:hover {
+    color: #fff;
+
+}
+
+.sandbox > .tools > .container > .quantity {
+    margin: 8px;
+}
+
+.sandbox > .tools > .container > .spacer {
+    height: 8px;    
+    clear: both;
+}
+
+.sandbox > .tools > .container > .quantity > .number {
+    display: inline;
+    float: left;
+
+    line-height: 50px;
+    font-size: 24px;
+    color: #fff;
+    
+    -webkit-user-select: none; /* Chrome/Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+ */
+}
+
+.sandbox > .tools > .container > .quantity > .button {
+    display: inline-block;
+    float: left;
+
+    margin-right: 8px;
+    width: 50px;
+    height: 50px;
+
+    background: #888;
+    border-radius: 8px;
+
+    line-height: 50px;
+    font-size: 28px;
+    color: #fff;
+
+    cursor: pointer;
+    transition: 0.2s;
+    
+    -webkit-user-select: none; /* Chrome/Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+ */
+}
+
+.sandbox > .tools > .container > .quantity > .button:hover {
+    background-color: #bbb;
+}
+
+.url {
+    margin-right: 8px;
+    height: 24px;
+}
+
+.url > .name {
+    display: inline-block;
+    float: right;
+
+    margin-right: 8px;
+
+    text-align: right;
+    line-height: 24px;
+    font-size: 24px;
+    color: #fff;
+    
+    -webkit-user-select: none; /* Chrome/Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+ */
+}
+
+.url > .field {
+    width: 60%;
+    float: right;
+
+    line-height: 24px;
 }

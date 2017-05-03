@@ -32,10 +32,7 @@ function Board(spec){
     pawnList = [],
     postList = [],
 
-    active = false,
     dragPost = null,
-
-    fractions = [],
 
     valid = false,
     complete = false,
@@ -51,6 +48,8 @@ function Board(spec){
     voteRatio,
     goalRatio,
     fov,
+
+    refreshQueryCallback = null,
 
     draw = function(){
         //console.log(TAG+"Drawing at "+pointString(position));
@@ -72,7 +71,7 @@ function Board(spec){
     invert = function(){
         //console.log("Inverting board...");
         if (goalTeam >= 0) {
-            setScore(1-goalTeam, goalScore);
+            setGoal(1-goalTeam, goalScore);
         }
         for (var i = 0; i < pawnList.length; i++) {
             pawnList[i].invert();
@@ -80,7 +79,7 @@ function Board(spec){
         ratio = 1-ratio;
     },
 
-    setScore = function(team, score){
+    setGoal = function(team, score){
         /*
         console.log("SETTING SCORE to %s, %s", team, score);
         console.log("SETTING SCORE to %s, %s", team, score);
@@ -118,7 +117,7 @@ function Board(spec){
     setRepCount = function(REPCOUNT){
         repCount = REPCOUNT;
         groups.length = 0;
-        if (goalScore > getMaxScore()) setScore(goalTeam, getMaxScore());
+        if (goalScore > getMaxScore()) setGoal(goalTeam, getMaxScore());
         compute();
     },
 
@@ -128,7 +127,7 @@ function Board(spec){
             pawnList[i].setMutable(mutable);
         }
     },
-
+/*
     setActive = function(value){
         active = value;
 
@@ -142,8 +141,6 @@ function Board(spec){
             menu.setShowBalance(true);
             //menu.balance.setRatio(ratio);
             menu.balance.setGoal(goalTeam, goalScore);
-
-            menu.setShowEditor(mutable);
         }
         else {
             menu.setShowPrompt(false);
@@ -151,12 +148,10 @@ function Board(spec){
             menu.setShowReset(false);
             menu.setShowBalance(false);
 
-            menu.setShowEditor(false);
-
             dragPost = null;
         }
     },
-
+*/
     setLayout = function(LAYOUT){
         layout = LAYOUT;
 
@@ -193,6 +188,7 @@ function Board(spec){
                         compute,
                         pawns,
                         getDragPost,
+                        fireRefreshQueryCallback,
                     },
                     xIndex: x,
                     yIndex: y,
@@ -227,7 +223,22 @@ function Board(spec){
         camera.fov = fov;
     },
 
+    // Ew
+    setRefreshQueryCallback = function(CALLBACK){
+        console.log("RefreshQueryCallback set!");
+        refreshQueryCallback = CALLBACK;
+    },
+
+    fireRefreshQueryCallback = function(){
+        if (refreshQueryCallback != null) {
+            console.log("Refreshing query in sandbox!");
+            refreshQueryCallback();
+        }
+    },
+
     scoreLeft = function(){
+        if (goalScore >= getMaxScore() && goalTeam == 1) return;
+
         var team = goalTeam;
         var score = goalScore;
         if (team == 1) {
@@ -241,10 +252,12 @@ function Board(spec){
             score--;
         }
         score = Math.min(score, groupCount*repCount);
-        setScore(team, score);
+        setGoal(team, score);
     },
 
     scoreRight = function(){
+        if (goalScore >= getMaxScore() && goalTeam == 0) return;
+
         var team = goalTeam;
         var score = goalScore;
         if (team == 0) {
@@ -258,7 +271,25 @@ function Board(spec){
             score--;
         }
         score = Math.min(score, groupCount*repCount);
-        setScore(team, score);
+        setGoal(team, score);
+    },
+
+    scoreUp = function(){
+        if (goalScore >= getMaxScore()) return;
+
+        var team = goalTeam;
+        var score = goalScore+1;
+        score = Math.min(score, getMaxScore());
+        setGoal(team, score);
+    },
+
+    scoreDown = function(){
+        if (goalScore <= -getMaxScore()) return;
+
+        var team = goalTeam;
+        var score = goalScore-1;
+        score = Math.min(score, getMaxScore());
+        setGoal(team, score);
     },
 
     correctGroupCount = function(){
@@ -269,7 +300,7 @@ function Board(spec){
     },
 
     addGroup = function(){
-        if (groupCount == dimensions.total) return;
+        if (groupCount >= dimensions.total/lowestFactor(dimensions.total)) return;
         do {
             groupCount++;
         } while (!divisible(pawnList.length, groupCount));
@@ -277,12 +308,12 @@ function Board(spec){
         //menu.setPrompt("Draw "+groupCount+" groups of "+groupSize);
         menu.setPrompt("Draw groups of "+groupSize);
 
-        setScore(goalTeam, Math.min(goalScore, groupCount));
+        setGoal(goalTeam, Math.min(goalScore, groupCount));
         compute();
     },
 
     subtractGroup = function(){
-        if (groupCount == 1) return;
+        if (groupCount <= lowestFactor(dimensions.total)) return;
         do {
             groupCount--;
         } while (!divisible(pawnList.length, groupCount));
@@ -290,16 +321,63 @@ function Board(spec){
         //menu.setPrompt("Draw "+groupCount+" groups of "+groupSize);
         menu.setPrompt("Draw groups of "+groupSize);
 
-        setScore(goalTeam, Math.min(goalScore, groupCount));
+        setGoal(goalTeam, Math.min(goalScore, groupCount));
         compute();
+    },
+
+    addRep = function(){
+        if (repCount >= getMaxReps()) return;
+
+        setRepCount(repCount+1);
+    },
+
+    subtractRep = function(){
+        if (repCount == 1) return;
+        
+        setRepCount(repCount-1);
+    },
+
+    addRow = function(){
+        if (dimensions.y >= 8) return;
+
+        var currentLayout = board.extractLayout();
+        addArrayRow(currentLayout);
+        setLayout(currentLayout);
+    },
+
+    subtractRow = function(){
+        if (dimensions.y <= 1) return;
+
+        var currentLayout = board.extractLayout();
+        subtractArrayRow(currentLayout);
+        setLayout(currentLayout);
+    },
+
+    addColumn = function(){
+        if (dimensions.x >= 8) return;
+
+        var currentLayout = board.extractLayout();
+        addArrayColumn(currentLayout);
+        setLayout(currentLayout);
+    },
+
+    subtractColumn = function(){
+        if (dimensions.x <= 2) return;
+
+        var currentLayout = board.extractLayout();
+        subtractArrayColumn(currentLayout);
+        setLayout(currentLayout);
+    },
+
+    switchTeam = function(){
+        if (goalTeam < 0) setGoal(0, goalScore);
+        else if (goalTeam == 0) setGoal(1, goalScore);
+        else if (goalTeam == 1) setGoal(-1, goalScore);
+        else console.log("Something fishy is going on with the value of goalTeam... (failed to switch team)");
     },
 
     getDragPost = function(){
         return dragPost;
-    },
-
-    getActive = function(){
-        return active;
     },
 
     getFov = function(){
@@ -335,6 +413,19 @@ function Board(spec){
     },
 
     getQueryString = function(){
+        layout = extractLayout();
+        var qs = "?=";
+        var data = {
+            groupCount,
+            repCount,
+            goalTeam,
+            goalScore,
+            layout,
+        }
+        var str = btoa(encodeURIComponent(JSON.stringify(data)));
+        qs += str;
+        return qs;
+        /*
         var qs = "?=";
         
         qs += "&x="+xSize;
@@ -355,7 +446,17 @@ function Board(spec){
         qs += "&p="+pString;
 
         return qs;
+        */
     },
+
+    getEmbedTag = function(){
+        var url = window.location.href;
+        if (url.includes("?")) url = url.slice(0, url.indexOf("?"));
+        url += board.getQueryString();
+        
+        var embed = "<embed src=\""+url+"\" width=\"640px\" style=\"border:1px solid black\"></iframe>";
+        return embed
+    }
 
     placePosts = function(){
         var post;
@@ -367,7 +468,6 @@ function Board(spec){
                         position,
                         xSize,
                         ySize,
-                        getActive,
                     },
                     xIndex: x,
                     yIndex: y,
@@ -404,7 +504,7 @@ function Board(spec){
 
     onMouseDown = function(point){
         var touchPost = getTouchPost(point);
-        if (touchPost != null && active) {
+        if (touchPost != null) {
             dragPost = touchPost;
         }
     },
@@ -414,7 +514,7 @@ function Board(spec){
     },
 
     onMouseMove = function(point){
-        if (dragPost == null && click && active) {
+        if (dragPost == null && click) {
             var touchPost = getTouchPost(point);
             if (touchPost != null) {
                 dragPost = touchPost;
@@ -627,15 +727,14 @@ function Board(spec){
             menu.chart.setRatios(voteRatio, repRatio);
         }
 
-        if (active) {
-            menu.balance.setGroups(balanceGroups, repCount);
-            menu.setShowNext(complete && completionCallback != null);
-        }
+        menu.balance.setGroups(balanceGroups, repCount);
+        menu.setShowNext(complete && completionCallback != null);
     };
 
     setLayout(layout);
+    setGoal(goalTeam, goalScore);
 
-    return Object.freeze({
+    var tr = Object.freeze({
         // Fields
         position,
         size,
@@ -655,16 +754,30 @@ function Board(spec){
 
         scoreLeft,
         scoreRight,
+        scoreUp,
+        scoreDown,
+        
+        addRow,
+        subtractRow,
+        
+        addColumn,
+        subtractColumn,
 
         addGroup,
         subtractGroup,
 
+        addRep,
+        subtractRep,
+
+        setRefreshQueryCallback,
+        fireRefreshQueryCallback,
+
         invert,
         extractLayout,
         resetFences,
+        switchTeam,
 
         getFov,
-        getActive,
         getDragPost,
         getQueryString,
         getTouchPost,
@@ -676,8 +789,7 @@ function Board(spec){
         getMaxScore,
         getMaxReps,
 
-        setActive,
-        setScore,
+        setGoal,
         setMutable,
         setGroupCount,
         setRepCount,
@@ -688,4 +800,9 @@ function Board(spec){
         onMouseUp,
         cancelDrag,
     });
+
+    mouseListeners.push(tr);
+    updateListeners.push(tr);
+
+    return tr;
 };

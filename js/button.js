@@ -6,7 +6,7 @@ function BasicButton(spec){
 
         baseColor = colors.menu.base,
         touchColor = colors.menu.touch,
-        clickColor = colors.menu.click,
+        pressColor = colors.menu.press,
         disabledColor = colors.menu.disabled,
 
         show = true,
@@ -24,7 +24,7 @@ function BasicButton(spec){
     position = mover.position,
 
     touch = false,
-    click = false,
+    press = false,
 
     showProgress = show?1:0,
 
@@ -35,23 +35,25 @@ function BasicButton(spec){
             drawColor = baseColor;
             if (mover.getState()) {
                 if (enabled) {
-                    if (click) drawColor = clickColor;
+                    if (press) drawColor = pressColor;
                     else if (touch) drawColor = touchColor;
                 }
-                else drawColor = disabledColor;
+                else {
+                    drawColor = disabledColor;
+                }
             }
             
             (world ? camera: port).drawCircle(position, radius, drawColor);
-
-            //console.log("Drawing! Position="+pointString(position));
 
             drawDetails({position, radius, drawColor});
         }
     },
 
     update = function(){
-        mover.update();
+        var changed = false;
+        changed = changed || mover.update();
         position = mover.getPosition();
+        return changed;
     },
 
     setShow = mover.setState,
@@ -73,16 +75,16 @@ function BasicButton(spec){
         touch = contains(point);
         if (touch && enabled) {
             onClick();
-            click = true;
+            press = true;
         }
     },
 
     onMouseUp = function(point){
         touch = contains(point);
-        if (touch && enabled && !click) {
+        if (touch && enabled && !press) {
             onClick();
         }
-        click = false;
+        press = false;
     };
 
     var tr = Object.freeze({

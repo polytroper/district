@@ -15,7 +15,7 @@ function Post(spec){
         //console.log(this.TAG+"Drawing at "+xyString(this.centerX, this.centerY));
 
         var color;
-        if (contains(mousePoint) && board.getActive()) color = colors.post.touch;
+        if (contains(mousePoint)) color = colors.post.touch;
         else color = colors.post.base;
 
         camera.drawCircle(position, sizes.postRadius, color);

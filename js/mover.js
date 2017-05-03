@@ -28,6 +28,7 @@ function Mover(spec){
 				position = lerpPoint(position0, position1, progress);
 			}
 		}
+		return ((!approximately(progress, 1) && state) || (!approximately(progress, 0) && !state));
         //console.log("Updating! state="+state+", progress="+progress+", position="+pointString(position));
 	},
 

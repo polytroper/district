@@ -86,6 +86,7 @@ function Pawn(spec){
         if (touch && (board.getDragPost() == null || down)) {
             teamIndex = 1-teamIndex;
             board.compute();
+            board.fireRefreshQueryCallback();
         }
         down = false;
     },
