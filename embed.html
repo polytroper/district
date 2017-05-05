@@ -114,7 +114,11 @@ canvas {
 
             var pause = false;
             window.setPause = function(PAUSE){
-                pause = PAUSE;
+                if (pause != PAUSE) {
+                    pause = PAUSE;
+                    if (pause) window.cancelAnimationFrame();
+                    else window.requestAnimationFrame(step);
+                }
             }
 
             window.setDrawGap = function(drawGap){

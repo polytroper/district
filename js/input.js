@@ -5,6 +5,8 @@ var mouseListeners = [];
 var click = false;
 
 function onMouseDown(event){
+    if (pause) setPause(false);
+
     click = true;
 
     mousePoint = getMousePos(canvasElement, event);
@@ -16,6 +18,8 @@ function onMouseDown(event){
 }
 
 function onMouseUp(event){
+    if (pause) setPause(false);
+    
     click = false;
 
     for (var i = 0; i < mouseListeners.length; i++) {
@@ -24,6 +28,8 @@ function onMouseUp(event){
 }
 
 function onMouseMove(event){
+    if (pause) setPause(false);
+
     mousePoint = getMousePos(canvasElement, event);
     mousePointWorld = camera.transformPoint(mousePoint);
 

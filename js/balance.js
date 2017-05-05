@@ -212,8 +212,8 @@ function Balance(){
 
         currentAngle = lerp(currentAngle, targetAngle+wobble, 0.03);
 
-        tr = tr || currentAngle != targetAngle;
-        return tr || true;
+        tr = tr || !approximately(currentAngle, targetAngle);
+        return tr;
     },
 
     requestPanSlot = function(panIndex, modifier = 1){

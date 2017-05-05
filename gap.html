@@ -78,6 +78,13 @@ canvas {
 
             var dirty = true;
 
+            var mainLayer = Layer({
+                name: "Main Layer",
+                canvas: canvasElement,
+            });
+            mouseListeners.push(mainLayer);
+            updateListeners.push(mainLayer);
+
             var view = View();
             var port = Port();
             var camera = Camera();
@@ -97,7 +104,7 @@ canvas {
                 startY: 0.5,
             });
             chart.setRatios(chartVoteRatio, chartRepRatio);
-            updateListeners.push(chart);
+            mainLayer.addComponent(chart);
 
             var handle = function(){
                 var // No spec
@@ -151,7 +158,7 @@ canvas {
                     onMouseUp
                 });
             }();
-            mouseListeners.push(handle);
+            mainLayer.addComponent(handle);
 
             showNextButton = true;
             var nextButton = BasicButton({
@@ -186,6 +193,7 @@ canvas {
                     );
                 },
             });
+            mainLayer.addComponent(nextButton);
 
             var completionCallback;
             window.setCompletionCallback = function(callback){
@@ -195,7 +203,11 @@ canvas {
 
             var pause = false;
             window.setPause = function(PAUSE){
-                pause = PAUSE;
+                if (pause != PAUSE) {
+                    pause = PAUSE;
+                    if (pause) window.cancelAnimationFrame();
+                    else window.requestAnimationFrame(step);
+                }
             }
 
             window.invert = function(){
@@ -208,7 +220,7 @@ canvas {
             }
 
             function start() {
-                var FPS = 60;
+                var FPS = 30;
                 deltaTime = 1/FPS;
                 setInterval(function() {
                   update();
@@ -234,11 +246,7 @@ canvas {
                 time = time+deltaTime;
 
                 //console.log("Updating %s listeners", updateListeners.length);
-                for (var i = 0; i < updateListeners.length; i++) {
-                    var listenerDirty = updateListeners[i].update() == true
-                    dirty = dirty || listenerDirty;
-                    //console.log("Updating listener %s: listenerDirty=%s", i, listenerDirty);
-                }
+                mainLayer.update();
                 //chart.update();
             }
 
@@ -247,9 +255,8 @@ canvas {
 
                 //console.log("Drawing: time=%s", time);
                 clear();
-                chart.draw();
-                nextButton.draw();
-                handle.draw();
+                mainLayer.draw();
+
                 /*
                 port.drawText("Create an Efficiency Gap of 40%", {x: view.aspect/2, y: 0.25}, 0.05*view.aspect, "center", colors.menu.prompt);
                 */
