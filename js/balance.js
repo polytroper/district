@@ -43,7 +43,7 @@ function Balance(){
 
     position = mover.position,
 
-    draw = function(){
+    draw = function(ctx){
         if (mover.getProgress() == 0) return;
         //console.log("Drawing balance at "+pointString(position));
 
@@ -68,12 +68,12 @@ function Balance(){
 
         // Draw the meter
 
-        port.drawPie(position, 0.065, 3/4, 5/6, colors.teams[0]);
-        port.drawPie(position, 0.065, 4/6, 3/4, colors.teams[1]);
-        port.drawCircle(position, 0.06, "white");
+        port.drawPie(position, 0.065, 3/4, 5/6, colors.teams[0], ctx);
+        port.drawPie(position, 0.065, 4/6, 3/4, colors.teams[1], ctx);
+        port.drawCircle(position, 0.06, "white", ctx);
 
-        port.drawLine(left, right, 0.007, colors.balance.arm);
-        port.drawLine(center, bottom, 0.007, colors.balance.arm);
+        port.drawLine(left, right, 0.007, colors.balance.arm, ctx);
+        port.drawLine(center, bottom, 0.007, colors.balance.arm, ctx);
 
         // Draw the big arrow pointer
 
@@ -82,14 +82,14 @@ function Balance(){
             y: position.y-0.05
         }
         pointerPosition = rotateAround(pointerPosition, position, currentAngle);
-        port.drawLine(position, pointerPosition, 0.005, colors.balance.arm);
+        port.drawLine(position, pointerPosition, 0.005, colors.balance.arm, ctx);
 
         var pointerTip = {
             x: position.x,
             y: position.y-0.06
         }
         pointerTip = rotateAround(pointerTip, position, currentAngle);
-        port.drawPointer(pointerPosition, pointerTip, "black");
+        port.drawPointer(pointerPosition, pointerTip, "black", ctx);
 
         // Draw the ratio pointer (unused right now)
 
@@ -102,7 +102,7 @@ function Balance(){
             ratioPointerPosition = rotateAround(ratioPointerPosition, position, ratioPointerAngle);
 
             var ratioPointerTip = lerpPoint(ratioPointerPosition, position, 0.1);
-            port.drawPointer(ratioPointerPosition, ratioPointerTip, "black");
+            port.drawPointer(ratioPointerPosition, ratioPointerTip, "black", ctx);
         }
 
         // Draw the goal pointer
@@ -122,31 +122,31 @@ function Balance(){
 
             var c = colors.teamNeutral;
             if (goalTeam >= 0) c = colors.teams[goalTeam];
-            port.drawPointer(goalPointerPosition, goalPointerTip, c);
+            port.drawPointer(goalPointerPosition, goalPointerTip, c, ctx);
         }
 
         // Draw the score pans
 
         panPositions = [right, left, center, bottom];
         for (var i = 0; i < 4; i++) {
-            drawPan(panPositions[i], panScores[i], i==3?"black":colors.teams[i], i==3?-1:1);
+            drawPan(panPositions[i], panScores[i], i==3?"black":colors.teams[i], i==3?-1:1, ctx);
         }
 
         // Draw the actual groups/reps
         panSlots = [0, 0, 0, 0];
 
         for (var i = 0; i < groups.length; i++) {
-            groups[i].drawReps(this);
+            groups[i].drawReps(this, ctx);
         }
     },
 
-    drawPan = function(position, score, color, direction){
+    drawPan = function(position, score, color, direction, ctx){
         var repSize = sizes.counterSize/repCount;
         var repGap = sizes.counterGap/repCount;
 
         var width = (Math.max(score, repCount)*(repSize+repGap)-repGap);
 
-        port.drawPie(position, panThickness, direction/4+3/4, -direction/4+3/4, color);
+        port.drawPie(position, panThickness, direction/4+3/4, -direction/4+3/4, color, ctx);
 
         /*
         var size = {x: sizes.counterSize, y: sizes.counterSize}
@@ -164,20 +164,26 @@ function Balance(){
             {x: position.x-width/2, y: position.y-direction*panThickness/3},
             {x: position.x+width/2, y: position.y-direction*panThickness/3},
             panThickness,
-            colors.balance.pan
+            colors.balance.pan,
+            ctx
         );
 
     },
 
     update = function(){
+        //console.log("Updatng Balance: Time=%s", time);
+        var tr = false;
         // Update position
-        mover.update();
+        tr = tr || mover.update();
         position = mover.getPosition();
 
 
         // Animate groups (which animate reps)
         for (var i = 0; i < groups.length; i++) {
-            if (groups[i].animate()) break;
+            if (groups[i].animate()) {
+                tr = true;
+                break;
+            }
         }
 
         // Add up "scores" (number of reps on each pan). Bottom pan score is calculated from groups instead of reps since it stacks reps vertically by group.
@@ -205,6 +211,9 @@ function Balance(){
         if (reps.length == totalWeight) wobble = 0;
 
         currentAngle = lerp(currentAngle, targetAngle+wobble, 0.03);
+
+        tr = tr || currentAngle != targetAngle;
+        return tr || true;
     },
 
     requestPanSlot = function(panIndex, modifier = 1){

@@ -26,11 +26,16 @@ function Group(spec){
     fallProgress = 0,
 
     ratio = 0,
+    fullyAnimated = false,
 
     //console.log("Creating group of "+pawns.length+" pawns, valid="+valid);
 
     update = function(){
-
+        if (!fullyAnimated && fallProgress == 1) {
+            fullyAnimated = true;
+            return true;
+        }
+        return false;
     },
 
     animate = function(){
@@ -68,22 +73,22 @@ function Group(spec){
         return riseProgress+tallyProgress+holdProgress+splitProgress+hangProgress+fallProgress;
     },
 
-    draw = function(){
+    draw = function(ctx){
         if (valid && fallProgress > 0) {
             if (reps.length == 1) {
                 for (var i = 0; i < pawns.length; i++) {
-                    fillPawn(pawns[i]);
+                    fillPawn(pawns[i], ctx);
                 }
             }
             if (reps.length > 1) {
                 for (var i = 0; i < pawns.length; i++) {
-                    stripePawn(pawns[i]);
+                    stripePawn(pawns[i], ctx);
                 }
             }
         }
     },
 
-    fillPawn = function(pawn){
+    fillPawn = function(pawn, ctx){
         var boxSize = {
             x: sizes.pawnRadius*3+camera.unscaleX(2),
             y: sizes.pawnRadius*3+camera.unscaleY(2)
@@ -97,10 +102,10 @@ function Group(spec){
         if (reps[0].team > 1) color = colors.groupNeutral;
         else color = colors.teamsLight[reps[0].team];
 
-        camera.drawBox(boxPosition, boxSize, color);
+        camera.drawBox(boxPosition, boxSize, color, ctx);
     },
 
-    stripePawn = function(pawn){
+    stripePawn = function(pawn, ctx){
         var boxSize = {
             x: sizes.pawnRadius*3,
             y: sizes.pawnRadius*3
@@ -111,11 +116,11 @@ function Group(spec){
         };
         
         for (var i = 0; i < reps.length; i++) {
-            camera.drawStripes(boxPosition, boxSize, i, reps.length, colors.teamsLight[reps[i].team]);
+            camera.drawStripes(boxPosition, boxSize, i, reps.length, colors.teamsLight[reps[i].team], ctx);
         }
     },
 
-    drawReps = function(balance){
+    drawReps = function(balance, ctx){
         var repSize = sizes.counterSize/repCount;
         var repGap = sizes.counterGap/repCount;
 
@@ -141,12 +146,12 @@ function Group(spec){
                 point = smoothLerpPoint(point0, point1, distribute(i, reps.length, riseProgress, 0.3));
                 size = lerp(repSize, sizes.counterSize, distribute(i, reps.length, riseProgress, 0.6));
 
-                reps[i].drawAt(point, size);
+                reps[i].drawAt(point, size, ctx);
             }
 
         }
         else if (tallyProgress < 1 || holdProgress < 1) {
-            drawTally(tallyOrigin, tallyProgress);
+            drawTally(tallyOrigin, tallyProgress, ctx);
         }
         else if (splitProgress < 1 || hangProgress < 1) {
             var r = "RepRatios: ";
@@ -156,7 +161,7 @@ function Group(spec){
                 point = getTallyPoint(tallyOrigin, i, repCount, splitProgress*repGap*repCount*4);
                 size = sizes.counterSize;
 
-                reps[i].drawSplit(point, size, repRatio);
+                reps[i].drawSplit(point, size, repRatio, ctx);
 
                 //reps[i].drawAt(point, size);
 
@@ -172,7 +177,7 @@ function Group(spec){
                 point = smoothLerpPoint(point0, point1, distribute(i, reps.length, fallProgress, 0.3));
                 size = lerp(sizes.counterSize, repSize, distribute(i, reps.length, fallProgress, 0.6));
 
-                reps[i].drawAt(point, size);
+                reps[i].drawAt(point, size, ctx);
             }
         }
         else {
@@ -180,12 +185,12 @@ function Group(spec){
                 point = balance.requestPanSlot(reps[i].team);
                 size = repSize;
 
-                reps[i].drawAt(point, size);
+                reps[i].drawAt(point, size, ctx);
             }
         }
     },
 
-    drawTally = function(origin, progress){
+    drawTally = function(origin, progress, ctx){
         var repSize = sizes.counterSize;
         var repGap = sizes.counterGap;
 
@@ -195,7 +200,7 @@ function Group(spec){
         var y1 = origin.y+repSize;
 
 
-        port.drawBox({x: x0, y: y0}, {x: repSize*repCount, y: repSize}, "black");
+        port.drawBox({x: x0, y: y0}, {x: repSize*repCount, y: repSize}, "black", ctx);
 
         //console.log("DIRSTRIBUTING");
         var redTally = 0;
@@ -206,7 +211,7 @@ function Group(spec){
         for (var i = 0; i < pawns.length; i++) {
             p = distribute(i, pawns.length, progress, 0.25);
             report += trunc(p)+", ";
-            drawTallyPawn(origin, pawns[i], p);
+            drawTallyPawn(origin, pawns[i], p, ctx);
             if (p >= 0.9) {
                 if (pawns[i].getTeam() == 0) redTally++;
                 else blueTally++;
@@ -223,7 +228,7 @@ function Group(spec){
         }
 
         if (blueTally > 0) {
-            port.drawBox(bluePosition, blueSize, colors.teams[1]);
+            port.drawBox(bluePosition, blueSize, colors.teams[1], ctx);
         }
 
         var redPosition = {
@@ -236,7 +241,7 @@ function Group(spec){
         }
 
         if (redTally > 0) {
-            port.drawBox(redPosition, redSize, colors.teams[0]);
+            port.drawBox(redPosition, redSize, colors.teams[0], ctx);
         }
 
         //console.log(report);
@@ -244,13 +249,13 @@ function Group(spec){
 
     },
 
-    drawTallyPawn = function(origin, pawn, progress){
+    drawTallyPawn = function(origin, pawn, progress, ctx){
         var pawnPosition = port.untransformPoint(camera.transformPoint(pawn.position));
         //var radius = camera.scale(pawns);
         var radius = lerp(port.untransform(camera.scaleY(sizes.pawnRadius)), 0*sizes.counterSize/repCount/2, progress);
         var point = smoothLerpPoint(pawnPosition, origin, progress);
         var color = colors.teamsDark[pawn.getTeam()];
-        port.drawCircle(point, radius, color);
+        port.drawCircle(point, radius, color, ctx);
 
         //console.log("Drawing pawn tally animation. progress="+progress+", pawnPosition="+pointString(pawnPosition)+", point="+pointString(point));
     },

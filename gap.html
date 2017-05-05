@@ -51,20 +51,20 @@ canvas {
         </canvas>
 
         <script type='text/javascript'>
-            var canvas = document.getElementById("gameCanvas");;
-            var context = canvas.getContext("2d");
+            var canvasElement = document.getElementById("gameCanvas");;
+            var context = canvasElement.getContext("2d");
 
-            var CANVAS_WIDTH = canvas.offsetWidth;
-            var CANVAS_HEIGHT = canvas.offsetHeight;
+            var CANVAS_WIDTH = canvasElement.offsetWidth;
+            var CANVAS_HEIGHT = canvasElement.offsetHeight;
 
-            canvas.addEventListener("mousedown", onMouseDown, false);
-            canvas.addEventListener("mouseup", onMouseUp, false);
-            canvas.addEventListener("mousemove", onMouseMove, false);
+            canvasElement.addEventListener("mousedown", onMouseDown, false);
+            canvasElement.addEventListener("mouseup", onMouseUp, false);
+            canvasElement.addEventListener("mousemove", onMouseMove, false);
 
-            canvas.addEventListener("touchstart", onTouchStart, false);
-            canvas.addEventListener("touchend", onTouchEnd, false);
-            canvas.addEventListener("touchcancel", onTouchCancel, false);
-            canvas.addEventListener("touchmove", onTouchMove, false);
+            canvasElement.addEventListener("touchstart", onTouchStart, false);
+            canvasElement.addEventListener("touchend", onTouchEnd, false);
+            canvasElement.addEventListener("touchcancel", onTouchCancel, false);
+            canvasElement.addEventListener("touchmove", onTouchMove, false);
 
             context.textBaseline="middle"; 
 

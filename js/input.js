@@ -7,7 +7,7 @@ var click = false;
 function onMouseDown(event){
     click = true;
 
-    mousePoint = getMousePos(canvas, event);
+    mousePoint = getMousePos(canvasElement, event);
     mousePointWorld = camera.transformPoint(mousePoint);
 
     for (var i = 0; i < mouseListeners.length; i++) {
@@ -24,7 +24,7 @@ function onMouseUp(event){
 }
 
 function onMouseMove(event){
-    mousePoint = getMousePos(canvas, event);
+    mousePoint = getMousePos(canvasElement, event);
     mousePointWorld = camera.transformPoint(mousePoint);
 
     for (var i = 0; i < mouseListeners.length; i++) {
@@ -38,14 +38,14 @@ function onTouchStart(event){
         clientX: touch.clientX,
         clientY: touch.clientY
     });
-    canvas.dispatchEvent(mouseEvent);
+    canvasElement.dispatchEvent(mouseEvent);
     //onMouseDown(convertTouches(event));
 }
 
 function onTouchEnd(event){
     var touch = event.touches[0];
     var mouseEvent = new MouseEvent("mouseup");
-    canvas.dispatchEvent(mouseEvent);
+    canvasElement.dispatchEvent(mouseEvent);
     //onMouseUp(convertTouches(event));
 }
 
@@ -55,7 +55,7 @@ function onTouchMove(event){
         clientX: touch.clientX,
         clientY: touch.clientY
     });
-    canvas.dispatchEvent(mouseEvent);
+    canvasElement.dispatchEvent(mouseEvent);
     //onMouseMove(convertTouches(event));
 }
 
@@ -63,8 +63,8 @@ function onTouchCancel(event){
     //onMouseUp(convertTouches(event));
 }
 
-function getMousePos(canvas, event){
-    var rect = canvas.getBoundingClientRect();
+function getMousePos(canvasElement, event){
+    var rect = canvasElement.getBoundingClientRect();
     return {
         x: event.clientX - rect.left,
         y: event.clientY - rect.top

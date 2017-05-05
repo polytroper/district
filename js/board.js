@@ -34,8 +34,34 @@ function Board(spec){
 
     dragPost = null,
 
+    dirty = true,
     valid = false,
     complete = false,
+
+    boardLayer = Layer({
+        name: "Board Layer",
+        parent: mainLayer,
+    }),
+
+    groupLayer = Layer({
+        name: "Group Layer",
+        parent: boardLayer,
+    }),
+
+    pawnLayer = Layer({
+        name: "Pawn Layer",
+        parent: boardLayer,
+    }),
+
+    postLayer = Layer({
+        name: "Post Layer",
+        parent: boardLayer,
+    }),
+
+    fenceLayer = Layer({
+        name: "Fence Layer",
+        parent: boardLayer,
+    }),
 
     pawnCount = xSize*ySize,
     groupSize = pawnCount/groupCount,
@@ -51,21 +77,22 @@ function Board(spec){
 
     refreshQueryCallback = null,
 
-    draw = function(){
+    draw = function(ctx){
         //console.log(TAG+"Drawing at "+pointString(position));
 
-        for (var i = 0; i < groups.length; i++) {groups[i].draw();}
-        for (var i = 0; i < pawnList.length; i++) {pawnList[i].draw();}
-        for (var i = 0; i < postList.length; i++) {postList[i].draw();}
-        for (var i = 0; i < fences.length; i++) {fences[i].draw();}
+
+
+        //for (var i = 0; i < groups.length; i++) {groups[i].draw();}
+        //for (var i = 0; i < pawnList.length; i++) {pawnList[i].draw();}
+        //for (var i = 0; i < postList.length; i++) {postList[i].draw();}
+        //for (var i = 0; i < fences.length; i++) {fences[i].draw();}
 
         if (dragPost != null) {
-            camera.drawLine(dragPost.position, camera.untransformPoint(mousePoint), sizes.fenceWidth, colors.fence.drag);
+            camera.drawLine(dragPost.position, camera.untransformPoint(mousePoint), sizes.fenceWidth, colors.fence.drag, ctx);
         }
     },
 
     update = function(){
-
     },
 
     invert = function(){
@@ -176,6 +203,11 @@ function Board(spec){
 
         fov = Math.max(size.x, size.y)*5/3;
 
+        pawnLayer.clearComponents();
+        fenceLayer.clearComponents();
+        postLayer.clearComponents();
+        groupLayer.clearComponents();
+
         var pawn;
         for (var x = 0; x < xSize; x++) {
             pawns.push([]);
@@ -197,6 +229,8 @@ function Board(spec){
 
                 pawns[x].push(pawn);
                 pawnList.push(pawn);
+
+                pawnLayer.addComponent(pawn);
             }
         }
 
@@ -456,7 +490,7 @@ function Board(spec){
         
         var embed = "<embed src=\""+url+"\" width=\"640px\" style=\"border:1px solid black\"></iframe>";
         return embed
-    }
+    },
 
     placePosts = function(){
         var post;
@@ -474,6 +508,7 @@ function Board(spec){
                 });
                 posts[x].push(post);
                 postList.push(post);
+                postLayer.addComponent(post);
             }
         }
     },
@@ -506,18 +541,26 @@ function Board(spec){
         var touchPost = getTouchPost(point);
         if (touchPost != null) {
             dragPost = touchPost;
+            return true;
         }
+        return false;
     },
 
     onMouseUp = function(point){
-        dragPost = null;
+        if (dragPost != null) {
+            dragPost = null;
+            return true;
+        }
+        return false;
     },
 
     onMouseMove = function(point){
+        var tr = false;
         if (dragPost == null && click) {
             var touchPost = getTouchPost(point);
             if (touchPost != null) {
                 dragPost = touchPost;
+                tr = true;
             }
         }
         
@@ -528,7 +571,9 @@ function Board(spec){
                 dragPost = touchPost;
                 compute();
             }
+            tr = true;
         }
+        return tr;
     },
 
     cancelDrag = function(){
@@ -593,27 +638,33 @@ function Board(spec){
     },
 
     placeFence = function(post0, post1, border){
-        fences.push(Fence({
+        var fence = Fence({
             board: this,
             post0: post0,
             post1: post1,
             isBorder: border
-        }));
+        });
+        fenceLayer.addComponent(fence);
+        fences.push(fence);
     },
 
     removeFence = function(fence){
+        fenceLayer.removeComponent(fence);
         var fenceIndex = fences.indexOf(fence);
         fences.splice(fenceIndex, 1);
     },
 
     resetFences = function(){
+        fenceLayer.clearComponents();
         var newFences = [];
         for (var i = 0; i < fences.length; i++) {
             if (fences[i].isBorder) {
                 newFences.push(fences[i]);
+                fenceLayer.addComponent(fences[i]);
             }
         }
         fences = newFences;
+
         compute();
     },
 
@@ -675,6 +726,10 @@ function Board(spec){
         }
 
         groups = validGroups;
+        groupLayer.clearComponents();
+        for (var i = 0; i < validGroups.length; i++) {
+            groupLayer.addComponent(validGroups[i]);
+        }
 
         while (balanceGroups.length < groupCount) {
             var phantomGroup = Group({
@@ -729,6 +784,11 @@ function Board(spec){
 
         menu.balance.setGroups(balanceGroups, repCount);
         menu.setShowNext(complete && completionCallback != null);
+    },
+
+    destroy = function(){
+        setMutable(false);
+        boardLayer.destroy();
     };
 
     setLayout(layout);
@@ -751,6 +811,7 @@ function Board(spec){
         draw,
         update,
         compute,
+        destroy,
 
         scoreLeft,
         scoreRight,
@@ -801,8 +862,7 @@ function Board(spec){
         cancelDrag,
     });
 
-    mouseListeners.push(tr);
-    updateListeners.push(tr);
+    boardLayer.addComponent(tr);
 
     return tr;
 };

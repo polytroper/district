@@ -107,87 +107,87 @@ function Camera(){
             return true;
         },
 
-        drawBox: function(position, size, color){
-            this.drawBoxXY(position.x, position.y, size.x, size.y, color);
+        drawBox: function(position, size, color, ctx = context){
+            this.drawBoxXY(position.x, position.y, size.x, size.y, color, ctx);
         },
 
-        drawBoxXY: function(px, py, sx, sy, color){
+        drawBoxXY: function(px, py, sx, sy, color, ctx = context){
             px = this.transformX(px);
             py = this.transformY(py);
             sx = this.scaleX(sx);
             sy = this.scaleY(sy);
-            view.drawBoxXY(px, py, sx, sy, color);
+            view.drawBoxXY(px, py, sx, sy, color, ctx);
         },
 
-        drawText: function(text, position, size, alignment, color){
-            this.drawTextXY(text, position.x, position.y, size, alignment, color);
+        drawText: function(text, position, size, alignment, color, ctx = context){
+            this.drawTextXY(text, position.x, position.y, size, alignment, color, ctx);
         },
 
-        drawTextXY: function(text, px, py, size, alignment, color){
+        drawTextXY: function(text, px, py, size, alignment, color, ctx = context){
             px = this.transformX(px);
             py = this.transformY(py);
             size = view.height*size/this.fov;
 
-            view.drawTextXY(text, px, py, size, alignment, color);
+            view.drawTextXY(text, px, py, size, alignment, color, ctx);
         },
 
-        drawPie: function(position, radius, start, end, fill){
-            this.drawPieXY(position.x, position.y, radius, start, end, fill);
+        drawPie: function(position, radius, start, end, fill, ctx = context){
+            this.drawPieXY(position.x, position.y, radius, start, end, fill, ctx);
         },
 
-        drawPieXY: function(px, py, radius, start, end, fill){
+        drawPieXY: function(px, py, radius, start, end, fill, ctx = context){
             px = this.transformX(px);
             py = this.transformY(py);
             radius = view.height*radius/this.fov;
-            view.drawPieXY(px, py, radius, start, end, fill);
+            view.drawPieXY(px, py, radius, start, end, fill, ctx);
         },
 
-        drawCircle: function(position, radius, fill){
-            this.drawCircleXY(position.x, position.y, radius, fill);
+        drawCircle: function(position, radius, fill, ctx = context){
+            this.drawCircleXY(position.x, position.y, radius, fill, ctx);
         },
 
-        drawCircleXY: function(px, py, radius, fill){
-            this.drawPieXY(px, py, radius, 0, 1, fill);
+        drawCircleXY: function(px, py, radius, fill, ctx = context){
+            this.drawPieXY(px, py, radius, 0, 1, fill, ctx);
         },
 
-        drawLine: function(point0, point1, width, color){
-            this.drawLineXY(point0.x, point0.y, point1.x, point1.y, width, color);
+        drawLine: function(point0, point1, width, color, ctx = context){
+            this.drawLineXY(point0.x, point0.y, point1.x, point1.y, width, color, ctx);
         },
 
-        drawLineXY: function(x0, y0, x1, y1, width, color){
+        drawLineXY: function(x0, y0, x1, y1, width, color, ctx = context){
             x0 = this.transformX(x0);
             y0 = this.transformY(y0);
             x1 = this.transformX(x1);
             y1 = this.transformY(y1);
             width = view.height*width/this.fov;
 
-            view.drawLineXY(x0, y0, x1, y1, width, color);
+            view.drawLineXY(x0, y0, x1, y1, width, color, ctx);
         },
 
-        drawImage: function(image, position, size){
-            this.drawImageXY(image, position.x, position.y, size.x, size.y);
+        drawImage: function(image, position, size, ctx = context){
+            this.drawImageXY(image, position.x, position.y, size.x, size.y, ctx);
         },
 
-        drawImageXY: function(image, px, py, sx, sy){
+        drawImageXY: function(image, px, py, sx, sy, ctx = context){
             px = this.transformX(px);
             py = this.transformY(py);
             sx = this.scaleX(sx);
             sy = this.scaleY(sy);
 
-            view.drawImageXY(image, px, py, sx, sy);
+            view.drawImageXY(image, px, py, sx, sy, ctx);
         },
 
-        drawPointer: function(center, tip, color){
+        drawPointer: function(center, tip, color, ctx = context){
             center = this.transformPoint(center);
             tip = this.transformPoint(tip);
 
-            view.drawPointer(center, tip, color);
+            view.drawPointer(center, tip, color, ctx);
         },
 
-        drawStripes: function(position, size, index, total, color){
+        drawStripes: function(position, size, index, total, color, ctx = context){
             position = this.transformPoint(position);
             size = this.scalePoint(size);
-            view.drawStripes(position, size, index, total, color);
+            view.drawStripes(position, size, index, total, color, ctx);
         },
 
         untransformX: function(x){

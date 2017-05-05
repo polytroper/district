@@ -30,7 +30,7 @@ function Chart(spec){
 
     position = mover.position,
 
-    draw = function(){
+    draw = function(ctx){
         if (mover.getProgress() == 0) return;
 
         var x0 = position.x-width/2;
@@ -46,19 +46,19 @@ function Chart(spec){
         var repX = lerp(x0, x1, repRatio);
 
 
-        port.drawBox({x: x0, y: y0}, {x: voteX-x0, y: y1-y0}, colors.teams[1]);
-        port.drawBox({x: voteX, y: y0}, {x: x1-voteX, y: y1-y0}, colors.teams[0]);
+        port.drawBox({x: x0, y: y0}, {x: voteX-x0, y: y1-y0}, colors.teams[1], ctx);
+        port.drawBox({x: voteX, y: y0}, {x: x1-voteX, y: y1-y0}, colors.teams[0], ctx);
 
-        port.drawBox({x: x0, y: y2}, {x: repX-x0, y: y3-y2}, colors.teams[1]);
-        port.drawBox({x: repX, y: y2}, {x: x1-repX, y: y3-y2}, colors.teams[0]);
+        port.drawBox({x: x0, y: y2}, {x: repX-x0, y: y3-y2}, colors.teams[1], ctx);
+        port.drawBox({x: repX, y: y2}, {x: x1-repX, y: y3-y2}, colors.teams[0], ctx);
 
-        port.drawText("VOTES", {x: position.x, y: (y0+y1)/2}, 0.025*yScale, "center", colors.menu.chart);
-        port.drawText(Math.round((voteRatio)*100)+"%", {x: x0+0.01*yScale, y: (y0+y1)/2}, 0.025*yScale, "left", colors.menu.chart);
-        port.drawText(Math.round((1-voteRatio)*100)+"%", {x: x1-0.01*yScale, y: (y0+y1)/2}, 0.025*yScale, "right", colors.menu.chart);
+        port.drawText("VOTES", {x: position.x, y: (y0+y1)/2}, 0.025*yScale, "center", colors.menu.chart, ctx);
+        port.drawText(Math.round((voteRatio)*100)+"%", {x: x0+0.01*yScale, y: (y0+y1)/2}, 0.025*yScale, "left", colors.menu.chart, ctx);
+        port.drawText(Math.round((1-voteRatio)*100)+"%", {x: x1-0.01*yScale, y: (y0+y1)/2}, 0.025*yScale, "right", colors.menu.chart, ctx);
 
-        port.drawText("FLOOR", {x: position.x, y: (y2+y3)/2}, 0.025*yScale, "center", colors.menu.chart);
-        port.drawText(Math.round((repRatio)*100)+"%", {x: x0+0.01*yScale, y: (y2+y3)/2}, 0.025*yScale, "left", colors.menu.chart);
-        port.drawText(Math.round((1-repRatio)*100)+"%", {x: x1-0.01*yScale, y: (y2+y3)/2}, 0.025*yScale, "right", colors.menu.chart);
+        port.drawText("FLOOR", {x: position.x, y: (y2+y3)/2}, 0.025*yScale, "center", colors.menu.chart, ctx);
+        port.drawText(Math.round((repRatio)*100)+"%", {x: x0+0.01*yScale, y: (y2+y3)/2}, 0.025*yScale, "left", colors.menu.chart, ctx);
+        port.drawText(Math.round((1-repRatio)*100)+"%", {x: x1-0.01*yScale, y: (y2+y3)/2}, 0.025*yScale, "right", colors.menu.chart, ctx);
 
         if (goalTeam >= 0 && goalRatio >= 0) {
             var goalX = lerp(x0, x1, goalRatio);
@@ -67,8 +67,8 @@ function Chart(spec){
             var complete = (goalTeam == 0 && repRatio <= goalRatio) || (goalTeam == 1 && repRatio >= goalRatio);
             var goalColor = complete ? "black": va(255*bounce, 1);
 
-            port.drawPointer({x: goalX, y: y2-0.01*yScale}, {x: goalX, y: y2}, goalColor);
-            port.drawPointer({x: goalX, y: y3+0.01*yScale}, {x: goalX, y: y3}, goalColor);
+            port.drawPointer({x: goalX, y: y2-0.01*yScale}, {x: goalX, y: y2}, goalColor, ctx);
+            port.drawPointer({x: goalX, y: y3+0.01*yScale}, {x: goalX, y: y3}, goalColor, ctx);
             //port.drawCircle({x: goalX, y: (y2+y3)/2}, 0.02*yScale, );
             //port.drawLine({x: goalX, y: y2-0.02*yScale}, {x: goalX, y: y3+0.02*yScale}, 0.03, va(64, 0.5));
         }
@@ -82,20 +82,21 @@ function Chart(spec){
             if (gapString0[0] != "-" && gapString0[0] != "0") gapString0 = "+"+gapString0;
             if (gapString1[0] != "-" && gapString1[0] != "0") gapString1 = "+"+gapString1;
 
-            port.drawText("— PROPORTIONALITY GAP —", {x: position.x, y: gapY}, 0.025*yScale, "center", colors.menu.text);
-            port.drawText(gapString0, {x: x0, y: gapY}, 0.04*yScale, "right", colors.teamsDark[1]);
-            port.drawText(gapString1, {x: x1, y: gapY}, 0.04*yScale, "left", colors.teamsDark[0]);
+            port.drawText("— PROPORTIONALITY GAP —", {x: position.x, y: gapY}, 0.025*yScale, "center", colors.menu.text, ctx);
+            port.drawText(gapString0, {x: x0, y: gapY}, 0.04*yScale, "right", colors.teamsDark[1], ctx);
+            port.drawText(gapString1, {x: x1, y: gapY}, 0.04*yScale, "left", colors.teamsDark[0], ctx);
         }
 
     },
 
     update = function(){
+        var tr = false;
         //console.log("Updating chart");
         // Update position
-        mover.update();
+        tr = tr || mover.update();
         position = mover.getPosition();
 
-        return goalTeam >= 0 && goalRatio >= 0;
+        return tr;
     },
 
     getHandlePosition = function(){

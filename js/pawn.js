@@ -10,6 +10,7 @@ function Pawn(spec){
     down = false,
     touch = false,
     mutable = false,
+    dirty = true,
 
     neighbors = [],
 
@@ -18,7 +19,7 @@ function Pawn(spec){
         y: board.position.y+(yIndex-(board.ySize-1)/2)*sizes.pawnRadius*3
     },
 
-    draw = function(){
+    draw = function(ctx){
         //console.log(this.TAG+"Drawing at "+xyString(this.centerX, this.centerY));
 
         var color = colors.teams[teamIndex];
@@ -26,7 +27,7 @@ function Pawn(spec){
             if (touch) color = colors.teamsDark[teamIndex];
         }
 
-        camera.drawCircle(position, sizes.pawnRadius, color);
+        camera.drawCircle(position, sizes.pawnRadius, color, ctx);
     },
 
     // Called when the board is created to make a convenient local mapping between neighboring pawns.
@@ -44,24 +45,30 @@ function Pawn(spec){
             mutable = MUTABLE;
             if (mutable) {
                 mouseListeners.push(this);
-                updateListeners.push(this);
+                //updateListeners.push(this);
             }
             else {
                 mouseListeners.splice(mouseListeners.indexOf(this), 1);
-                updateListeners.splice(updateListeners.indexOf(this), 1);
+                //updateListeners.splice(updateListeners.indexOf(this), 1);
                 touch = false;
                 down = false;
+                dirty = true;
             }
         }
     },
 
     update = function(){
-
+        if (dirty) {
+            dirty = false;
+            return true;
+        }
+        return false;
     },
 
-    // Inverts the pawn's team, called only on boards after the "choice" stage if player selects Team 1 to rebalance the puzzles
+    // Inverts the pawn's team
     invert = function(){
         if (teamIndex < 2) teamIndex = 1-teamIndex;
+        dirty = true;
     },
 
     // Retrieves the team
@@ -76,15 +83,28 @@ function Pawn(spec){
     },
 
     onMouseDown = function(point){
+        if (!mutable) {
+            touch = false;
+            return false;
+        }
+
         touch = contains(point);
-        if (touch) down = true;
+        if (touch) {
+            down = true;
+            dirty = true;
+        }
     },
 
     onMouseUp = function(point){
+        if (!mutable) {
+            touch = false;
+            return false;
+        }
+
         touch = contains(point);
 
         if (touch && (board.getDragPost() == null || down)) {
-            teamIndex = 1-teamIndex;
+            invert();
             board.compute();
             board.fireRefreshQueryCallback();
         }
@@ -92,7 +112,15 @@ function Pawn(spec){
     },
 
     onMouseMove = function(point){
-        touch = contains(point);
+        if (!mutable) {
+            touch = false;
+            return false;
+        }
+
+        if (touch != contains(point)) {
+            touch = !touch;
+            if (mutable) dirty = true;
+        }
 
         if (!touch) down = false;
     };

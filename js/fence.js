@@ -7,10 +7,19 @@ function Fence(spec){
 
     xIndex = Math.min(post0.xIndex, post1.xIndex),
     yIndex = Math.min(post0.yIndex, post1.yIndex),
+    dirty = true,
 
-    draw = function(){
-        camera.drawLine(post0.position, post1.position, sizes.fenceWidth, colors.fence.base);
+    draw = function(ctx){
+        camera.drawLine(post0.position, post1.position, sizes.fenceWidth, colors.fence.base, ctx);
     },
+
+    update = function(){
+        if (dirty) {
+            //dirty = false;
+            //return true;
+        }
+        return false;
+    }
 
     // Checks if this fence is attached to the given pair of posts
     containsPosts = function(POST0, POST1){
@@ -48,6 +57,7 @@ function Fence(spec){
 
         // Methods
         draw,
+        update,
         containsPosts,
         dividesPawns,
     });

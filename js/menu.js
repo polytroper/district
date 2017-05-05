@@ -19,12 +19,13 @@ function Menu(){
         },
 
         drawDetails: function(info){
-            port.drawPie(info.position, info.radius*0.6, -0.25, 0.5, "white");
-            port.drawCircle(info.position, info.radius*0.4, info.drawColor);
+            port.drawPie(info.position, info.radius*0.6, -0.25, 0.5, "white", info.ctx);
+            port.drawCircle(info.position, info.radius*0.4, info.drawColor, info.ctx);
             port.drawPointer(
                 {x: info.position.x-info.radius*0.12, y: info.position.y-info.radius*0.5},
                 {x: info.position.x-info.radius*0.42, y: info.position.y-info.radius*0.5},
-                "white"
+                "white",
+                info.ctx
             );
         },
     }),
@@ -57,7 +58,8 @@ function Menu(){
             port.drawPointer(
                 info.position,
                 {x: info.position.x+info.radius*0.75, y: info.position.y},
-                "white"
+                "white",
+                info.ctx
             );
         },
     }),
@@ -78,24 +80,36 @@ function Menu(){
 
     showEditor = false,
 
+    menuLayer = Layer({
+        name: "Menu Layer",
+        parent: mainLayer,
+    }),
+
+    buttonLayer = Layer({
+        name: "Button Layer",
+        parent: menuLayer,
+    }),
+
+    chartLayer = Layer({
+        name: "Chart Layer",
+        parent: menuLayer,
+    }),
+
+    balanceLayer = Layer({
+        name: "Balance Layer",
+        parent: menuLayer,
+    }),
+
     chart = new Chart({}),
     balance = new Balance(),
     promptString = "~ ~ ~",
 
-    draw = function(){
-        port.drawText(promptString, promptMover.getPosition(), 0.04, "center", colors.menu.prompt);
-
-        resetButton.draw();
-        nextButton.draw();
-        
-        balance.draw();
-        chart.draw();
+    draw = function(ctx){
+        port.drawText(promptString, promptMover.getPosition(), 0.04, "center", colors.menu.prompt, ctx);
     },
 
     update = function(){
-        promptMover.update();
-        balance.update();
-        chart.update();
+        return promptMover.update();
     },
     
     setPrompt = function(prompt){
@@ -120,7 +134,13 @@ function Menu(){
         balance.setShow(show);
     };
 
-    return Object.freeze({
+    buttonLayer.addComponent(resetButton);
+    buttonLayer.addComponent(nextButton);
+
+    chartLayer.addComponent(chart);
+    balanceLayer.addComponent(balance);
+
+    var tr = Object.freeze({
         // Fields
         balance,
         chart,
@@ -135,4 +155,8 @@ function Menu(){
         setShowNext,
         setShowBalance,
     });
+    
+    menuLayer.addComponent(tr);
+
+    return tr;
 }

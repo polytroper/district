@@ -30,7 +30,7 @@ function BasicButton(spec){
 
     drawColor = baseColor,
 
-    draw = function(){
+    draw = function(ctx){
         if (mover.getProgress() > 0) {
             drawColor = baseColor;
             if (mover.getState()) {
@@ -43,9 +43,9 @@ function BasicButton(spec){
                 }
             }
             
-            (world ? camera: port).drawCircle(position, radius, drawColor);
+            (world ? camera: port).drawCircle(position, radius, drawColor, ctx);
 
-            drawDetails({position, radius, drawColor});
+            drawDetails({position, radius, drawColor, ctx});
         }
     },
 
@@ -68,23 +68,33 @@ function BasicButton(spec){
     },
 
     onMouseMove = function(point){
-        touch = contains(point);
+        if (touch != contains(point)) {
+            touch = !touch;
+            return true;
+        }
+        return false;
     },
 
     onMouseDown = function(point){
+        var tr = false;
         touch = contains(point);
         if (touch && enabled) {
             onClick();
             press = true;
+            tr = true;
         }
+        return tr;
     },
 
     onMouseUp = function(point){
+        var tr = false;
         touch = contains(point);
         if (touch && enabled && !press) {
             onClick();
+            tr = true;
         }
         press = false;
+        return tr;
     };
 
     var tr = Object.freeze({
@@ -102,9 +112,6 @@ function BasicButton(spec){
         onMouseDown,
         onMouseUp,
     });
-
-    mouseListeners.push(tr);
-    updateListeners.push(tr);
 
     return tr;
 }

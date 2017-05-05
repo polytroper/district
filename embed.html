@@ -24,6 +24,7 @@ canvas {
         <meta charset="utf-8">
 
         <title>District</title>
+        <script language="javascript" src="./js/layer.js" type="text/javascript"></script>
         <script language="javascript" src="./js/values.js" type="text/javascript"></script>
         <script language="javascript" src="./js/input.js" type="text/javascript"></script>
         <script language="javascript" src="./js/mover.js" type="text/javascript"></script>
@@ -51,21 +52,21 @@ canvas {
         </canvas>
 
         <script type='text/javascript'>
-            var canvas = document.getElementById("gameCanvas");;
-            var context = canvas.getContext("2d");
+            var canvasElement = document.getElementById("gameCanvas");;
+            var context = canvasElement.getContext("2d");
 
-            var CANVAS_WIDTH = canvas.offsetWidth;
-            var CANVAS_HEIGHT = canvas.offsetHeight;
+            var CANVAS_WIDTH = canvasElement.offsetWidth;
+            var CANVAS_HEIGHT = canvasElement.offsetHeight;
 
-            canvas.addEventListener("mousedown", onMouseDown, false);
-            canvas.addEventListener("mouseup", onMouseUp, false);
-            canvas.addEventListener("mousemove", onMouseMove, false);
+            canvasElement.addEventListener("mousedown", onMouseDown, false);
+            canvasElement.addEventListener("mouseup", onMouseUp, false);
+            canvasElement.addEventListener("mousemove", onMouseMove, false);
 
-            canvas.addEventListener("touchstart", onTouchStart, false);
-            canvas.addEventListener("touchend", onTouchEnd, false);
-            canvas.addEventListener("touchcancel", onTouchCancel, false);
-            canvas.addEventListener("touchmove", onTouchMove, false);
-            context.textBaseline="middle"; 
+            canvasElement.addEventListener("touchstart", onTouchStart, false);
+            canvasElement.addEventListener("touchend", onTouchEnd, false);
+            canvasElement.addEventListener("touchcancel", onTouchCancel, false);
+            canvasElement.addEventListener("touchmove", onTouchMove, false);
+            context.textBaseline="middle";
 
             var updateListeners = [];
 
@@ -76,7 +77,14 @@ canvas {
             var drawTime = 0;
 
             var click = false;
-            var dirty = false;
+            var redraw = false;
+
+            var mainLayer = Layer({
+                name: "Main Layer",
+                canvas: canvasElement,
+            });
+            mouseListeners.push(mainLayer);
+            updateListeners.push(mainLayer);
 
             var view = View();
             var menu = Menu();
@@ -128,13 +136,14 @@ canvas {
             window.setBoardSpec = function(spec){
                 if (typeof(spec) === 'undefined') return;
 
-                board.setMutable(false);
+                board.destroy();
                 console.log("SETTING NEW BOARD SPEC");
+                /*
                 var updateIndex = updateListeners.indexOf(board);
                 var mouseIndex = mouseListeners.indexOf(board);
                 updateListeners.splice(updateIndex, 1);
                 mouseListeners.splice(mouseIndex, 1);
-
+                */
                 board = Board(spec);
                 camera.position = board.position;
                 camera.fov = board.getFov();
@@ -169,9 +178,9 @@ canvas {
             }
 
             function step(timestamp) {
-                if (dirty) {
+                if (redraw) {
                     draw();
-                    dirty = false;
+                    redraw = false;
                 }
                 window.requestAnimationFrame(step);
             }
@@ -180,21 +189,18 @@ canvas {
                 if (pause) return;
 
                 time = time+deltaTime;
-                menu.update();
                 
                 for (var i = 0; i < updateListeners.length; i++) {
                     updateListeners[i].update();
                 }
                 
-                dirty = true;
+                redraw = true;
             }
 
             function draw() {
                 if (pause) return;
 
-                clear();
-                board.draw();
-                menu.draw();
+                mainLayer.draw();
             }
 
             function clear(){
