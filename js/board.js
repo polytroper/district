@@ -242,13 +242,13 @@ function Board(spec){
 
     // Ew
     setRefreshQueryCallback = function(CALLBACK){
-        console.log("RefreshQueryCallback set!");
+        //console.log("RefreshQueryCallback set!");
         refreshQueryCallback = CALLBACK;
     },
 
     fireRefreshQueryCallback = function(){
         if (refreshQueryCallback != null) {
-            console.log("Refreshing query in sandbox!");
+            //console.log("Refreshing query in sandbox!");
             refreshQueryCallback();
         }
     },
@@ -593,11 +593,11 @@ function Board(spec){
     linkPosts = function(post0, post1){
         var fence = getFenceFromPosts(post0, post1);
         if (fence == null) {
-            console.log("Linking "+post0.TAG+" and "+post1.TAG);
+            //console.log("Linking "+post0.TAG+" and "+post1.TAG);
             placeFence(post0, post1, false);
         }
         else if (!fence.isBorder) {
-            console.log("Unlinking "+post0.TAG+" and "+post1.TAG);
+            //console.log("Unlinking "+post0.TAG+" and "+post1.TAG);
             removeFence(fence);
             /*
             var fenceIndex = fences.indexOf(fence);
@@ -668,7 +668,7 @@ function Board(spec){
     },
 
     compute = function() {
-        console.log("COMPUTING BOARD...");
+        //console.log("COMPUTING BOARD...");
 
         // Crawl across all pawns and create a new group each time an un-crawled pawn is found, starting the trace from that pawn. Mark each newly-traced pawn as crawled. Repeat.
         var crawledPawns = [];
@@ -678,14 +678,14 @@ function Board(spec){
         valid = true;
         for (var i = 0; i < pawnList.length; i++) {
             if (!crawledPawns.includes(pawnList[i])) {
-                console.log("Tracing new group...");
+                //console.log("Tracing new group...");
                 var newGroup = Group({
                     pawnCount: groupSize,
                     repCount: repCount,
                 });
                 
                 newGroup.trace(fences, pawnList[i]);
-                console.log("Trace complete. Group has "+newGroup.getPawns().length+" pawns");
+                //console.log("Trace complete. Group has "+newGroup.getPawns().length+" pawns");
 
                 newGroup.compute();
 
@@ -756,7 +756,7 @@ function Board(spec){
 
         complete = (score >= goalScore || goalScore < 0) && valid;
 
-        console.log("Board computed, "+groups.length+" valid groups. Score="+score+"/"+goalScore+", Complete="+complete);
+        //console.log("Board computed, "+groups.length+" valid groups. Score="+score+"/"+goalScore+", Complete="+complete);
 
         var showChart = valid;
         menu.setShowPrompt(!valid);

@@ -380,7 +380,7 @@ function Group(spec){
         if (valid) {
             pawns.sort(function(a, b){return b.getTeam()-a.getTeam()});
 
-            console.log("Group is valid! Computing scores...");
+            //console.log("Group is valid! Computing scores...");
 
             // Calculate overall ratio
             for (var i = 0; i < pawns.length; i++){
@@ -404,7 +404,7 @@ function Group(spec){
             seats[0] = Math.floor(seats[0]);
             seats[1] = Math.floor(seats[1]);
 
-            console.log("Threshold="+threshold+", granting "+seats[0]+" seats to Team 0 and "+seats[1]+" seats to Team 1");
+            //console.log("Threshold="+threshold+", granting "+seats[0]+" seats to Team 0 and "+seats[1]+" seats to Team 1");
 
             // For each of the two teams, allocate the whole number of seats in proportion to that team's score and the threshold value 
             for (var i = 0; i < 2; i++) {
@@ -423,7 +423,7 @@ function Group(spec){
                     var repTeam = 2;
                     if (remainders[0] > remainders[1]) repTeam = 0;
                     if (remainders[1] > remainders[0]) repTeam = 1;
-                    console.log("One remainder seat left. Giving it to Team "+repTeam);
+                    //console.log("One remainder seat left. Giving it to Team "+repTeam);
 
                     reps.push(Rep({
                         group: this,
@@ -433,7 +433,7 @@ function Group(spec){
                 }
                 // Give one seat to each team
                 else {
-                    console.log((reps.length-repCount)+" remainder seats left. One to each team");
+                    //console.log((reps.length-repCount)+" remainder seats left. One to each team");
                     for (var i = 0; i < 2; i++) {
                         reps.push(Rep({
                             group: this,
@@ -455,7 +455,7 @@ function Group(spec){
             if (reps.length != repCount) console.log("UH OH THIS GROUP COMPUTED "+reps.length+" REPS WHEN IT SHOULD HAVE COMPUTED "+repCount+"!!!");
         }
         else {
-            console.log("Group is invalid. No scores for you.");
+            //console.log("Group is invalid. No scores for you.");
         }
     };
 

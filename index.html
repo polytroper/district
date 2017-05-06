@@ -129,7 +129,9 @@
 
             appendPuzzleSlide = function(spec){
                 var deck = document.getElementById("deck");
-
+                while (deck.firstChild) {
+                    deck.removeChild(deck.firstChild);
+                }
                 var {slide, words, title, description} = createBasicSlide(spec);
 
                 var puzzle = document.createElement('div');
@@ -216,7 +218,7 @@
                 {
                     generator: appendPuzzleSlide,
                     title: "WINTEAM Carpeters Take Charge",
-                    description: "<p>In a stunning turn of events, WINTEAM wins a supermajority of the floor.</p><p>This gives them the power to redraw the districts (they promise to be totally fair about it).<p>",
+                    description: "<p>In a dramatic turn of events, WINTEAM wins a supermajority of the floor.</p><p>This gives them the power to redraw the districts (they promise to be totally fair about it).<p>",
                     board: {
                         groupCount: 3,
                         goalScore: 1,

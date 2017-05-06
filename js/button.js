@@ -97,7 +97,7 @@ function BasicButton(spec){
         return tr;
     };
 
-    var tr = Object.freeze({
+    return Object.freeze({
         // Fields
         radius,
 
@@ -112,6 +112,4 @@ function BasicButton(spec){
         onMouseDown,
         onMouseUp,
     });
-
-    return tr;
 }
