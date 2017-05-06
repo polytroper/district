@@ -85,6 +85,10 @@ function Layer(spec){
         if (index >= 0) children.splice(index, 1);
     },
 
+    refresh = function(){
+        dirty = true;
+    },
+
     sortChildren = function(){
         children.sort(function(a, b){
             return a.layerIndex-b.layerIndex;
@@ -138,6 +142,7 @@ function Layer(spec){
         draw,
         update,
         destroy,
+        refresh,
 
         addComponent,
         removeComponent,
@@ -152,7 +157,7 @@ function Layer(spec){
     });
 
     if (parent != null) {
-        console.log("Adding %s to %s children", name, parent.name);
+        //console.log("Adding %s to %s children", name, parent.name);
         parent.addChild(tr);
     }
     return tr;

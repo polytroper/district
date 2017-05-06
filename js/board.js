@@ -393,6 +393,13 @@ function Board(spec){
         else console.log("Something fishy is going on with the value of goalTeam... (failed to switch team)");
     },
 
+    activate = function(){
+        setGoal(goalTeam, goalScore);
+        mainLayer.addChild(boardLayer);
+        compute();
+        boardLayer.refresh();
+    },
+
     getDragPost = function(){
         return dragPost;
     },
@@ -429,17 +436,21 @@ function Board(spec){
         return Math.min(groupSize, 3);
     },
 
-    getQueryString = function(){
-        layout = extractLayout();
-        var qs = "?=";
-        var data = {
+    getSpec = function(){
+        return {
             groupCount,
             repCount,
             goalTeam,
             goalScore,
             layout,
         }
-        var str = btoa(encodeURIComponent(JSON.stringify(data)));
+    },
+
+    getQueryString = function(){
+        layout = extractLayout();
+        var qs = "?=";
+        var spec = getSpec();
+        var str = btoa(encodeURIComponent(JSON.stringify(spec)));
         qs += str;
         return qs;
         /*
@@ -795,6 +806,7 @@ function Board(spec){
         update,
         compute,
         destroy,
+        activate,
 
         scoreLeft,
         scoreRight,
@@ -824,6 +836,7 @@ function Board(spec){
         getFov,
         getDragPost,
         getQueryString,
+        getSpec,
         getTouchPost,
         getGroupCount,
         getGroupSize,

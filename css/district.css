@@ -76,7 +76,12 @@ a {
 .slide > .puzzle {
     order: 1;
 
+    width: 640px;
+    height: 640px;
+
     margin: 8px 32px 8px 32px;
+
+    border: 1px solid black;
 }
 
 .slide > .gap {

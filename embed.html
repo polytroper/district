@@ -121,12 +121,12 @@ canvas {
                 if (pause != PAUSE) {
                     pause = PAUSE;
                     if (pause) {
-                        canvasElement.style.display = "none";
+                        //canvasElement.style.display = "none";
                         window.cancelAnimationFrame(animationTimestamp);
                         clearInterval(timerId);
                     }
                     else {
-                        canvasElement.style.display = "block";
+                        //canvasElement.style.display = "block";
                         window.requestAnimationFrame(step);
                         timerId = setInterval(function() {
                           update();
@@ -151,21 +151,30 @@ canvas {
                 return board;
             }
 
+            window.setBoard = function(BOARD){
+                if (board != BOARD) {
+                    console.log("Setting board of size "+pointString(BOARD.dimensions));
+                    board.destroy();
+                    board = BOARD;
+                    camera.position = board.position;
+                    camera.fov = board.getFov();
+                    board.activate();
+                }
+                return board;
+            }
+
             window.setBoardSpec = function(spec){
                 if (typeof(spec) === 'undefined') return;
 
                 board.destroy();
                 console.log("SETTING NEW BOARD SPEC");
-                /*
-                var updateIndex = updateListeners.indexOf(board);
-                var mouseIndex = mouseListeners.indexOf(board);
-                updateListeners.splice(updateIndex, 1);
-                mouseListeners.splice(mouseIndex, 1);
-                */
-                board = Board(spec);
-                camera.position = board.position;
-                camera.fov = board.getFov();
+                setBoard(Board(spec));
+
                 return board;
+            }
+
+            window.getBoardSpec = function(){
+                return board.getSpec();
             }
 
             function start() {
