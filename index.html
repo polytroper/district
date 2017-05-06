@@ -18,19 +18,8 @@
         });
         </script>
 
-
-
-        <div class="advance" id="slideup" onclick="slideUp()">
-            <a href="javascript:void(0)">Previous...</a>
-        </div>
-
         <div class="deck" id="deck">
         </div>
-
-        <div class="advance" id="slidedown" onclick="slideDown()">
-            <a href="javascript:void(0)">Next...</a>
-        </div>
-
 
         <!--
         <div class="advance" id="advance" onclick="advance()">
@@ -388,6 +377,9 @@
 
             setActiveSlide = function(targetSlide){
                 //console.log("Setting active slide!");
+                if (targetSlide == null) return;
+                if (!puzzleSlides.includes(targetSlide) == null) return;
+                
                 for (var i = 0; i < puzzleSlides.length; i++) {
                     if (puzzleSlides[i] == targetSlide) {
                         if (!mobile) puzzleWindows[i].setPause(false);
