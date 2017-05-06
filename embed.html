@@ -163,6 +163,8 @@ canvas {
                     camera.position = board.position;
                     camera.fov = board.getFov();
                     board.activate();
+                    mainLayer.refresh();
+                    mainLayer.draw();
                 }
                 return board;
             }

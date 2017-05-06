@@ -123,7 +123,7 @@
                 gap.className = "gap";
                 slide.appendChild(gap);
 
-                gap.innerHTML = "<iframe id=\"frame\" src=\"./gap.html\" width=\"640px\" height=\"320px\" style=\"border:1px solid black\"></iframe>";
+                gap.innerHTML = "<iframe id=\"frame\" src=\"./gap.html\" width=\"640px\" height=\"320px\" style=\"border:1px solid black;\"></iframe>";
 
                 var gapFrame = gap.querySelector("#frame");
                 gapFrame.addEventListener('load', function(){
@@ -143,7 +143,7 @@
                 slide.appendChild(puzzle);
 
                 var embedURL = "./embed.html";//+spec.query;
-                puzzle.innerHTML = "<iframe id=\"frame\" src=\""+embedURL+"\" width=\"640px\" height=\"640px\" style=\"border:none\"></iframe>";
+                puzzle.innerHTML = "<iframe id=\"frame\" src=\""+embedURL+"\" width=\"640px\" height=\"640px\" style=\"border:none; visibility:hidden;\"></iframe>";
 
                 var puzzleFrame = puzzle.querySelector("#frame");
                 var slideIndex = slides.length-1;
@@ -187,6 +187,7 @@
 
                         puzzleFrame.contentWindow.completeAnimation();
                     }
+                    puzzleFrame.style.visibility = "visible";
                 });
 
                 return slide;
@@ -394,6 +395,7 @@
                         if (mobile && !puzzleContainers[i].contains(puzzleFrames[i])) {
                             puzzleContainers[i].appendChild(puzzleFrames[i]);
                             puzzleWindows[i] = puzzleFrames[i].contentWindow;
+                            puzzleFrames[i].style.visibility = "hidden";
                         }
                     }
                     else {
