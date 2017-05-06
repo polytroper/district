@@ -151,6 +151,10 @@ canvas {
                 return board;
             }
 
+            window.completeAnimation = function(){
+                board.completeAnimation();
+            }
+
             window.setBoard = function(BOARD){
                 if (board != BOARD) {
                     console.log("Setting board of size "+pointString(BOARD.dimensions));

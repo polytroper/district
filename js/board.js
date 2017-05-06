@@ -12,6 +12,8 @@ function Board(spec){
         showNext = true,
         showReset = true,
 
+        fencePairs = null,
+
         mutable = false,
     } = spec,
 
@@ -97,6 +99,8 @@ function Board(spec){
             pawnList[i].invert();
         }
         voteRatio = 1-voteRatio;
+
+        layout = extractLayout();
     },
 
     setGoal = function(team, score){
@@ -137,31 +141,7 @@ function Board(spec){
             pawnList[i].setMutable(mutable);
         }
     },
-/*
-    setActive = function(value){
-        active = value;
 
-        if (value) {
-            compute();
-            //menu.setPrompt("Make "+groupCount+" groups of "+groupSize);
-            menu.setShowPrompt(true);
-            menu.setShowNext(complete && showNext);
-            //menu.setShowReset(stages.indexOf(this) > stages.indexOf(choiceStage));
-            menu.setShowReset(showReset);
-            menu.setShowBalance(true);
-            //menu.balance.setRatio(ratio);
-            menu.balance.setGoal(goalTeam, goalScore);
-        }
-        else {
-            menu.setShowPrompt(false);
-            menu.setShowNext(false);
-            menu.setShowReset(false);
-            menu.setShowBalance(false);
-
-            dragPost = null;
-        }
-    },
-*/
     setLayout = function(LAYOUT){
         layout = LAYOUT;
 
@@ -437,12 +417,22 @@ function Board(spec){
     },
 
     getSpec = function(){
+        var specFences = [];
+        for (var i = 0; i < fences.length; i++) {
+            if (!fences[i].isBorder) {
+                specFences.push({
+                    a: postList.indexOf(fences[i].post0),
+                    b: postList.indexOf(fences[i].post1),
+                });
+            }
+        }
         return {
             groupCount,
             repCount,
             goalTeam,
             goalScore,
             layout,
+            fencePairs: specFences,
         }
     },
 
@@ -631,7 +621,7 @@ function Board(spec){
         return null;
     },
 
-    placeFence = function(post0, post1, border){
+    placeFence = function(post0, post1, border = false){
         var fence = Fence({
             board: this,
             post0: post0,
@@ -780,6 +770,12 @@ function Board(spec){
         menu.setShowNext(complete && completionCallback != null);
     },
 
+    completeAnimation = function(){
+        for (var i = 0; i < groups.length; i++) {
+            groups[i].completeAnimation();
+        }
+    },
+
     destroy = function(){
         setMutable(false);
         boardLayer.destroy();
@@ -787,6 +783,12 @@ function Board(spec){
 
     setLayout(layout);
     setGoal(goalTeam, goalScore);
+
+    if (fencePairs != null) {
+        for (var i = 0; i < fencePairs.length; i++) {
+            placeFence(postList[fencePairs[i].a], postList[fencePairs[i].b]);
+        }
+    }
 
     var tr = Object.freeze({
         // Fields
@@ -807,6 +809,7 @@ function Board(spec){
         compute,
         destroy,
         activate,
+        completeAnimation,
 
         scoreLeft,
         scoreRight,
