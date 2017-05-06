@@ -103,7 +103,7 @@ function Board(spec){
         for (var i = 0; i < pawnList.length; i++) {
             pawnList[i].invert();
         }
-        ratio = 1-ratio;
+        voteRatio = 1-voteRatio;
     },
 
     setGoal = function(team, score){

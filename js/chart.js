@@ -92,6 +92,7 @@ function Chart(spec){
     update = function(){
         var tr = false;
         //console.log("Updating chart");
+        
         // Update position
         tr = tr || mover.update();
         position = mover.getPosition();
