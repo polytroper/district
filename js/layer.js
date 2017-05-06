@@ -8,6 +8,7 @@ function Layer(spec){
             return tr;
         }(),
         parent = null,
+        layerIndex = 0,
     } = spec,
 
     children = [],
@@ -19,6 +20,7 @@ function Layer(spec){
     height = CANVAS_HEIGHT,
 
     draw = function(parentContext){
+        //console.log("%s is drawing", name);
         if (dirty) {
             //console.log("%s is redrawing %s components and %s children.", name, components.length, children.length);
             clear();
@@ -73,12 +75,19 @@ function Layer(spec){
     addChild = function(child){
         dirty = true;
         children.push(child);
+        sortChildren();
     },
 
     removeChild = function(child){
         dirty = true;
         var index = children.indexOf(child);
         if (index >= 0) children.splice(index, 1);
+    },
+
+    sortChildren = function(){
+        children.sort(function(a, b){
+            return a.layerIndex-b.layerIndex;
+        });
     },
 
     onMouseDown = function(point){
@@ -122,6 +131,7 @@ function Layer(spec){
         name,
         width,
         height,
+        layerIndex,
 
         // Methods
         draw,
@@ -131,6 +141,7 @@ function Layer(spec){
         addComponent,
         removeComponent,
         clearComponents,
+
         addChild,
         removeChild,
 

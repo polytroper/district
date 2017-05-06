@@ -83,6 +83,7 @@ function Menu(){
     menuLayer = Layer({
         name: "Menu Layer",
         parent: mainLayer,
+        layerIndex: 1,
     }),
 
     buttonLayer = Layer({
@@ -155,7 +156,7 @@ function Menu(){
         setShowNext,
         setShowBalance,
     });
-    
+
     menuLayer.addComponent(tr);
 
     return tr;

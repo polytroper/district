@@ -24,6 +24,7 @@ canvas {
         <meta charset="utf-8">
 
         <title>District</title>
+        <script language="javascript" src="./js/layer.js" type="text/javascript"></script>
         <script language="javascript" src="./js/values.js" type="text/javascript"></script>
         <script language="javascript" src="./js/input.js" type="text/javascript"></script>
         <script language="javascript" src="./js/mover.js" type="text/javascript"></script>
@@ -76,14 +77,17 @@ canvas {
             var deltaTime;
             var drawTime = 0;
 
-            var dirty = true;
+            var FPS = 60;
+            var timerId = 0;
+            var animationTimestamp = 0;
+
+            var redraw = true;
 
             var mainLayer = Layer({
                 name: "Main Layer",
                 canvas: canvasElement,
             });
             mouseListeners.push(mainLayer);
-            updateListeners.push(mainLayer);
 
             var view = View();
             var port = Port();
@@ -94,7 +98,7 @@ canvas {
             var chartGoalRatio = 0.3;
             var chartGoalTeam = 0;
 
-            var chartWidth = view.aspect*0.8;
+            var chartWidth = view.aspect*0.75;
             var chartX0 = view.aspect-chartWidth/2;
             var chartX1 = view.aspect+chartWidth/2;
             
@@ -113,10 +117,10 @@ canvas {
                 touching = false,
                 radius = 0.02*view.aspect,
 
-                draw = function(){
+                draw = function(ctx){
                     var position = chart.getHandlePosition();
-                    var color = dragging ? colors.menu.click : (touching ? colors.menu.touch : colors.menu.base);
-                    port.drawCircle(position, radius, color)
+                    var color = dragging ? colors.menu.press : (touching ? colors.menu.touch : colors.menu.base);
+                    port.drawCircle(position, radius, color, ctx)
                 },
 
                 contains = function(point){
@@ -140,14 +144,17 @@ canvas {
                         setGoalState(complete);
                         chart.setRatios(chartVoteRatio, repRatio);
                     }
+                    return true;
                 },
 
                 onMouseDown = function(point){
                     if (contains(point)) dragging = true;
+                    return true;
                 },
 
                 onMouseUp = function(point){
                     dragging = false;
+                    return true;
                 };
 
                 return Object.freeze({
@@ -189,7 +196,8 @@ canvas {
                     port.drawPointer(
                         info.position,
                         {x: info.position.x+info.radius*0.75, y: info.position.y},
-                        "white"
+                        "white",
+                        info.ctx
                     );
                 },
             });
@@ -205,8 +213,16 @@ canvas {
             window.setPause = function(PAUSE){
                 if (pause != PAUSE) {
                     pause = PAUSE;
-                    if (pause) window.cancelAnimationFrame();
-                    else window.requestAnimationFrame(step);
+                    if (pause) {
+                        window.cancelAnimationFrame(animationTimestamp);
+                        clearInterval(timerId);
+                    }
+                    else {
+                        window.requestAnimationFrame(step);
+                        timerId = setInterval(function() {
+                          update();
+                        }, 1000/FPS);
+                    }
                 }
             }
 
@@ -220,9 +236,8 @@ canvas {
             }
 
             function start() {
-                var FPS = 30;
                 deltaTime = 1/FPS;
-                setInterval(function() {
+                timerId = setInterval(function() {
                   update();
                 }, 1000/FPS);
 
@@ -235,10 +250,11 @@ canvas {
             }
 
             function step(timestamp) {
-                if (dirty && !pause) {
+                if (redraw && !pause) {
                     draw();
-                    dirty = false;
+                    redraw = false;
                 }
+                animationTimestamp = timestamp;
                 window.requestAnimationFrame(step);
             }
 
@@ -246,7 +262,7 @@ canvas {
                 time = time+deltaTime;
 
                 //console.log("Updating %s listeners", updateListeners.length);
-                mainLayer.update();
+                redraw = mainLayer.update() || redraw;
                 //chart.update();
             }
 
@@ -254,7 +270,7 @@ canvas {
                 if (pause) return;
 
                 //console.log("Drawing: time=%s", time);
-                clear();
+                //clear();
                 mainLayer.draw();
 
                 /*
@@ -276,13 +292,13 @@ canvas {
                     nextButton.setShow(false);
                 }
             }
-
+/*
             mouseListeners.push({
                 onMouseMove: function(point){draw();},
                 onMouseDown: function(point){draw();},
                 onMouseUp: function(point){draw();},
             });
-
+*/
             start();
 
         </script>

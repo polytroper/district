@@ -76,6 +76,10 @@ canvas {
             var deltaTime;
             var drawTime = 0;
 
+            var FPS = 60;
+            var timerId = 0;
+            var animationTimestamp = 0;
+
             var click = false;
             var redraw = false;
 
@@ -116,8 +120,16 @@ canvas {
             window.setPause = function(PAUSE){
                 if (pause != PAUSE) {
                     pause = PAUSE;
-                    if (pause) window.cancelAnimationFrame();
-                    else window.requestAnimationFrame(step);
+                    if (pause) {
+                        window.cancelAnimationFrame(animationTimestamp);
+                        clearInterval(timerId);
+                    }
+                    else {
+                        window.requestAnimationFrame(step);
+                        timerId = setInterval(function() {
+                          update();
+                        }, 1000/FPS);
+                    }
                 }
             }
 
@@ -155,9 +167,8 @@ canvas {
             }
 
             function start() {
-                var FPS = 60;
                 deltaTime = 1/FPS;
-                setInterval(function() {
+                timerId = setInterval(function() {
                   update();
                 }, 1000/FPS);
 
@@ -186,6 +197,7 @@ canvas {
                     draw();
                     redraw = false;
                 }
+                animationTimestamp = timestamp;
                 window.requestAnimationFrame(step);
             }
 
