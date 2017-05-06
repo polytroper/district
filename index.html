@@ -129,8 +129,8 @@
 
             appendPuzzleSlide = function(spec){
                 var deck = document.getElementById("deck");
-                while (deck.firstChild) {
-                    deck.removeChild(deck.firstChild);
+                for (var i = 0; i < deck.children.length; i++) {
+                    deck.children[i].style.display="none";
                 }
                 var {slide, words, title, description} = createBasicSlide(spec);
 
