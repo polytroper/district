@@ -378,7 +378,7 @@
             setActiveSlide = function(targetSlide){
                 //console.log("Setting active slide!");
                 if (targetSlide == null) return;
-                if (!puzzleSlides.includes(targetSlide) == null) return;
+                if (!puzzleSlides.includes(targetSlide)) return;
                 
                 for (var i = 0; i < puzzleSlides.length; i++) {
                     if (puzzleSlides[i] == targetSlide) {
