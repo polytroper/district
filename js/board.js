@@ -80,13 +80,6 @@ function Board(spec){
     draw = function(ctx){
         //console.log(TAG+"Drawing at "+pointString(position));
 
-
-
-        //for (var i = 0; i < groups.length; i++) {groups[i].draw();}
-        //for (var i = 0; i < pawnList.length; i++) {pawnList[i].draw();}
-        //for (var i = 0; i < postList.length; i++) {postList[i].draw();}
-        //for (var i = 0; i < fences.length; i++) {fences[i].draw();}
-
         if (dragPost != null) {
             camera.drawLine(dragPost.position, camera.untransformPoint(mousePoint), sizes.fenceWidth, colors.fence.drag, ctx);
         }
@@ -107,19 +100,9 @@ function Board(spec){
     },
 
     setGoal = function(team, score){
-        /*
-        console.log("SETTING SCORE to %s, %s", team, score);
-        console.log("SETTING SCORE to %s, %s", team, score);
-        console.log("SETTING SCORE to %s, %s", team, score);
-        console.log("SETTING SCORE to %s, %s", team, score);
-        console.log("SETTING SCORE to %s, %s", team, score);
-        console.log("SETTING SCORE to %s, %s", team, score);
-        console.log("SETTING SCORE to %s, %s", team, score);
-        console.log("SETTING SCORE to %s, %s", team, score);
-        console.log("SETTING SCORE to %s, %s", team, score);
-        console.log("SETTING SCORE to %s, %s", team, score);
-        console.log("SETTING SCORE to %s, %s", team, score);
-        */
+        
+        //console.log("SETTING SCORE to %s, %s", team, score);
+        
         goalTeam = team;
         goalScore = score;
         menu.balance.setGoal(goalTeam, goalScore);

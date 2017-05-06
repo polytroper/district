@@ -59,6 +59,7 @@ function Layer(spec){
     addComponent = function(component){
         dirty = true;
         components.push(component);
+        //console.log("%s: adding component #%s", name, components.length);
     },
 
     removeComponent = function(component){

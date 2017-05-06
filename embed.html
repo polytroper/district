@@ -121,10 +121,12 @@ canvas {
                 if (pause != PAUSE) {
                     pause = PAUSE;
                     if (pause) {
+                        canvasElement.style.display = "none";
                         window.cancelAnimationFrame(animationTimestamp);
                         clearInterval(timerId);
                     }
                     else {
+                        canvasElement.style.display = "block";
                         window.requestAnimationFrame(step);
                         timerId = setInterval(function() {
                           update();
