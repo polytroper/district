@@ -22,8 +22,7 @@ function Rep(spec) {
     },
 
     drawSplit = function(point, width, ratio, ctx){
-
-        console.log("Drawing rep with ratio=%s at position %s", ratio, pointString(point));
+        //console.log("Drawing rep with ratio=%s at position %s", ratio, pointString(point));
         var size = {x: ratio*width, y: width}
         var color = colors.teams[1];
         //if (ratio != 0) 
