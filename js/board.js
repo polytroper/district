@@ -416,23 +416,36 @@ function Board(spec){
         return Math.min(groupSize, 3);
     },
 
-    getSpec = function(){
-        var specFences = [];
+    getFencePairs = function(){
+        var pairs = [];
         for (var i = 0; i < fences.length; i++) {
             if (!fences[i].isBorder) {
-                specFences.push({
+                pairs.push({
                     a: postList.indexOf(fences[i].post0),
                     b: postList.indexOf(fences[i].post1),
                 });
             }
         }
+        return pairs;
+    },
+
+    setFencePairs = function(pairs){
+        if (pairs != null) {
+            resetFences();
+            for (var i = 0; i < fencePairs.length; i++) {
+                placeFence(postList[fencePairs[i].a], postList[fencePairs[i].b]);
+            }
+        }
+    },
+
+    getSpec = function(){
         return {
             groupCount,
             repCount,
             goalTeam,
             goalScore,
             layout,
-            fencePairs: specFences,
+            fencePairs: getFencePairs(),
         }
     },
 
@@ -596,14 +609,12 @@ function Board(spec){
         if (fence == null) {
             //console.log("Linking "+post0.TAG+" and "+post1.TAG);
             placeFence(post0, post1, false);
+            fireRefreshQueryCallback();
         }
         else if (!fence.isBorder) {
             //console.log("Unlinking "+post0.TAG+" and "+post1.TAG);
             removeFence(fence);
-            /*
-            var fenceIndex = fences.indexOf(fence);
-            fences.splice(fenceIndex, 1);
-            */
+            fireRefreshQueryCallback();
         }
     },
 
@@ -783,12 +794,7 @@ function Board(spec){
 
     setLayout(layout);
     setGoal(goalTeam, goalScore);
-
-    if (fencePairs != null) {
-        for (var i = 0; i < fencePairs.length; i++) {
-            placeFence(postList[fencePairs[i].a], postList[fencePairs[i].b]);
-        }
-    }
+    setFencePairs(fencePairs);
 
     var tr = Object.freeze({
         // Fields
@@ -840,6 +846,7 @@ function Board(spec){
         getDragPost,
         getQueryString,
         getSpec,
+        getFencePairs,
         getTouchPost,
         getGroupCount,
         getGroupSize,
@@ -854,6 +861,7 @@ function Board(spec){
         setGroupCount,
         setRepCount,
         setLayout,
+        setFencePairs,
 
         onMouseMove,
         onMouseDown,

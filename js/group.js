@@ -43,12 +43,12 @@ function Group(spec){
 
         var multiple = reps.length > 1;
 
-        riseProgress = tickProgress(true, riseProgress, 0.15*repCount);
-        tallyProgress = tickProgress(riseProgress == 1, tallyProgress, Math.sqrt(pawns.length/6));
+        riseProgress = tickProgress(true, riseProgress, 0.1*repCount);
+        tallyProgress = tickProgress(riseProgress == 1, tallyProgress, Math.sqrt(pawns.length/8));
         holdProgress = tickProgress(tallyProgress == 1, holdProgress, 0.1);
-        splitProgress = tickProgress(holdProgress == 1, splitProgress, multiple ? 0.1 : 0);
-        hangProgress = tickProgress(splitProgress == 1, hangProgress, multiple ? 0.1 : 0);
-        fallProgress = tickProgress(hangProgress == 1, fallProgress, 0.15*repCount);
+        splitProgress = tickProgress(holdProgress == 1, splitProgress, multiple ? 0.075 : 0);
+        hangProgress = tickProgress(splitProgress == 1, hangProgress, multiple ? 0.075 : 0);
+        fallProgress = tickProgress(hangProgress == 1, fallProgress, 0.1*repCount);
 
         for (var i = 0; i < reps.length; i++) {
             reps[i].setFallProgress(fallProgress);

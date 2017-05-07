@@ -13,6 +13,7 @@ function Mover(spec){
 	progress = state ? 1:0,
 
 	position = lerpPoint(position0, position1, progress),
+	dirty = true,
 
 	update = function(){
 		if (lerpType == "spring") {
@@ -28,6 +29,12 @@ function Mover(spec){
 				position = lerpPoint(position0, position1, progress);
 			}
 		}
+
+		if (dirty) {
+			dirty = false;
+			return true;
+		}
+
 		return ((!approximately(progress, 1) && state) || (!approximately(progress, 0) && !state));
         //console.log("Updating! state="+state+", progress="+progress+", position="+pointString(position));
 	},
@@ -44,11 +51,18 @@ function Mover(spec){
 		return state;
 	},
 
+	completeAnimation = function(){
+		if (state) progress = 1;
+		else progress = 0;
+		position = lerpPoint(position0, position1, progress);
+		dirty = true;
+	},
+
 	setState = function(STATE){
 		state = STATE;
 	};
 
-	return Object.seal({
+	var tr = Object.seal({
 		// Fields
 		position0,
 		position1,
@@ -63,5 +77,10 @@ function Mover(spec){
 		getPosition,
 		getProgress,
 		getState,
+		completeAnimation,
 	});
+
+	animationListeners.push(tr);
+
+	return tr;
 }

@@ -73,7 +73,7 @@ function Chart(spec){
             //port.drawLine({x: goalX, y: y2-0.02*yScale}, {x: goalX, y: y3+0.02*yScale}, 0.03, va(64, 0.5));
         }
 
-        if (drawGap) {
+        if (false && drawGap) {
             var gap = Math.round(100*(repRatio-voteRatio));
             var gapString0 = (gap)+"%";
             var gapString1 = (-1*gap)+"%";
@@ -92,10 +92,12 @@ function Chart(spec){
     update = function(){
         var tr = false;
         //console.log("Updating chart");
-        
+
         // Update position
         tr = tr || mover.update();
         position = mover.getPosition();
+
+        tr = tr || (goalTeam >= 0 && goalRatio >= 0);
 
         return tr;
     },

@@ -70,6 +70,7 @@ canvas {
             context.textBaseline="middle"; 
 
             var updateListeners = [];
+            var animationListeners = [];
 
             var borderSize = 1;
 
@@ -234,6 +235,7 @@ canvas {
                 chartRepRatio = 1-chartRepRatio;
                 chart.setRatios(chartVoteRatio, chartRepRatio);
                 chart.setGoal(chartGoalTeam, chartGoalRatio);
+                mainLayer.refresh();
             }
 
             function start() {
@@ -274,8 +276,8 @@ canvas {
                 //clear();
                 mainLayer.draw();
 
+                port.drawText("Create a Proportionality Gap of 40%", {x: view.aspect/2, y: 0.25}, 0.05*view.aspect, "center", colors.menu.prompt);
                 /*
-                port.drawText("Create an Efficiency Gap of 40%", {x: view.aspect/2, y: 0.25}, 0.05*view.aspect, "center", colors.menu.prompt);
                 */
             }
 

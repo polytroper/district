@@ -44,11 +44,11 @@ function Pawn(spec){
         if (mutable != MUTABLE) {
             mutable = MUTABLE;
             if (mutable) {
-                mouseListeners.push(this);
+                //mouseListeners.push(this);
                 //updateListeners.push(this);
             }
             else {
-                mouseListeners.splice(mouseListeners.indexOf(this), 1);
+                //mouseListeners.splice(mouseListeners.indexOf(this), 1);
                 //updateListeners.splice(updateListeners.indexOf(this), 1);
                 touch = false;
                 down = false;
@@ -67,7 +67,7 @@ function Pawn(spec){
 
     // Inverts the pawn's team
     invert = function(){
-        if (teamIndex < 2) teamIndex = 1-teamIndex;
+        teamIndex = 1-teamIndex;
         dirty = true;
     },
 
@@ -76,7 +76,7 @@ function Pawn(spec){
         return teamIndex;
     },
 
-    // Checks if the pawn contains a point (pretty much just wherever the mouse is)
+    // Checks if the pawn contains a point
     contains = function(point){
         point = camera.untransformPoint(point);
         return distance(position, point) < sizes.pawnRadius;
@@ -105,6 +105,7 @@ function Pawn(spec){
 
         if (touch && (board.getDragPost() == null || down)) {
             invert();
+            console.log("Inverting to "+teamIndex);
             board.compute();
             board.fireRefreshQueryCallback();
         }
