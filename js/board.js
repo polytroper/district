@@ -416,6 +416,10 @@ function Board(spec){
         return Math.min(groupSize, 3);
     },
 
+    getComplete = function(){
+        return complete;
+    },
+
     getFencePairs = function(){
         var pairs = [];
         for (var i = 0; i < fences.length; i++) {
@@ -675,10 +679,6 @@ function Board(spec){
         return layout;
     },
 
-    getGoalTeam = function(){
-        return goalTeam;
-    },
-
     compute = function() {
         //console.log("COMPUTING BOARD...");
 
@@ -848,11 +848,12 @@ function Board(spec){
         resetFences,
         switchTeam,
 
+        getSpec,
         getFov,
         getDragPost,
         getQueryString,
-        getSpec,
         getFencePairs,
+        getComplete,
         getTouchPost,
         getGroupCount,
         getGroupSize,

@@ -28,9 +28,15 @@ function Group(spec){
     ratio = 0,
     fullyAnimated = false,
 
+    speedUp = false,
+    clickReleased = false,
+
     //console.log("Creating group of "+pawns.length+" pawns, valid="+valid);
 
     update = function(){
+        if (!click) clickReleased = true;
+        if (click && clickReleased && board.getComplete()) speedUp = true;
+
         if (!fullyAnimated && fallProgress == 1) {
             fullyAnimated = true;
             return true;
@@ -42,13 +48,14 @@ function Group(spec){
         if (phantom || fallProgress == 1) return false;
 
         var multiple = reps.length > 1;
+        var multiplier = speedUp ? 0.5 : 1;
 
-        riseProgress = tickProgress(true, riseProgress, 0.1*repCount);
-        tallyProgress = tickProgress(riseProgress == 1, tallyProgress, Math.sqrt(pawns.length/8));
-        holdProgress = tickProgress(tallyProgress == 1, holdProgress, 0.1);
-        splitProgress = tickProgress(holdProgress == 1, splitProgress, multiple ? 0.075 : 0);
-        hangProgress = tickProgress(splitProgress == 1, hangProgress, multiple ? 0.075 : 0);
-        fallProgress = tickProgress(hangProgress == 1, fallProgress, 0.1*repCount);
+        riseProgress = tickProgress(true, riseProgress, 0.2*repCount*multiplier);
+        tallyProgress = tickProgress(riseProgress == 1, tallyProgress, Math.sqrt(pawns.length/2+1)*0.6*multiplier);
+        holdProgress = tickProgress(tallyProgress == 1, holdProgress, 0.2*multiplier);
+        splitProgress = tickProgress(holdProgress == 1, splitProgress, (multiple ? 0.15 : 0)*multiplier);
+        hangProgress = tickProgress(splitProgress == 1, hangProgress, (multiple ? 0.15 : 0)*multiplier);
+        fallProgress = tickProgress(hangProgress == 1, fallProgress, 0.2*repCount*multiplier);
 
         for (var i = 0; i < reps.length; i++) {
             reps[i].setFallProgress(fallProgress);
@@ -208,10 +215,15 @@ function Group(spec){
 
         var p;
         var report = "Distribution: "
+        var target = {
+            x: x0,
+            y: origin.y
+        }
         for (var i = 0; i < pawns.length; i++) {
             p = distribute(i, pawns.length, progress, 0.25);
             report += trunc(p)+", ";
-            drawTallyPawn(origin, pawns[i], p, ctx);
+            target.x = lerp(x0, x1, (i+0.5)/pawns.length);
+            drawTallyPawn(target, pawns[i], p, ctx);
             if (p >= 0.9) {
                 if (pawns[i].getTeam() == 0) redTally++;
                 else blueTally++;
@@ -249,11 +261,11 @@ function Group(spec){
 
     },
 
-    drawTallyPawn = function(origin, pawn, progress, ctx){
+    drawTallyPawn = function(target, pawn, progress, ctx){
         var pawnPosition = port.untransformPoint(camera.transformPoint(pawn.position));
         //var radius = camera.scale(pawns);
         var radius = lerp(port.untransform(camera.scaleY(sizes.pawnRadius)), 0*sizes.counterSize/repCount/2, progress);
-        var point = smoothLerpPoint(pawnPosition, origin, progress);
+        var point = smoothLerpPoint(pawnPosition, target, progress);
         var color = colors.teamsDark[pawn.getTeam()];
         port.drawCircle(point, radius, color, ctx);
 
