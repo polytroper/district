@@ -70,7 +70,7 @@ body {
 }
 
 .slide > .words > .title {
-    text-align: left;
+    text-align: center;
 
     font-weight: normal;
     font-size: 28px;
@@ -133,7 +133,7 @@ body {
     margin: 8px 16px 8px 16px;
 
     border: 1px solid black;
-    
+
     touch-action: none;
 }
 
