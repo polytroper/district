@@ -77,6 +77,9 @@ function Menu(){
         duration: 0.5,
         lerpType: "spring"
     }),
+    promptString = "~ ~ ~",
+    promptFlash = false,
+    promptFlashTime = 0,
 
     showEditor = false,
 
@@ -103,18 +106,21 @@ function Menu(){
 
     chart = new Chart({}),
     balance = new Balance(),
-    promptString = "~ ~ ~",
 
     draw = function(ctx){
-        port.drawText(promptString, promptMover.getPosition(), 0.04, "center", colors.menu.prompt, ctx);
+        var promptColor = colors.menu.prompt;
+        if (promptFlash) promptColor = va(255*(Math.pow(Math.sin((time-promptFlashTime)*2), 2)), 1);
+        port.drawText(promptString, promptMover.getPosition(), 0.05, "center", promptColor, ctx);
     },
 
     update = function(){
-        return promptMover.update();
+        return promptMover.update() || promptFlash;
     },
     
-    setPrompt = function(prompt){
+    setPrompt = function(prompt, flash = false){
         promptString = prompt;
+        promptFlash = flash;
+        if (flash) promptFlashTime = time;
     },
     
     setShowPrompt = function(show){

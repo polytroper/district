@@ -686,6 +686,7 @@ function Board(spec){
         var crawledPawns = [];
         var balanceGroups = [];
         var validGroups = [];
+        var tooSmall = false;
 
         valid = true;
         for (var i = 0; i < pawnList.length; i++) {
@@ -700,6 +701,8 @@ function Board(spec){
                 //console.log("Trace complete. Group has "+newGroup.getPawns().length+" pawns");
 
                 newGroup.compute();
+
+                if (newGroup.getPawns().length < groupSize) tooSmall = true;
 
                 crawledPawns = crawledPawns.concat(newGroup.getPawns());
 
@@ -769,6 +772,9 @@ function Board(spec){
         complete = (score >= goalScore || goalScore < 0) && valid;
 
         //console.log("Board computed, "+groups.length+" valid groups. Score="+score+"/"+goalScore+", Complete="+complete);
+
+        if (tooSmall) menu.setPrompt("Each group must have "+groupSize+" voters!", true);
+        else menu.setPrompt("Draw groups of "+groupSize);
 
         var showChart = valid;
         menu.setShowPrompt(!valid);

@@ -48,6 +48,7 @@
             var activeSlide = null;
             var deck = document.getElementById("deck");
 
+            var startTime = new Date();
             var advanceTime = new Date();
 
             var mobile = ('ontouchstart' in document.documentElement);
@@ -368,10 +369,12 @@
                 {
                     generator: appendPuzzleSlide,
                     title: "God Intervenes",
-                    description: "<p>God checks out a library book on Voting Systems, and comes across an idea called <b>Proportional Representation</b>.</p><p>God decides to try using <b>half as many districts</b> with <b>two winners each</b>.</p><p>WINTEAM is no longer able to engineer an undeserved victory.</p>",
+                    description: "<p>God checks out a library book on Voting Systems, and comes across an idea called <b>Proportional Representation</b>.</p><p>God decides to try using <b>half as many districts</b> with <b>two winners each</b>.</p><p>This game gets much harder for WINTEAM.</p>",
                     board: {
                         groupCount: 3,
                         repCount: 2,
+                        goalScore: -2,
+                        goalTeam: 0,
                         layout: [
                             [1, 1, 1, 0, 0, 0],
                             [1, 1, 1, 0, 0, 0],
@@ -379,6 +382,7 @@
                             [0, 0, 0, 1, 1, 1],
                             [0, 0, 0, 1, 1, 1],
                         ],
+                        /*
                         fencePairs: [
                             {a: 6, b: 7},
                             {a: 7, b: 8},
@@ -395,6 +399,7 @@
                             {a: 33, b: 34},
                             {a: 34, b: 35},
                         ],
+                        */
                     },
                 },
                 {
@@ -404,6 +409,9 @@
                     board: {
                         groupCount: 3,
                         repCount: 3,
+                        goalScore: -1,
+                        goalTeam: 0,
+
                         layout: [
                             [1, 1, 1, 0, 0, 0],
                             [1, 1, 1, 0, 0, 0],
@@ -411,6 +419,7 @@
                             [0, 0, 0, 1, 1, 1],
                             [0, 0, 0, 1, 1, 1],
                         ],
+                        /*
                         fencePairs: [
                             {a: 6, b: 7},
                             {a: 7, b: 8},
@@ -427,6 +436,7 @@
                             {a: 33, b: 34},
                             {a: 34, b: 35},
                         ],
+                        */
                     },
                 },
                 {
@@ -465,8 +475,9 @@
                     ga('send', {
                         hitType: 'event',
                         eventCategory: 'Color',
-                        eventAction: colorNames[color],
-                        eventLabel: 'choice'
+                        eventAction: 'color: '+colorNames[color],
+                        eventLabel: 'choice',
+                        eventValue: color,
                     });
 
                     advance();
@@ -524,7 +535,8 @@
                         hitType: 'event',
                         eventCategory: 'Slide',
                         eventAction: '#'+(slides.length-1),
-                        eventLabel: 'advance'
+                        eventLabel: 'advance',
+                        eventValue: timeDelta
                     });
                     ga('send', {
                         hitType: 'timing',
@@ -532,6 +544,16 @@
                         timingVar: '#'+(slides.length-1),
                         timingValue: timeDelta
                     });
+
+                    if (slideSpecs.length == 0) {
+                        ga('send', {
+                            hitType: 'event',
+                            eventCategory: 'Complete',
+                            eventAction: 'complete',
+                            eventLabel: 'complete',
+                            eventValue: currentTime-startTime
+                        });
+                    }
                 }
             }
 

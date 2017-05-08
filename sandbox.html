@@ -273,7 +273,7 @@
                 board = frame.contentWindow.getBoard();
                 board.setRefreshQueryCallback(refreshToolbox);
                 refreshToolbox();
-                if (!window.href.includes('?')) openToolbox();
+                if (!window.location.href.includes('?')) openToolbox();
             });
         </script>
 
