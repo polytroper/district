@@ -524,11 +524,10 @@
             }
 
             skip = function(){
-                
-                while (slideSpecs.length > 0) advance();
+                while (slideSpecs.length > 0) advance(false);
             }
 
-            advance = function(){
+            advance = function(report = true){
                 if (slideSpecs.length > 0) {
                     var spec = slideSpecs.shift();
                     var slide = spec.generator(spec);
@@ -546,28 +545,30 @@
                     if (action < 10) action = '0'+action;
                     action = '#'+action;
 
-                    ga('send', {
-                        hitType: 'event',
-                        eventCategory: 'Slide',
-                        eventAction: action,
-                        eventLabel: 'advance',
-                        eventValue: timeDelta
-                    });
-                    ga('send', {
-                        hitType: 'timing',
-                        timingCategory: 'Slide Deltas',
-                        timingVar: action,
-                        timingValue: timeDelta
-                    });
-
-                    if (slideSpecs.length == 0) {
+                    if (report) {
                         ga('send', {
                             hitType: 'event',
-                            eventCategory: 'Complete',
-                            eventAction: 'complete',
-                            eventLabel: 'complete',
-                            eventValue: currentTime-startTime
+                            eventCategory: 'Slide',
+                            eventAction: action,
+                            eventLabel: 'advance',
+                            eventValue: timeDelta
                         });
+                        ga('send', {
+                            hitType: 'timing',
+                            timingCategory: 'Slide Deltas',
+                            timingVar: action,
+                            timingValue: timeDelta
+                        });
+
+                        if (slideSpecs.length == 0) {
+                            ga('send', {
+                                hitType: 'event',
+                                eventCategory: 'Complete',
+                                eventAction: 'complete',
+                                eventLabel: 'complete',
+                                eventValue: currentTime-startTime
+                            });
+                        }
                     }
                 }
             }

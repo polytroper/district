@@ -90,7 +90,7 @@ function xyString(x, y){
 }
 
 function distance(a, b){
-    return Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2);
+    return Math.sqrt(Math.pow((a.x-b.x), 2)+Math.pow((a.y-b.y), 2));
 }
 function trunc(x, p=2){
     return Math.round(x*Math.pow(10, p))/Math.pow(10, p);
