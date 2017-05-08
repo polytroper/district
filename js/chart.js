@@ -36,11 +36,11 @@ function Chart(spec){
         var x0 = position.x-width/2;
         var x1 = position.x+width/2;
 
-        var y0 = position.y-0.05*yScale;
-        var y1 = position.y-0.01*yScale;
+        var y0 = position.y-0.06*yScale;
+        var y1 = position.y-0.02*yScale;
 
-        var y2 = position.y+0.01*yScale;
-        var y3 = position.y+0.05*yScale;
+        var y2 = position.y+0.02*yScale;
+        var y3 = position.y+0.06*yScale;
 
         var voteX = lerp(x0, x1, voteRatio);
         var repX = lerp(x0, x1, repRatio);
@@ -67,10 +67,20 @@ function Chart(spec){
             var complete = (goalTeam == 0 && repRatio <= goalRatio) || (goalTeam == 1 && repRatio >= goalRatio);
             var goalColor = complete ? "black": va(Math.round(255*bounce), 1);
 
-            port.drawPointer({x: goalX, y: y2-0.01*yScale}, {x: goalX, y: y2}, goalColor, ctx);
-            port.drawPointer({x: goalX, y: y3+0.01*yScale}, {x: goalX, y: y3}, goalColor, ctx);
+            port.drawPointer({x: goalX, y: y2}, {x: goalX, y: y2+0.01*yScale}, goalColor, ctx);
+            port.drawPointer({x: goalX, y: y3}, {x: goalX, y: y3-0.01*yScale}, goalColor, ctx);
             //port.drawCircle({x: goalX, y: (y2+y3)/2}, 0.02*yScale, );
             //port.drawLine({x: goalX, y: y2-0.02*yScale}, {x: goalX, y: y3+0.02*yScale}, 0.03, va(64, 0.5));
+
+            var nagString = null;
+            if ((goalTeam == 0 && goalRatio < repRatio)) {
+                nagString = "Red can win more districts!";
+            }
+            else if ((goalTeam == 1 && goalRatio > repRatio)) {
+                nagString = "Blue can win more districts!";
+            }
+
+            if (nagString != null) port.drawText(nagString, position, 0.03*yScale, "center", colors.menu.prompt, ctx);
         }
 
         if (false && drawGap) {
