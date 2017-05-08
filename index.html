@@ -537,21 +537,21 @@
                     var timeDelta = currentTime-advanceTime;
                     advanceTime = currentTime;
 
-                    var label = slides.length-1;
-                    if (label < 10) label = '0'+label;
-                    label = '#'+label;
+                    var action = slides.length-1;
+                    if (action < 10) action = '0'+action;
+                    action = '#'+action;
 
                     ga('send', {
                         hitType: 'event',
                         eventCategory: 'Slide',
-                        eventAction: '#'+(slides.length-1),
+                        eventAction: action,
                         eventLabel: 'advance',
                         eventValue: timeDelta
                     });
                     ga('send', {
                         hitType: 'timing',
                         timingCategory: 'Slide Deltas',
-                        timingVar: '#'+(slides.length-1),
+                        timingVar: action,
                         timingValue: timeDelta
                     });
 
