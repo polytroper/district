@@ -74,20 +74,23 @@ body {
 }
 
 .slide > .words > .bullets {
-    text-align: left;
+    text-align: center;
+    width: 100%;
 
     font-size: 24px;
 }
 .slide > .words > .bullets > div {
-    margin: 16px
+    margin: 24px;
 }
 .slide > .words a {
     text-decoration: none;
+    color: blue;
 }
 
 .slide > .words > .closer {
     text-align: center;
 
+    margin: 32px;
     font-size: 28px;
 }
 

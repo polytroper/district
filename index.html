@@ -132,6 +132,11 @@
             appendFinalSlide = function(spec){
                 var {slide, words, title, description} = createBasicSlide(spec);
 
+                words.style.flexBasis = "1000px";
+                words.style.textAlign = "center";
+                title.style.textAlign = "center";
+                description.style.textAlign = "center";
+
                 var bullets = document.createElement('div');
                 bullets.className = "bullets";
                 words.appendChild(bullets);
@@ -452,7 +457,7 @@
                     bullets: [
                         "&#8226; <b>Get Informed</b> and read up on <a href=\"http://election.princeton.edu/2016/11/24/a-lower-court-win-on-partisan-gerrymandering/\">Gerrymandering Metrics</a> and <a href=\"http://fairvote.org/proportional_representation_library\">Proportional Representation</a>",
                         "&#8226; <b>Get Involved</b> with groups like <a href=\"http://www.fairvote.org/\">FairVote</a> and donate to groups like the <a href=\"https://secure.squarespace.com/commerce/donate?donatePageId=55f70a4ee4b080e8fac1d69e\">Fair Elections Project</a>",
-                        "&#8226; <b>Spread the Word</b> about these issues! Sharing this page on <a href=\"https://twitter.com/home?status=Here%20is%20a%20totally%20rad%20game%20about%20redistricting%20and%20representation%3A%20polytrope.com/district/\">Twitter</a> or <a href=\"https://www.facebook.com/sharer/sharer.php?u=polytrope.com/district/\">Facebook</a> is a good start.",
+                        "&#8226; <b>Spread the Word</b> about these issues! Sharing this page on <a href=\"https://twitter.com/home?status=Here%20is%20a%20totally%20rad%20game%20about%20redistricting%20and%20representation%3A%20polytrope.com/district/\">Twitter</a> or <a href=\"https://www.facebook.com/sharer/sharer.php?u=polytrope.com/district/\">Facebook</a> is a good start",
                     ],
                     closer: "Want to make, share, or embed your own District maps?<br><a href=\"http://polytrope.com/district/sandbox.html\">Use the Level Editor!</a>",
                     credits: "<p>Special thanks to these<br>very patient people:</p><p>Amit Patel<br>Andy Matuschak<br>Lingxi Chenyang<br>Lucas Vieira<br>Nicky Case</p><p>And finally, thanks to you for playing!</p>",
@@ -567,7 +572,8 @@
                 }
             }
 
-            advance();
+            if (window.location.href.includes("skip")) skip();
+            else advance();
 
         </script>
 
