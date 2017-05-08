@@ -65,7 +65,7 @@ function Chart(spec){
             var bounce = Math.abs(Math.sin(time*4));
 
             var complete = (goalTeam == 0 && repRatio <= goalRatio) || (goalTeam == 1 && repRatio >= goalRatio);
-            var goalColor = complete ? "black": va(255*bounce, 1);
+            var goalColor = complete ? "black": va(Math.round(255*bounce), 1);
 
             port.drawPointer({x: goalX, y: y2-0.01*yScale}, {x: goalX, y: y2}, goalColor, ctx);
             port.drawPointer({x: goalX, y: y3+0.01*yScale}, {x: goalX, y: y3}, goalColor, ctx);
