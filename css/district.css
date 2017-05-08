@@ -56,8 +56,8 @@ body {
 
 .slide > .words {
     order: 0;
-    flex-basis: 640px;
-    flex-grow: 0.2;
+    flex-basis: 480px;
+    flex-grow: 0.5;
     flex-shrink: 0.1;
 
     margin: 8px 16px 8px 16px;
