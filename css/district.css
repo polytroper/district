@@ -17,6 +17,23 @@ body {
     display: block;
 }
 
+.title {
+    width: 100%;
+    margin: 32px auto 32px auto;
+
+    font-size: 72px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.subtitle {
+    width: 100%;
+    margin: 0px auto 80px auto;
+
+    font-size: 40px;
+    text-align: center;
+}
+
 .ruler > hr {
     margin-left: 5%;
     margin-right: 5%;
@@ -39,13 +56,17 @@ body {
 
 .slide > .words {
     order: 0;
-    flex-basis: 600px;
+    flex-basis: 640px;
     flex-grow: 0.2;
-    flex-shrink: 2;
+    flex-shrink: 0.1;
 
-    margin: 8px 32px 8px 32px;
+    margin: 8px 16px 8px 16px;
 
     text-align: center;
+}
+.slide > .words a {
+    text-decoration: none;
+    color: blue;
 }
 
 .slide > .words > .title {
@@ -82,10 +103,6 @@ body {
 .slide > .words > .bullets > div {
     margin: 24px;
 }
-.slide > .words a {
-    text-decoration: none;
-    color: blue;
-}
 
 .slide > .words > .closer {
     text-align: center;
@@ -113,9 +130,11 @@ body {
     width: 640px;
     height: 640px;
 
-    margin: 8px 32px 8px 32px;
+    margin: 8px 16px 8px 16px;
 
     border: 1px solid black;
+    
+    touch-action: none;
 }
 
 .slide > .gap {

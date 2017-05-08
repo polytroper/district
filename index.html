@@ -34,8 +34,10 @@
         });
         </script>
 
-        <div class="deck" id="deck">
-        </div>
+        <div class="title">DISTRICT</div>
+        <div class="subtitle">A Game about Representation & Redistricting</div>
+
+        <div class="deck" id="deck"></div>
 
         <script type="text/javascript">
             var slides = [];
@@ -190,7 +192,7 @@
                 slide.appendChild(puzzle);
 
                 var embedURL = "./embed.html";//+spec.query;
-                puzzle.innerHTML = "<iframe id=\"frame\" src=\""+embedURL+"\" width=\"640px\" height=\"640px\" style=\"border:none; visibility:hidden;\"></iframe>";
+                puzzle.innerHTML = "<iframe id=\"frame\" src=\""+embedURL+"\" width=\"640px\" height=\"640px\" style=\"border:none; visibility:hidden; transition:2s; opacity:0;\"></iframe>";
 
                 var puzzleFrame = puzzle.querySelector("#frame");
                 var slideIndex = slides.length-1;
@@ -220,6 +222,8 @@
 
                         //puzzleBoards.push(puzzleFrame.contentWindow.getBoard());
                         puzzleSpecs.push(puzzleFrame.contentWindow.getBoardSpec());
+
+                        window.setTimeout(function(){puzzleFrame.style.opacity = 1;}, 200);
                     }
                     else {
                         if (slideIndex == slides.length-1) {

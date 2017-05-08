@@ -31,6 +31,7 @@ function Balance(){
     },
 
     mover = Mover({
+        smoothing: 1.5,
         position0: {
             x: 0.5,
             y: 1.225
