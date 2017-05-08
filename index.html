@@ -531,6 +531,10 @@
                     var timeDelta = currentTime-advanceTime;
                     advanceTime = currentTime;
 
+                    var label = slides.length-1;
+                    if (label < 10) label = '0'+label;
+                    label = '#'+label;
+
                     ga('send', {
                         hitType: 'event',
                         eventCategory: 'Slide',
