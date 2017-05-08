@@ -109,7 +109,7 @@ function Menu(){
 
     draw = function(ctx){
         var promptColor = colors.menu.prompt;
-        if (promptFlash) promptColor = va(255*(Math.pow(Math.sin((time-promptFlashTime)*2), 2)), 1);
+        if (promptFlash) promptColor = va(Math.round(255*(Math.pow(Math.sin((time-promptFlashTime)*2), 2))), 1);
         port.drawText(promptString, promptMover.getPosition(), 0.05, "center", promptColor, ctx);
     },
 
