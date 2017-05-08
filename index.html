@@ -4,7 +4,6 @@
         <meta charset="utf-8">
         <title>District</title>
 
-        <!-- Google Analytics -->
         <script>
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
         (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -14,7 +13,6 @@
         ga('create', 'UA-98651852-1', 'auto');
         ga('send', 'pageview');
         </script>
-        <!-- End Google Analytics -->
 
         <script src="http://code.jquery.com/jquery.min.js"></script>
 
@@ -49,6 +47,8 @@
 
             var activeSlide = null;
             var deck = document.getElementById("deck");
+
+            var advanceTime = new Date();
 
             var mobile = ('ontouchstart' in document.documentElement);
             mobile = (function(){
@@ -461,6 +461,14 @@
                     invertPuzzles = color == 1;
                     button0.onclick = null;
                     button1.onclick = null;
+
+                    ga('send', {
+                        hitType: 'event',
+                        eventCategory: 'Color',
+                        eventAction: colorNames[color],
+                        eventLabel: 'choice'
+                    });
+
                     advance();
                 }
             }
@@ -508,11 +516,21 @@
                         block: "start",
                     });
 
+                    var currentTime = new Date();
+                    var timeDelta = currentTime-advanceTime;
+                    advanceTime = currentTime;
+
                     ga('send', {
                         hitType: 'event',
                         eventCategory: 'Slide',
                         eventAction: '#'+(slides.length-1),
                         eventLabel: 'advance'
+                    });
+                    ga('send', {
+                        hitType: 'timing',
+                        timingCategory: 'Slide Deltas',
+                        timingVar: '#'+(slides.length-1),
+                        timingValue: timeDelta
                     });
                 }
             }
