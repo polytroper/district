@@ -247,7 +247,7 @@
             var slideSpecs = [
                 {
                     generator: appendPuzzleSlide,
-                    title: "Welcome to the Carpet Kingdom",
+                    title: "The Carpet Kingdom",
                     description:
                     "<p>Alice and Bob are opposing rulers of the Carpet Kingdom. Alice likes Red, but Bob likes Blue.</p><p>They split the floor into 2 separate carpet districts.</p><p>For now, everyone is happy.</p>",
                     board: {
@@ -290,13 +290,13 @@
                 },
                 {
                     generator: appendChoiceSlide,
-                    title: "God gets Bored.",
-                    description: "<p>The Almighty is frankly annoyed that everyone is getting along so well.</p><p>Our lord picks a color to win the next election, just to shake things up.</p>",
+                    title: "Welcome Home",
+                    description: "<p>You buy a house and settle down here. You have to <b>pick a color</b>; thankfully, the choice is obvious to you.</p><p>Your vote tips the election, so now you and your friends get to control the districts.</p>",
                 },
                 {
                     generator: appendPuzzleSlide,
-                    title: "WINTEAM Carpeters Take Charge",
-                    description: "<p>In a dramatic turn of events, WINTEAM wins a supermajority of the floor.</p><p>This gives them the power to redraw the districts (they promise to be totally fair about it).<p>",
+                    title: "WINTEAM Takes Charge",
+                    description: "<p>You're in charge now, so you redraw the map for the next election.</p><p>Things work out pretty well for WINTEAM.</p>",
                     board: {
                         groupCount: 3,
                         goalScore: 1,
@@ -311,8 +311,8 @@
                 },
                 {
                     generator: appendPuzzleSlide,
-                    title: "Seeds of Discontent",
-                    description: "<p>The kingdom is evenly split on color.</p><p>Yet somehow, the floor is still mostly WINTEAM. It's almost as if many LOSETEAM <b>votes didn't count.</b></p>",
+                    title: "Playing By The Rules",
+                    description: "<p>The kingdom is evenly split on color, but WINTEAM wins again thanks to the magic of <b>Gerrymandering</b>.</p><p>LOSETEAM feels cheated, but this is how the game works.</p>",
                     board: {
                         groupCount: 4,
                         goalScore: 2,
@@ -328,7 +328,7 @@
                 {
                     generator: appendPuzzleSlide,
                     title: "Cracking & Packing",
-                    description: "<p>The WINTEAM leadership starts grouping a large chunk of LOSETEAM voters into one district, a technique they dub <b>\"Packing\"</b>.</p><p>They dristribute the leftover LOSETEAM voters between guaranteed WINTEAM districts, and nickname this process <b>\"Cracking\"</b>.</p>",
+                    description: "<p>WINTEAM is now a minority, but you have a strategy to win: <b>\"Packing\"</b> many LOSETEAM voters into one district, and <b>\"Cracking\"</b> the rest between many WINTEAM districts.</p><p>This way, most <b>LOSETEAM votes are wasted</b>.</p>",
                     board: {
                         groupCount: 3,
                         goalScore: 1,
@@ -344,7 +344,7 @@
                 {
                     generator: appendPuzzleSlide,
                     title: "Linking",
-                    description: "<p>WINTEAM neighborhoods start to fracture, making it hard to draw <b>compact districts</b> around them.</p><p>They will have to be a bit more crafty to maintain power.</p>",
+                    description: "<p>Your WINTEAM neighbors start to fracture, making it hard to draw <b>compact districts</b> around them.</p><p>You will have to be a bit more crafty to maintain power.</p>",
                     board: {
                         groupCount: 3,
                         goalScore: 1,
@@ -357,101 +357,57 @@
                     },
                     muteGap: true,
                 },
-                /*
-                {
-                    generator: appendGapSlide,
-                    title: "God Becomes Concerned.",
-                    description: "<p>God is worried about the big difference between WINTEAM's <b>proportion of voters</b> and <b>proportion of representatives</b>. God decides to measure this difference to see how unfair these elections are.<p>\"I shall call this metric... the <b>Proportionality Gap</b>\" says God.</p>",
-                },
-                */
                 {
                     generator: appendPuzzleSlide,
-                    title: "God Becomes Concerned",
-                    description: "<p>After the next election, WINTEAM has 40% of the voters, 67% of the representatives, and <b>100% of the power.</b></p><p>This worries God.</p>",
+                    title: "Catastrophe",
+                    description: "<p>You have a problem: <b>WINTEAM can't win</b> the next election!</p><p>The layout of WINTEAM voters even forces you to give LOSETEAM more of the floor than they deserve.</p><p>Clearly, this is super unfair. Something must be done!</p>",
                     board: {
                         groupCount: 6,
-                        goalScore: 2,
+                        goalScore: -4,
                         goalTeam: 0,
                         layout: [
-                            [1, 1, 1, 0, 0, 0],
-                            [1, 1, 1, 0, 0, 0],
-                            [1, 1, 1, 1, 1, 1],
-                            [0, 0, 0, 1, 1, 1],
-                            [0, 0, 0, 1, 1, 1],
+                            [1, 1, 0, 1, 1, 1],
+                            [1, 1, 1, 1, 0, 1],
+                            [0, 1, 1, 1, 1, 1],
+                            [0, 0, 1, 1, 1, 0],
+                            [1, 0, 0, 1, 1, 1],
                         ],
                     },
                 },
                 {
                     generator: appendPuzzleSlide,
-                    title: "God Intervenes",
-                    description: "<p>God checks out a library book on Voting Systems, and comes across an idea called <b>Proportional Representation</b>.</p><p>God decides to try using <b>half as many districts</b> with <b>two winners each</b>.</p><p>This game gets much harder for WINTEAM.</p>",
+                    title: "A Fairer Game",
+                    description: "<p>You read up on <b>Proportional Representation</b> and discover multi-member districts.</p><p>By drawing <b>half as many districts</b> with <b>two winners each</b>, you can draw a better map for WINTEAM.</p><p>But now that WINTEAM is a minority, you don't just want one fair map... you want to guarantee that <b>all maps are fair</b>.</p>",
                     board: {
                         groupCount: 3,
-                        repCount: 2,
                         goalScore: -2,
                         goalTeam: 0,
+                        repCount: 2,
                         layout: [
-                            [1, 1, 1, 0, 0, 0],
-                            [1, 1, 1, 0, 0, 0],
-                            [1, 1, 1, 1, 1, 1],
-                            [0, 0, 0, 1, 1, 1],
-                            [0, 0, 0, 1, 1, 1],
+                            [1, 1, 0, 1, 1, 1],
+                            [1, 1, 1, 1, 0, 1],
+                            [0, 1, 1, 1, 1, 1],
+                            [0, 0, 1, 1, 1, 0],
+                            [1, 0, 0, 1, 1, 1],
                         ],
-                        /*
-                        fencePairs: [
-                            {a: 6, b: 7},
-                            {a: 7, b: 8},
-                            {a: 8, b: 14},
-                            {a: 14, b: 20},
-                            {a: 20, b: 26},
-                            {a: 26, b: 32},
-                            {a: 32, b: 38},
-                            {a: 3, b: 9},
-                            {a: 9, b: 15},
-                            {a: 15, b: 21},
-                            {a: 21, b: 27},
-                            {a: 27, b: 33},
-                            {a: 33, b: 34},
-                            {a: 34, b: 35},
-                        ],
-                        */
                     },
                 },
                 {
                     generator: appendPuzzleSlide,
                     title: "The End",
-                    description: "<p>God adds a third winner, and the election only gets more fair.</p><p>God concludes that single-winner elections are fundamentally unrepresentative. Unfortunately, the Carpet Kingdom Supreme Court is not convinced by this argument.</p><p>So God wonders aloud... <b>\"What can I do about this?\"</b></p>",
+                    description: "<p>You add a third winner to each district, which makes <b>gerrymandering almost impossible</b>.</p><p>You realize that single-member districts are fundamentally unrepresentative... which is odd, because your country's congress <b>passed a law requiring them in 1967</b>.</p><p>You wonder aloud, <b>\"What can I do about this?\"</b></p>",
                     board: {
                         groupCount: 3,
-                        repCount: 3,
-                        goalScore: -1,
+                        goalScore: -3,
                         goalTeam: 0,
-
+                        repCount: 3,
                         layout: [
-                            [1, 1, 1, 0, 0, 0],
-                            [1, 1, 1, 0, 0, 0],
-                            [1, 1, 1, 1, 1, 1],
-                            [0, 0, 0, 1, 1, 1],
-                            [0, 0, 0, 1, 1, 1],
+                            [1, 1, 0, 1, 1, 1],
+                            [1, 1, 1, 1, 0, 1],
+                            [0, 1, 1, 1, 1, 1],
+                            [0, 0, 1, 1, 1, 0],
+                            [1, 0, 0, 1, 1, 1],
                         ],
-                        /*
-                        fencePairs: [
-                            {a: 6, b: 7},
-                            {a: 7, b: 8},
-                            {a: 8, b: 14},
-                            {a: 14, b: 20},
-                            {a: 20, b: 26},
-                            {a: 26, b: 32},
-                            {a: 32, b: 38},
-                            {a: 3, b: 9},
-                            {a: 9, b: 15},
-                            {a: 15, b: 21},
-                            {a: 21, b: 27},
-                            {a: 27, b: 33},
-                            {a: 33, b: 34},
-                            {a: 34, b: 35},
-                        ],
-                        */
                     },
                 },
                 {
@@ -464,7 +420,7 @@
                         "<b>Spread the Word</b> about these issues! Sharing this page on <a href=\"https://twitter.com/home?status=Here%20is%20a%20totally%20rad%20game%20about%20redistricting%20and%20representation%3A%20polytrope.com/district/\">Twitter</a> or <a href=\"https://www.facebook.com/sharer/sharer.php?u=polytrope.com/district/\">Facebook</a> is a good start.",
                     ],
                     closer: "Want to make, share, or embed your own District maps? <a href=\"http://polytrope.com/district/sandbox.html\">Use the Level Editor!</a>",
-                    credits: "<p>Special thanks to these<br>very patient people:</p><p>Amit Patel<br>Andy Matuschak<br>Lingxi Chenyang<br>Lucas Vieira<br>Nicky Case</p><p>And finally, thanks to you for playing!</p>",
+                    credits: "<p>Special thanks to these<br>very patient people:</p><p>Amit Patel<br>Andy Matuschak<br>Jameson Quinn<br>Lingxi Chenyang<br>Lucas Vieira<br>Nicky Case</p><p>And finally, thanks to you for playing!</p>",
                 },
             ];
 

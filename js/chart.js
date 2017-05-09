@@ -14,6 +14,7 @@ function Chart(spec){
     goalRatio = -1,
 
     drawGap = true,
+    dirty = false,
 
     mover = Mover({
         state: show,
@@ -64,7 +65,7 @@ function Chart(spec){
             var goalX = lerp(x0, x1, goalRatio);
             var bounce = Math.abs(Math.sin(time*4));
 
-            var complete = (goalTeam == 0 && repRatio <= goalRatio) || (goalTeam == 1 && repRatio >= goalRatio);
+            var complete = (goalTeam == 0 && (repRatio < goalRatio || approximately(repRatio, goalRatio))) || (goalTeam == 1 && (repRatio > goalRatio || approximately(repRatio, goalRatio)));
             var goalColor = complete ? "black": va(Math.round(255*bounce), 1);
 
             port.drawPointer({x: goalX, y: y2}, {x: goalX, y: y2+0.01*yScale}, goalColor, ctx);
@@ -73,10 +74,10 @@ function Chart(spec){
             //port.drawLine({x: goalX, y: y2-0.02*yScale}, {x: goalX, y: y3+0.02*yScale}, 0.03, va(64, 0.5));
 
             var nagString = null;
-            if ((goalTeam == 0 && goalRatio < repRatio)) {
+            if ((goalTeam == 0 && goalRatio < repRatio) && !approximately(goalRatio, repRatio)) {
                 nagString = "Red can win more districts!";
             }
-            else if ((goalTeam == 1 && goalRatio > repRatio)) {
+            else if ((goalTeam == 1 && goalRatio > repRatio) && !approximately(goalRatio, repRatio)) {
                 nagString = "Blue can win more districts!";
             }
 
@@ -97,6 +98,7 @@ function Chart(spec){
             port.drawText(gapString1, {x: x1, y: gapY}, 0.04*yScale, "left", colors.teamsDark[0], ctx);
         }
 
+        dirty = false;
     },
 
     update = function(){
@@ -107,7 +109,7 @@ function Chart(spec){
         tr = tr || mover.update();
         position = mover.getPosition();
 
-        tr = tr || (goalTeam >= 0 && goalRatio >= 0);
+        tr = tr || (goalTeam >= 0 && goalRatio >= 0) || dirty;
 
         return tr;
     },
@@ -131,16 +133,19 @@ function Chart(spec){
         console.log("Setting goal ratio to "+(team == 0 ? "red" : "blue")+", "+ratio);
         goalTeam = team;
         goalRatio = ratio;
+        dirty = true;
         //console.log("Setting goal ratios to %s, %s", goalTeam, ratio);
     },
 
     setRepcount = function(REPCOUNT){
         repCount = REPCOUNT;
+        dirty = true;
     },
 
     setRatios = function(VOTERATIO, REPRATIO){
         voteRatio = VOTERATIO;
         repRatio = REPRATIO;
+        dirty = true;
         //console.log("Setting ratios to %s:%s", voteRatio, repRatio);
     };
 

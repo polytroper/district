@@ -310,7 +310,8 @@ function Board(spec){
     },
 
     subtractGroup = function(){
-        if (groupCount <= lowestFactor(dimensions.total)) return;
+        //if (groupCount <= lowestFactor(dimensions.total)) return;
+        if (groupCount <= 1) return;
         do {
             groupCount--;
         } while (!divisible(pawnList.length, groupCount));
@@ -769,7 +770,7 @@ function Board(spec){
         }
         voteRatio /= pawnList.length;
 
-        complete = (score >= goalScore || goalScore < 0) && valid;
+        complete = (score >= goalScore || goalTeam < 0) && valid;
 
         //console.log("Board computed, "+groups.length+" valid groups. Score="+score+"/"+goalScore+", Complete="+complete);
 

@@ -43,6 +43,7 @@ function Balance(){
     }),
 
     position = mover.position,
+    dirty = false,
 
     draw = function(ctx){
         if (mover.getProgress() == 0) return;
@@ -139,6 +140,8 @@ function Balance(){
         for (var i = 0; i < groups.length; i++) {
             groups[i].drawReps(this, ctx);
         }
+
+        dirty = false;
     },
 
     drawPan = function(position, score, color, direction, ctx){
@@ -213,7 +216,7 @@ function Balance(){
 
         currentAngle = lerp(currentAngle, targetAngle+wobble, 0.03);
 
-        tr = tr || !approximately(currentAngle, targetAngle);
+        tr = tr || !approximately(currentAngle, targetAngle) || dirty;
         return tr;
     },
 
@@ -280,17 +283,21 @@ function Balance(){
         repCount = REPCOUNT;
 
         console.log("Balance: accepting "+groups.length+" groups with "+reps.length+" reps");
+
+        dirty = true;
     },
 
     setGoal = function(team, score){
         console.log("Setting goal to "+(team == 0 ? "red" : "blue")+", "+score);
         goalTeam = team;
         goalScore = score;
+        dirty = true;
     },
 
     setRatio = function(ratio){
         console.log("Setting ratio to "+ratio);
         ratio = ratio;
+        dirty = true;
     };
 
 
