@@ -25,6 +25,8 @@
         <link rel="icon" type="image/png" href="/favicon.png"/>
         <link rel="stylesheet" href="./css/district.css">
         <link rel="stylesheet" href="/css/main.css">
+
+        <script language="javascript" src="./js/slides.js" type="text/javascript"></script>
     </head>
     <body>
         <div id="nav-container"></div>
@@ -40,389 +42,23 @@
         <div class="deck" id="deck"></div>
 
         <script type="text/javascript">
-            var slides = [];
-            var puzzleSlides = [];
-            var puzzleContainers = [];
-            var puzzleFrames = [];
-            var puzzleWindows = [];
-            var puzzleBoards = [];
-            var puzzleSpecs = [];
-
-            var slideIndex = 0;
-
-            var chosenColor = -1;
-            var invertPuzzles = false;
-
-            var activeSlide = null;
             var deck = document.getElementById("deck");
+
+            var slides = [];
+            var chosenColor = -1;
 
             var startTime = new Date();
             var advanceTime = new Date();
 
-            var mobile = ('ontouchstart' in document.documentElement);
-            mobile = (function(){
+            // Big ugly regex check for mobile and therefore performance-constrained devices
+            var mobile = (function(){
                 var check = false;
                 (function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);
                 return check;
             })();
             console.log("Mobile="+mobile);
 
-            createBasicSlide = function(spec){
-                if (slideIndex > 0) {
-                    var ruler = document.createElement('div');
-                    ruler.className = "ruler";
-                    deck.appendChild(ruler);
-                    ruler.innerHTML = "<hr>";
-                }
-
-                var slide = document.createElement('div');
-                slide.className = "slide";
-                deck.appendChild(slide);
-
-                var words = document.createElement('div');
-                words.className = "words";
-                slide.appendChild(words);
-
-                var title = document.createElement('div');
-                title.className = "title";
-                title.innerHTML = "<b>"+spec.title+"</b>";
-                words.appendChild(title);
-
-                var description = document.createElement('div');
-                description.className = "description";
-                description.innerHTML = spec.description;
-                words.appendChild(description);
-
-                slides.push(slide);
-                slideIndex++;
-
-                return {
-                    slide,
-                    words,
-                    title,
-                    description,
-                }
-            }
-
-            appendChoiceSlide = function(spec){
-                var {slide, words, title, description} = createBasicSlide(spec);
-
-                var choice = document.createElement('div');
-                choice.className = "choice";
-                slide.appendChild(choice);
-
-                var colorButton0 = document.createElement('div');
-                colorButton0.className = "colorButton";
-                colorButton0.style.backgroundColor = "red";
-                choice.appendChild(colorButton0);
-
-                var colorButton1 = document.createElement('div');
-                colorButton1.className = "colorButton";
-                colorButton1.style.backgroundColor = "blue";
-                choice.appendChild(colorButton1);
-                
-                colorButton0.addEventListener("click", function(){
-                    chooseColor(0, colorButton0, colorButton1);
-                });
-                colorButton1.addEventListener("click", function(){
-                    chooseColor(1, colorButton0, colorButton1);
-                });
-
-                return slide;
-            }
-
-            appendFinalSlide = function(spec){
-                var {slide, words, title, description} = createBasicSlide(spec);
-
-                words.style.flexBasis = "1000px";
-                words.style.textAlign = "center";
-                title.style.textAlign = "center";
-                description.style.textAlign = "center";
-
-                var bullets = document.createElement('div');
-                bullets.className = "bullets";
-                words.appendChild(bullets);
-
-                for (var i = 0; i < spec.bullets.length; i++) {
-                    let bullet = document.createElement('div');
-                    bullet.innerHTML = spec.bullets[i];
-                    bullet.className = "bullet";
-                    bullets.appendChild(bullet);
-                }
-
-                var closer = document.createElement('div');
-                closer.className = "closer";
-                closer.innerHTML = spec.closer;
-                words.appendChild(closer);
-
-                var credits = document.createElement('div');
-                credits.className = "credits";
-                credits.innerHTML = spec.credits;
-                words.appendChild(credits);
-
-                return slide;
-            }
-
-            appendGapSlide = function(spec){
-                var {slide, words, title, description} = createBasicSlide(spec);
-
-                var gap = document.createElement('div');
-                gap.className = "gap";
-                slide.appendChild(gap);
-
-                gap.innerHTML = "<iframe id=\"frame\" src=\"./gap.html\" width=\"640px\" height=\"320px\" style=\"border:1px solid black;\"></iframe>";
-
-                var gapFrame = gap.querySelector("#frame");
-                gapFrame.addEventListener('load', function(){
-                    gapFrame.contentWindow.setCompletionCallback(advance);
-
-                    if (invertPuzzles) gapFrame.contentWindow.invert();
-                });
-
-                return slide;
-            }
-
-            appendPuzzleSlide = function(spec){
-                var {slide, words, title, description} = createBasicSlide(spec);
-
-                title.innerHTML += "&nbsp;&nbsp;&nbsp;&nbsp;"+(puzzleSlides.length+1)+"/10";
-
-                var puzzle = document.createElement('div');
-                puzzle.className = "puzzle";
-                slide.appendChild(puzzle);
-
-                var embedURL = "./embed.html";//+spec.query;
-                puzzle.innerHTML = "<iframe id=\"frame\" src=\""+embedURL+"\" width=\"640px\" height=\"640px\" style=\"border:none; visibility:hidden; transition:2s; opacity:0;\"></iframe>";
-
-                var puzzleFrame = puzzle.querySelector("#frame");
-                var slideIndex = slides.length-1;
-
-                puzzleFrame.addEventListener('load', function(){
-                    if (!puzzleFrames.includes(puzzleFrame)) {
-                        puzzleFrame.contentWindow.setCompletionCallback(advance);
-                        puzzleFrame.contentWindow.setBoardSpec(spec.board);
-
-                        puzzleContainers.push(puzzle);
-                        puzzleFrames.push(puzzleFrame);
-                        puzzleSlides.push(slide);
-                        puzzleWindows.push(puzzleFrame.contentWindow);
-
-                        slide.addEventListener("mouseenter", function(event){
-                            setActiveSlide(event.target);
-                        });
-                        slide.addEventListener("touchstart", function(event){
-                            setActiveSlide(event.target);
-                        });
-
-                        if (spec.muteGap == true) puzzleFrame.contentWindow.setDrawGap(false);
-                        if (spec.muteReset == true) puzzleFrame.contentWindow.setShowReset(false);
-                        if (invertPuzzles) puzzleFrame.contentWindow.invertBoard();
-
-                        setActiveSlide(slide);
-
-                        //puzzleBoards.push(puzzleFrame.contentWindow.getBoard());
-                        puzzleSpecs.push(puzzleFrame.contentWindow.getBoardSpec());
-
-                        window.setTimeout(function(){puzzleFrame.style.opacity = 1;}, 200);
-                    }
-                    else {
-                        if (slideIndex == slides.length-1) {
-                            puzzleFrame.contentWindow.setCompletionCallback(advance);
-                        }
-
-                        if (spec.muteGap == true) puzzleFrame.contentWindow.setDrawGap(false);
-                        if (spec.muteReset == true) puzzleFrame.contentWindow.setShowReset(false);
-
-                        var puzzleSpec = puzzleSpecs[puzzleFrames.indexOf(puzzleFrame)];
-                        puzzleFrame.contentWindow.setBoardSpec(puzzleSpec);
-
-                        puzzleFrame.contentWindow.completeAnimation();
-                    }
-                    puzzleFrame.style.visibility = "visible";
-                });
-
-                return slide;
-            }
-
-            var slideSpecs = [
-                {
-                    generator: appendPuzzleSlide,
-                    title: "The Carpet Kingdom",
-                    description:
-                    "<p>Alice and Bob are opposing rulers of the Carpet Kingdom. Alice likes Red, but Bob likes Blue.</p><p>They split the floor into 2 separate carpet districts.</p><p>For now, everyone is happy.</p>",
-                    board: {
-                        groupCount: 2,
-                        layout: [
-                            [0, 1],
-                        ],
-                    },
-                    muteReset: true,
-                    muteGap: true,
-                },
-                {
-                    generator: appendPuzzleSlide,
-                    title: "Democracy is Born",
-                    description: "<p>Two new subjects move in, so Alice and Bob invent democracy and hold a vote for color.</p><p>Both districts tie, so they compromise on Grey.</p>",
-                    board: {
-                        groupCount: 2,
-                        layout: [
-                            [0, 1],
-                            [1, 0],
-                        ],
-                    },
-                    muteReset: true,
-                    muteGap: true,
-                },
-                {
-                    generator: appendPuzzleSlide,
-                    title: "The Kingdom Expands",
-                    description: "<p>A third district is added to accomodate new arrivals, and another vote is held.</p><p>Most citizens are satisfied with the outcome.</p>",
-                    board: {
-                        groupCount: 3,
-                        layout: [
-                            [0, 0],
-                            [1, 0],
-                            [1, 1],
-                        ],
-                    },
-                    muteReset: true,
-                    muteGap: true,
-                },
-                {
-                    generator: appendChoiceSlide,
-                    title: "Welcome Home",
-                    description: "<p>You buy a house and settle down here. You have to <b>pick a color</b>; thankfully, the choice is obvious to you.</p><p>Your vote tips the election, so now you and your friends get to control the districts.</p>",
-                },
-                {
-                    generator: appendPuzzleSlide,
-                    title: "WINTEAM Takes Charge",
-                    description: "<p>You're in charge now, so you redraw the map for the next election.</p><p>Things work out pretty well for WINTEAM.</p>",
-                    board: {
-                        groupCount: 3,
-                        goalScore: 1,
-                        goalTeam: 0,
-                        layout: [
-                            [0, 1, 1],
-                            [0, 1, 0],
-                            [1, 1, 0],
-                        ],
-                    },
-                    muteGap: true,
-                },
-                {
-                    generator: appendPuzzleSlide,
-                    title: "Playing By The Rules",
-                    description: "<p>The kingdom is evenly split on color, but WINTEAM wins again thanks to the magic of <b>Gerrymandering</b>.</p><p>LOSETEAM feels cheated, but this is how the game works.</p>",
-                    board: {
-                        groupCount: 4,
-                        goalScore: 2,
-                        goalTeam: 0,
-                        layout: [
-                            [0, 0, 0, 0],
-                            [0, 0, 1, 1],
-                            [1, 1, 1, 1],
-                        ],
-                    },
-                    muteGap: true,
-                },
-                {
-                    generator: appendPuzzleSlide,
-                    title: "Cracking & Packing",
-                    description: "<p>WINTEAM is now a minority, but you have a strategy to win: <b>\"Packing\"</b> many LOSETEAM voters into one district, and <b>\"Cracking\"</b> the rest between many WINTEAM districts.</p><p>This way, most <b>LOSETEAM votes are wasted</b>.</p>",
-                    board: {
-                        groupCount: 3,
-                        goalScore: 1,
-                        goalTeam: 0,
-                        layout: [
-                            [0, 0, 1, 1, 1],
-                            [0, 0, 1, 1, 1],
-                            [0, 0, 1, 1, 1],
-                        ],
-                    },
-                    muteGap: true,
-                },
-                {
-                    generator: appendPuzzleSlide,
-                    title: "Linking",
-                    description: "<p>Your WINTEAM neighbors start to fracture, making it hard to draw <b>compact districts</b> around them.</p><p>You will have to be a bit more crafty to maintain power.</p>",
-                    board: {
-                        groupCount: 3,
-                        goalScore: 1,
-                        goalTeam: 0,
-                        layout: [
-                            [0, 0, 1, 1, 0, 0],
-                            [0, 1, 1, 1, 1, 0],
-                            [1, 1, 0, 0, 1, 1],
-                        ],
-                    },
-                    muteGap: true,
-                },
-                {
-                    generator: appendPuzzleSlide,
-                    title: "Catastrophe",
-                    description: "<p>You have a problem: <b>WINTEAM can't win</b> the next election!</p><p>The layout of WINTEAM voters even forces you to give LOSETEAM more of the floor than they deserve.</p><p>Clearly, this is super unfair. Something must be done!</p>",
-                    board: {
-                        groupCount: 6,
-                        goalScore: -4,
-                        goalTeam: 0,
-                        layout: [
-                            [1, 1, 0, 1, 1, 1],
-                            [1, 1, 1, 1, 0, 1],
-                            [0, 1, 1, 1, 1, 1],
-                            [0, 0, 1, 1, 1, 0],
-                            [1, 0, 0, 1, 1, 1],
-                        ],
-                    },
-                },
-                {
-                    generator: appendPuzzleSlide,
-                    title: "A Fairer Game",
-                    description: "<p>You read up on <b>Proportional Representation</b> and discover multi-member districts.</p><p>By drawing <b>half as many districts</b> with <b>two winners each</b>, you can draw a better map for WINTEAM.</p><p>But now that WINTEAM is a minority, you don't just want one fair map... you want to guarantee that <b>all maps are fair</b>.</p>",
-                    board: {
-                        groupCount: 3,
-                        goalScore: -2,
-                        goalTeam: 0,
-                        repCount: 2,
-                        layout: [
-                            [1, 1, 0, 1, 1, 1],
-                            [1, 1, 1, 1, 0, 1],
-                            [0, 1, 1, 1, 1, 1],
-                            [0, 0, 1, 1, 1, 0],
-                            [1, 0, 0, 1, 1, 1],
-                        ],
-                    },
-                },
-                {
-                    generator: appendPuzzleSlide,
-                    title: "The End",
-                    description: "<p>You add a third winner to each district, which makes <b>gerrymandering almost impossible</b>.</p><p>You realize that single-member districts are fundamentally unrepresentative... which is odd, because your country's congress <b>passed a law requiring them in 1967</b>.</p><p>You wonder aloud, <b>\"What can I do about this?\"</b></p>",
-                    board: {
-                        groupCount: 3,
-                        goalScore: -3,
-                        goalTeam: 0,
-                        repCount: 3,
-                        layout: [
-                            [1, 1, 0, 1, 1, 1],
-                            [1, 1, 1, 1, 0, 1],
-                            [0, 1, 1, 1, 1, 1],
-                            [0, 0, 1, 1, 1, 0],
-                            [1, 0, 0, 1, 1, 1],
-                        ],
-                    },
-                },
-                {
-                    generator: appendFinalSlide,
-                    title: "What You Can Do About This",
-                    description: "",//"<p>If you care about this issue, here are some further steps you can take:</p>",
-                    bullets: [
-                        "<b>Get Informed</b> and read up on <a href=\"http://election.princeton.edu/2016/11/24/a-lower-court-win-on-partisan-gerrymandering/\">Gerrymandering Metrics</a> and <a href=\"http://fairvote.org/proportional_representation_library\">Proportional Representation</a>.",
-                        "<b>Get Involved</b> with groups like <a href=\"http://www.fairvote.org/\">FairVote</a> and donate to groups like the <a href=\"https://secure.squarespace.com/commerce/donate?donatePageId=55f70a4ee4b080e8fac1d69e\">Fair Elections Project</a>.",
-                        "<b>Spread the Word</b> about these issues! Sharing this page on <a href=\"https://twitter.com/home?status=Here%20is%20a%20totally%20rad%20game%20about%20redistricting%20and%20representation%3A%20polytrope.com/district/\">Twitter</a> or <a href=\"https://www.facebook.com/sharer/sharer.php?u=polytrope.com/district/\">Facebook</a> is a good start.",
-                    ],
-                    closer: "Want to make, share, or embed your own District maps? <a href=\"http://polytrope.com/district/sandbox.html\">Use the Level Editor!</a>",
-                    credits: "<p>Special thanks to these<br>very patient people:</p><p>Amit Patel<br>Andy Matuschak<br>Jameson Quinn<br>Lingxi Chenyang<br>Lucas Vieira<br>Nicky Case</p><p>And finally, thanks to you for playing!</p>",
-                },
-            ];
+            var slideSpecs = gimmeSlideSpecs();
 
             chooseColor = function(color, button0, button1){
                 if (chosenColor < 0) {
@@ -437,11 +73,19 @@
 
                         spec.title = spec.title.replace(regexLose, colorNames[1-chosenColor]);
                         spec.description = spec.description.replace(regexLose, colorNames[1-chosenColor]);
-                    });
 
-                    invertPuzzles = color == 1;
-                    button0.onclick = null;
-                    button1.onclick = null;
+                        if (color == 1 && spec.board) {
+                            if (spec.board.goalTeam >= 0) spec.board.goalTeam = 1-spec.board.goalTeam;
+
+                            var layout = spec.board.layout;
+                            for (var i = 0; i < layout.length; i++) {
+                                for (var j = 0; j < layout[i].length; j++) {
+                                    layout[i][j] = 1-layout[i][j];
+                                }
+                            }
+                        }
+
+                    });
 
                     ga('send', {
                         hitType: 'event',
@@ -455,47 +99,29 @@
                 }
             }
 
-            setActiveSlide = function(targetSlide){
-                //console.log("Setting active slide!");
-                if (targetSlide == null) return;
-
-                for (var i = 0; i < puzzleSlides.length; i++) {
-                    if (puzzleSlides[i] == targetSlide || puzzleSlides[i].contains(targetSlide)) {
-                        if (!mobile) puzzleWindows[i].setPause(false);
-
-                        if (mobile && !puzzleContainers[i].contains(puzzleFrames[i])) {
-                            puzzleContainers[i].appendChild(puzzleFrames[i]);
-                            puzzleWindows[i] = puzzleFrames[i].contentWindow;
-                            puzzleFrames[i].style.visibility = "hidden";
-                        }
-                    }
-                    else {
-                        //if (!mobile) 
-                        puzzleWindows[i].setPause(true);
-
-                        if (mobile && puzzleContainers[i].contains(puzzleFrames[i])) {
-                            puzzleSpecs[i] = puzzleWindows[i].getBoardSpec();
-                            puzzleContainers[i].removeChild(puzzleFrames[i]);
-                            console.log("Assigning spec %s on deactivation. Spec has %s fences", i, puzzleSpecs[i].fencePairs.length);
-                        }
-                    }
-                } 
-                activeSlide = targetSlide;
-            }
-
             skip = function(){
                 while (slideSpecs.length > 0) advance(false);
             }
 
             advance = function(report = true){
                 if (slideSpecs.length > 0) {
-                    var spec = slideSpecs.shift();
-                    var slide = spec.generator(spec);
+                    if (slides.length > 0) {
+                        var ruler = document.createElement('div');
+                        ruler.className = "ruler";
+                        deck.appendChild(ruler);
+                        ruler.innerHTML = "<hr>";
+                    }
 
-                    slide.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start",
-                    });
+                    var spec = slideSpecs.shift();
+                    var slide = spec.type(spec);
+                    slides.push(slide);
+
+                    if (slides.length > 1) {
+                        slide.main.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start",
+                        });
+                    }
 
                     var currentTime = new Date();
                     var timeDelta = currentTime-advanceTime;

@@ -164,7 +164,7 @@ function Board(spec){
         size.x = (xSize)*3*sizes.pawnRadius+sizes.postRadius*2;
         size.y = (ySize)*3*sizes.pawnRadius+sizes.postRadius*2;
 
-        fov = Math.max(size.x, size.y)*5/3;
+        fov = Math.max(size.x*3/4, size.y)*5/3;
 
         pawnLayer.clearComponents();
         fenceLayer.clearComponents();
@@ -344,7 +344,7 @@ function Board(spec){
     },
 
     subtractRow = function(){
-        if (dimensions.y <= 1) return;
+        if (dimensions.y <= 2) return;
 
         var currentLayout = board.extractLayout();
         subtractArrayRow(currentLayout);

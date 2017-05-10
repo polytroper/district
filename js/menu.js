@@ -31,17 +31,17 @@ function Menu(){
     }),
 
     nextButton = BasicButton({
-        radius: 0.06,
+        radius: 0.08,
         show: false,
         lerpType: "spring",
 
         position0: {
-            x: view.aspect+0.08,
-            y: 0.5
+            x: view.aspect+0.1,
+            y: 0.9
         },
         position1: {
-            x: view.aspect-0.08,
-            y: 0.5
+            x: view.aspect-0.1,
+            y: 0.9
         },
 
         onClick: function(){
