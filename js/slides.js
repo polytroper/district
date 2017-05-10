@@ -66,7 +66,7 @@ PuzzleSlide = function(spec){
 
     var setInserted = function(INSERTED){
         if (!mobile) return;
-        
+
         if (inserted != INSERTED) {
             inserted = INSERTED;
             console.log("Setting puzzle %s .inserted to %s", spec.puzzleIndex, inserted);
@@ -145,6 +145,7 @@ PuzzleSlide = function(spec){
 
         //if (visible && !active) setActive(true);
         if (!visible) setActive(false);
+        else setActiveSlide(getSlideFromTarget(base.main));
     });
 
     window.addEventListener('scroll', scroll);
