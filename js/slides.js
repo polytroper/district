@@ -44,7 +44,8 @@ PuzzleSlide = function(spec){
     var complete = false;
     var visible = true;
     var loaded = false;
-    var active = true;
+    var active = false;
+    var inserted = true;
     
     var boardSpec = spec.board;
 
@@ -58,34 +59,58 @@ PuzzleSlide = function(spec){
         if (visible != VISIBLE) {
             visible = VISIBLE;
             console.log("Setting puzzle %s .visible to %s", spec.puzzleIndex, visible);
-            if (loaded) setActive(true);
+
+            setInserted(visible);
         }
     }
 
-    var setActive = function(ACTIVE){
-        if (active != ACTIVE && loaded) {
-            active = ACTIVE;
-            console.log("Setting puzzle %s .active to %s", spec.puzzleIndex, active);
+    var setInserted = function(INSERTED){
+        if (!mobile) return;
+        
+        if (inserted != INSERTED) {
+            inserted = INSERTED;
+            console.log("Setting puzzle %s .inserted to %s", spec.puzzleIndex, inserted);
 
-            if (active) {
-                if (!mobile) frame.contentWindow.setPause(false);
-
-                if (mobile && !puzzle.contains(frame)) {
+            if (inserted) {
+                if (puzzle.contains(frame)) console.log("ERROR WHILE ATTEMPTING TO INSERT PUZZLE %s, DIV ALREADY ATTACHED", spec.puzzleIndex);
+                else {
                     puzzle.appendChild(frame);
                     frame.style.visibility = "hidden";
                 }
             }
             else {
-                frame.contentWindow.setPause(true);
-
-                if (mobile && puzzle.contains(frame)) {
-                    boardSpec = frame.contentWindow.getBoardSpec();
+                if (!puzzle.contains(frame)) console.log("ERROR WHILE ATTEMPTING TO REMOVE PUZZLE %s, DIV NOT ATTACHED", spec.puzzleIndex);
+                else {
+                    if (loaded) boardSpec = frame.contentWindow.getBoardSpec();
                     puzzle.removeChild(frame);
-                    console.log("Assigning spec %s on deactivation. Spec has %s fences", spec.puzzleIndex, boardSpec.fencePairs.length);
+                    //console.log("Assigning spec %s on deactivation. Spec has %s fences", spec.puzzleIndex, boardSpec.fencePairs.length);
                     loaded = false;
                 }
             }
         }
+    }
+
+    var setActive = function(ACTIVE){
+        if (!inserted) {}//console.log("ERROR WHILE ATTEMTING TO SET ACTIVE TO %s ON PUZZLE %s, INSERTED IS FALSE", ACTIVE, spec.puzzleIndex);
+        else if (!loaded) {}//console.log("ERROR WHILE ATTEMTING TO SET ACTIVE TO %s ON PUZZLE %s, LOADED IS FALSE", ACTIVE, spec.puzzleIndex);
+        else if (active != ACTIVE) {
+            active = ACTIVE;
+            console.log("Setting puzzle %s .active to %s", spec.puzzleIndex, active);
+            
+            frame.contentWindow.setPause(!active);
+        }
+    }
+
+    var scroll = function(){
+        var frameRect = base.main.getBoundingClientRect();
+
+        frameTop = frameRect.top;
+        frameBottom = frameRect.bottom;
+
+        var below = frameTop < window.innerHeight;
+        var above = frameBottom > 0;
+
+        setVisible(below && above);
     }
 
     frame.addEventListener('load', function(){
@@ -97,29 +122,40 @@ PuzzleSlide = function(spec){
 
         if (spec.muteReset) frame.contentWindow.setShowReset(false);
         
-        if (!initialized) window.setTimeout(function(){frame.style.opacity = 1;}, 200);
+        if (!initialized) {
+            window.setTimeout(function(){frame.style.opacity = 1;}, 200);
+
+            base.main.addEventListener("mouseenter", function(event){
+                setInserted(true);
+                setActiveSlide(getSlideFromTarget(event.target));
+            });
+            base.main.addEventListener("touchstart", function(event){
+                setInserted(true);
+                setActiveSlide(getSlideFromTarget(event.target));
+            });
+        }
 
         if (initialized) frame.contentWindow.completeAnimation();
 
         frame.style.visibility = "visible";
 
+        active = true;
         loaded = true;
         initialized = true;
 
-        if (visible && !active) setActive(true);
-        if (!visible && active) setActive(false);
+        //if (visible && !active) setActive(true);
+        if (!visible) setActive(false);
     });
 
-    window.addEventListener('scroll', function(){
-        var scrollY = window.pageYOffset;
-        var innerHeight = window.innerHeight;
-        var state = (frame.offsetTop<scrollY+innerHeight && frame.offsetTop+parseInt(frame.height)>scrollY);
-        setVisible(state);
-    });
+    window.addEventListener('scroll', scroll);
+    window.addEventListener('touchmove', scroll);
 
     return Object.freeze(Object.assign({
         puzzle,
         frame,
+
+        // Methods
+        setActive,
     }, base));
 }
 
