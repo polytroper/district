@@ -28,7 +28,7 @@ body {
     z-index: 0;
 }
 
-.open {
+.openButton {
     width: 40px;
     height: 40px;
     margin-left: 16px;
@@ -43,7 +43,7 @@ body {
     z-index: 0;
 }
 
-.open:hover {
+.openButton:hover {
     color: #888;
 
 }
