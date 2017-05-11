@@ -40,7 +40,7 @@ function onMouseMove(event){
 
 function onTouchStart(event){
     event.preventDefault();
-    
+
     var touch = event.touches[0];
     var mouseEvent = new MouseEvent("mousedown", {
         clientX: touch.clientX,
@@ -57,6 +57,8 @@ function onTouchEnd(event){
 }
 
 function onTouchMove(event){
+    event.preventDefault();
+    
     var touch = event.touches[0];
     var mouseEvent = new MouseEvent("mousemove", {
         clientX: touch.clientX,
