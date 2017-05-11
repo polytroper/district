@@ -399,7 +399,7 @@ gimmeSlideSpecs = function(){
         {
             type: FinalSlide,
             title: "What You Can Do About This",
-            description: "In 1967, the US Congress <b>mandated</b> single-winner districts by law.",//"<p>If you care about this issue, here are some further steps you can take:</p>",
+            description: "<p>Single-winner districts encourage gerrymandering,<br>increase polarization, and disenfranchise minorities.</p><p>In 1967 the US Congress passed a law<br>that <b>mandated</b> single-winner districts.",
             bullets: [
                 "<b>Get Informed</b> and read up on <a href=\"http://election.princeton.edu/2016/11/24/a-lower-court-win-on-partisan-gerrymandering/\">Gerrymandering Metrics</a> and <a href=\"http://medium.com/@jameson.quinn/a-proportional-representation-primer-be76186861dc\">Proportional Representation</a>.",
                 "<b>Get Involved</b> with voting groups in the <a href=\"http://fairvote.org/\">US</a>, <a href=\"http://electoral-reform.org.uk/\">UK</a>, and <a href=\"http://allvotescount.ca/\">Canada</a>, and donate to groups like the <a href=\"https://secure.squarespace.com/commerce/donate?donatePageId=55f70a4ee4b080e8fac1d69e\">Fair Elections Project</a>.",
