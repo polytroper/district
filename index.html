@@ -61,8 +61,11 @@
 
             var slideSpecs = gimmeSlideSpecs();
 
+            // This junk is to address the stupid accidental click of the color buttons
+            var choiceButtonsReady = false;
+
             chooseColor = function(color, button0, button1){
-                if (chosenColor < 0) {
+                if (chosenColor < 0 && choiceButtonsReady) {
                     chosenColor = color;
 
                     var colorNames = ["Red", "Blue"];

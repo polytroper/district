@@ -186,6 +186,9 @@ ChoiceSlide = function(spec){
         chooseColor(1, colorButton0, colorButton1);
     });
 
+    // Hack to address accidental clicking of color buttons
+    window.setTimeout(function(){choiceButtonsReady = true;}, 1000);
+
     return Object.freeze(Object.assign({
         colorButton0,
         colorButton1,

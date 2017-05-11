@@ -80,7 +80,7 @@ function Post(spec){
         var tr = touch;
         touch = false;
         down = false;
-        setPulse(touch);
+        setPulse(false);
         return tr;
     },
 
