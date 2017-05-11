@@ -13,6 +13,7 @@ function Post(spec){
     down = false,
     touch = false,
     dirty = false,
+    pulse = false,
 
     draw = function(ctx){
         //console.log(this.TAG+"Drawing at "+xyString(this.centerX, this.centerY));
@@ -21,16 +22,28 @@ function Post(spec){
         if (touch) color = colors.post.touch;
         else color = colors.post.base;
 
+
+        if (pulse) {
+            var pulseProgress = (time%4)/4;
+            var pulseRadius = 2*pulseProgress;
+            var pulseColor = va(128, 1-pulseProgress);
+            camera.drawCircle(position, pulseRadius, pulseColor, ctx);
+        }
+
         camera.drawCircle(position, sizes.postRadius, color, ctx);
     },
 
     update = function(){
-        return false;
+        return pulse;
     },
 
     contains = function(point){
         point = camera.untransformPoint(point);
         return distance(position, point) < sizes.postRadius*4;
+    },
+
+    setPulse = function(PULSE){
+        pulse = PULSE;
     },
 
     onMouseDown = function(point){
@@ -69,7 +82,7 @@ function Post(spec){
         if (!touch) down = false;
 
         return tr;
-    };
+    },
 
     isNeighbor = function(post){
         return Math.abs(xIndex-post.xIndex)+Math.abs(yIndex-post.yIndex) == 1;
@@ -87,6 +100,8 @@ function Post(spec){
         draw,
         update,
         contains,
+
+        setPulse,
         isNeighbor,
     });
 }

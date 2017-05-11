@@ -7,8 +7,10 @@ var sizes = {
 }
 
 var colors = {
-    teamNeutral: '#808080',
-    groupNeutral: 'rgb(192, 192, 192)',
+    //teamNeutral: '#808080',
+    //groupNeutral: 'rgb(192, 192, 192)',
+    teamNeutral: 'rgb(170, 102, 204)',
+    groupNeutral: 'rgb(170, 102, 204)',
 
     teams: [
         'rgb(208, 32, 32)',

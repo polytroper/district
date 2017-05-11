@@ -203,6 +203,8 @@ FinalSlide = function(spec){
     bullets.className = "bullets";
     base.words.appendChild(bullets);
 
+    base.description.style.fontSize = "28px";
+
     for (var i = 0; i < spec.bullets.length; i++) {
         let bullet = document.createElement('div');
         bullet.innerHTML = spec.bullets[i];
@@ -231,9 +233,9 @@ gimmeSlideSpecs = function(){
     var tr = [
         {
             type: PuzzleSlide,
-            title: "The Carpet Kingdom",
+            title: "Alice & Bob",
             description:
-            "<p>Alice and Bob are opposing rulers of the Carpet Kingdom. Alice likes Red, but Bob likes Blue.</p><p>They split the floor into 2 separate carpet districts.</p><p>For now, everyone is happy.</p>",
+            "<p>Alice and Bob make a country. Alice likes Red. Bob likes Blue.</p><p>They split the country into 2 districts.</p><p>For now, everyone is happy.</p>",
             board: {
                 groupCount: 2,
                 layout: [
@@ -246,7 +248,7 @@ gimmeSlideSpecs = function(){
         {
             type: PuzzleSlide,
             title: "Democracy is Born",
-            description: "<p>Two new subjects move in, so Alice and Bob invent democracy and hold a vote for color.</p><p>Both districts tie, so they compromise on Grey.</p>",
+            description: "<p>One person moves in with Alice. Another moves in with Bob.</p><p>They vote for favorite color.</p><p>Both districts tie, so everyone compromises on purple.</p>",
             board: {
                 groupCount: 2,
                 layout: [
@@ -259,8 +261,8 @@ gimmeSlideSpecs = function(){
         },
         {
             type: PuzzleSlide,
-            title: "The Kingdom Expands",
-            description: "<p>A third district is added to accomodate new arrivals, and another vote is held.</p><p>Most citizens are satisfied with the outcome.</p>",
+            title: "The Country Expands",
+            description: "<p>A third district is added for two new arrivals.</p><p>They vote again for favorite color.</p><p>Most are happy with the results.</p>",
             board: {
                 groupCount: 3,
                 layout: [
@@ -274,12 +276,12 @@ gimmeSlideSpecs = function(){
         {
             type: ChoiceSlide,
             title: "Welcome Home",
-            description: "<p>You buy a house, settle down, and <b>pick a color</b>.</p><p>Your vote tips the election, so now you and your friends get to control the districts.</p>",
+            description: "<p>You move to the country, <b>pick a favorite color</b>, and run for president.</p>",
         },
         {
             type: PuzzleSlide,
             title: "WINTEAM Takes Charge",
-            description: "<p>You're in charge now, so you redraw the map for the next election.</p><p>Things work out pretty well for WINTEAM.</p>",
+            description: "<p>You win! Now you draw the districts.</p><p>Things work out pretty well for WINTEAM.</p>",
             board: {
                 groupCount: 3,
                 goalScore: 1,
@@ -295,7 +297,7 @@ gimmeSlideSpecs = function(){
         {
             type: PuzzleSlide,
             title: "Playing By The Rules",
-            description: "<p>The kingdom is evenly split on color, but WINTEAM wins again thanks to the magic of <b>Gerrymandering</b>.</p><p>LOSETEAM feels cheated, but this is how the game works.</p>",
+            description: "<p>The country is evenly split.</p><p>WINTEAM wins again thanks to the magic of <b>Gerrymandering</b>!</p><p>LOSETEAM feels cheated. (Sorry, that's how the game works.)</p>",
             board: {
                 groupCount: 4,
                 goalScore: 2,
@@ -311,7 +313,7 @@ gimmeSlideSpecs = function(){
         {
             type: PuzzleSlide,
             title: "Cracking & Packing",
-            description: "<p>WINTEAM is now a minority, but you have a strategy to win: <b>\"Packing\"</b> many LOSETEAM voters into one district, and <b>\"Cracking\"</b> the rest between many WINTEAM districts.</p><p>This way, most <b>LOSETEAM votes are wasted</b>.</p>",
+            description: "<p>WINTEAM is now a minority. But you have a strategy:</p><p><b>Packing</b> many LOSETEAM voters into one district, and<br><b>Cracking</b> the rest between many WINTEAM districts.</p><p>Most LOSETEAM votes are <b>wasted</b>.</p>",
             board: {
                 groupCount: 3,
                 goalScore: 1,
@@ -327,7 +329,7 @@ gimmeSlideSpecs = function(){
         {
             type: PuzzleSlide,
             title: "Linking",
-            description: "<p>Your WINTEAM neighbors start to fracture, making it hard to draw <b>compact districts</b> around them.</p><p>You will have to be a bit more crafty to maintain power.</p>",
+            description: "<p>Your WINTEAM neighbors move apart.</p><p>Now it's hard to put them in <b>compact districts</b>.</p><p>You need to get more crafty.</p>",
             board: {
                 groupCount: 3,
                 goalScore: 1,
@@ -343,7 +345,7 @@ gimmeSlideSpecs = function(){
         {
             type: PuzzleSlide,
             title: "Catastrophe",
-            description: "<p>You have a problem: <b>WINTEAM can't win</b> the next election!</p><p>The layout of WINTEAM voters even forces you to give LOSETEAM more of the floor than they deserve.</p><p>Clearly, this is super unfair. Something must be done!</p>",
+            description: "<p>You have a problem: <b>WINTEAM can't win</b> the next election!</p><p>Where WINTEAM voters live gives them <b>36%</b> of the votes but only <b>25%</b> of the floor.</p><p>This is <i>clearly</i> unfair. Something must be done!</p>",
             board: {
                 groupCount: 4,
                 goalScore: -2,
@@ -359,7 +361,7 @@ gimmeSlideSpecs = function(){
         {
             type: PuzzleSlide,
             title: "A Fairer Game",
-            description: "<p>You read up on <b>Proportional Representation</b> and discover multi-member districts.</p><p>By drawing <b>half as many districts</b> with <b>two winners each</b>, you can make a better map for WINTEAM.</p><p>But now that WINTEAM is a minority, you don't just want one fair map... you want to guarantee that <b>all maps are fair</b>.</p>",
+            description: "<p>You read up on <b>Proportional Representation</b> and discover multi-member districts.</p><p>By drawing <b>half as many districts</b> with <b>two winners each</b>, you can make a better map for WINTEAM.</p><p>But when LOSETEAM takes charge, you want to guarantee that <b>all maps are fair</b>.</p>",
             board: {
                 groupCount: 2,
                 goalScore: -2,
@@ -376,7 +378,7 @@ gimmeSlideSpecs = function(){
         {
             type: PuzzleSlide,
             title: "The End",
-            description: "<p>You add a third winner to each district, which makes <b>gerrymandering almost impossible</b>.</p><p>You realize that single-member districts are fundamentally unrepresentative... which is odd, because your country's congress <b>passed a law requiring them in 1967</b>.</p><p>You wonder aloud, <b>\"What can I do about this?\"</b></p>",
+            description: "<p>You add a third winner to each district. Now gerrymandering is <b>almost impossible</b>.</p><p>You realize that single-member districts are fundamentally unrepresentative.</p><p>You wonder, <b>\"What can I do about this?\"</b></p>",
             board: {
                 groupCount: 2,
                 goalScore: -2,
@@ -393,7 +395,7 @@ gimmeSlideSpecs = function(){
         {
             type: FinalSlide,
             title: "What You Can Do About This",
-            description: "",//"<p>If you care about this issue, here are some further steps you can take:</p>",
+            description: "In 1967, the US Congress <b>mandated</b> single-member districts by law.",//"<p>If you care about this issue, here are some further steps you can take:</p>",
             bullets: [
                 "<b>Get Informed</b> and read up on <a href=\"http://election.princeton.edu/2016/11/24/a-lower-court-win-on-partisan-gerrymandering/\">Gerrymandering Metrics</a> and <a href=\"http://medium.com/@jameson.quinn/a-proportional-representation-primer-be76186861dc\">Proportional Representation</a>.",
                 "<b>Get Involved</b> with voting groups in the <a href=\"http://fairvote.org/\">US</a>, <a href=\"http://electoral-reform.org.uk/\">UK</a>, and <a href=\"http://allvotescount.ca/\">Canada</a>, and donate to groups like the <a href=\"https://secure.squarespace.com/commerce/donate?donatePageId=55f70a4ee4b080e8fac1d69e\">Fair Elections Project</a>.",
