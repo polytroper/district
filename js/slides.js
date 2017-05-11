@@ -349,7 +349,7 @@ gimmeSlideSpecs = function(){
         {
             type: PuzzleSlide,
             title: "Catastrophe",
-            description: "<p><b>Gerrymandering can't save you</b> this time!</p><p>WINTEAM gets <b>36%</b> of the votes but only <b>25%</b> of the floor.</p><p>This is <i>clearly</i> unfair. Something must be done to ensure <b>Proportional Representation</b>!</p>",
+            description: "<p><b>Gerrymandering won't work</b> this time!</p><p>WINTEAM gets <b>36%</b> of the votes but only <b>25%</b> of the floor.</p><p>This is <i>clearly</i> unfair. You must ensure <b>Proportional Representation</b>!</p>",
             board: {
                 groupCount: 4,
                 goalScore: -2,
