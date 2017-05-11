@@ -33,9 +33,14 @@ body {
     text-align: center;
 }
 
+.spacer {
+    height: 8px;    
+    clear: both;
+}
+
 .redirect {
     width: 100%;
-    margin: 16px auto 144px auto;
+    margin: 16px;
 
 }
 
@@ -113,11 +118,6 @@ body {
 
 .sandbox > .tools > .container > .quantity {
     margin: 8px;
-}
-
-.sandbox > .tools > .container > .spacer {
-    height: 8px;    
-    clear: both;
 }
 
 .sandbox > .tools > .container > .quantity > .number {
