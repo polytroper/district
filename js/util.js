@@ -78,6 +78,7 @@ function rgba(r, g, b, a){
 
 function va(v, a){
     //return "rgba("+v+", "+v+", "+v+", "+a+")";
+    v = Math.round(v);
     return "rgba("+[v, v, v, a]+")";
 }
 

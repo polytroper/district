@@ -15,6 +15,8 @@ function Board(spec){
         fencePairs = null,
 
         mutable = false,
+
+        pulseIndex = -1,
     } = spec,
 
     xSize = layout[0].length,
@@ -506,6 +508,7 @@ function Board(spec){
                         position,
                         xSize,
                         ySize,
+                        getDragPost,
                     },
                     xIndex: x,
                     yIndex: y,
@@ -515,6 +518,8 @@ function Board(spec){
                 postLayer.addComponent(post);
             }
         }
+
+        if (pulseIndex >= 0) postList[pulseIndex].setPulse(true);
     },
 
     placeBorderFences = function(){

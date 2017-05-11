@@ -31,20 +31,29 @@ function View(){
             this.drawPieXY(position.x, position.y, radius, start, end, fill, ctx);
         },
 
-        drawPieXY: function(px, py, radius, start, end, fill, ctx = context){
+        // Stroke option totally hacked in to support post pulse effect
+        drawPieXY: function(px, py, radius, start, end, fill, ctx = context, strokeWidth = 0){
             ctx.beginPath();
             ctx.arc(px, py, radius, start*(2*Math.PI), end*(2*Math.PI), false);
             if (start != 0 && end != 1) ctx.lineTo(px, py);
-            ctx.fillStyle = fill;
-            ctx.fill();
+
+            if (strokeWidth > 0) {
+                ctx.lineWidth = strokeWidth;
+                ctx.strokeStyle = fill;
+                ctx.stroke();
+            }
+            else {
+                ctx.fillStyle = fill;
+                ctx.fill();   
+            }
         },
 
-        drawCircle: function(position, radius, fill, ctx = context){
-            this.drawPieXY(position.x, position.y, radius, 0, 1, fill, ctx);
+        drawCircle: function(position, radius, fill, ctx = context, strokeWidth = 0){
+            this.drawPieXY(position.x, position.y, radius, 0, 1, fill, ctx, strokeWidth);
         },
 
-        drawCircleXY: function(px, py, radius, fill, ctx = context){
-            this.drawPieXY(px, py, radius, 0, 1, fill, ctx);
+        drawCircleXY: function(px, py, radius, fill, ctx = context, strokeWidth = 0){
+            this.drawPieXY(px, py, radius, 0, 1, fill, ctx, strokeWidth);
         },
 
         drawLine: function(point0, point1, width, color, ctx = context){

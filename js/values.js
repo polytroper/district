@@ -10,26 +10,26 @@ var colors = {
     //teamNeutral: '#808080',
     //groupNeutral: 'rgb(192, 192, 192)',
     teamNeutral: 'rgb(170, 102, 204)',
-    groupNeutral: 'rgb(170, 102, 204)',
+    groupNeutral: 'rgb(192, 144, 230)',
 
     teams: [
         'rgb(208, 32, 32)',
         'rgb(32, 32, 208)',
-        'rgb(128, 128, 128)',
+        'rgb(170, 102, 204)',
         'rgb(16, 16, 16)',
     ],
 
     teamsLight: [
         'rgb(224, 128, 128)',
         'rgb(128, 128, 224)',
-        'rgb(192, 192, 192)',
+        'rgb(192, 144, 230)',
         'rgb(32, 32, 32)',
     ],
 
     teamsDark: [
         'rgb(192, 16, 16)',
         'rgb(16, 16, 192)',
-        'rgb(64, 64, 64)',
+        'rgb(144, 72, 176)',
         'rgb(0, 0, 0)',
     ],
 

@@ -6,6 +6,9 @@ function Camera(){
             y: 0
         },
 
+
+        // Transition features should probably be removed.
+
         transitioning: false,
         transitionPosition0: {
             x: 0,
@@ -131,23 +134,24 @@ function Camera(){
             view.drawTextXY(text, px, py, size, alignment, color, ctx);
         },
 
-        drawPie: function(position, radius, start, end, fill, ctx = context){
-            this.drawPieXY(position.x, position.y, radius, start, end, fill, ctx);
+        drawPie: function(position, radius, start, end, fill, ctx = context, strokeWidth = 0){
+            this.drawPieXY(position.x, position.y, radius, start, end, fill, ctx, strokeWidth);
         },
 
-        drawPieXY: function(px, py, radius, start, end, fill, ctx = context){
+        drawPieXY: function(px, py, radius, start, end, fill, ctx = context, strokeWidth = 0){
+            strokeWidth = this.scaleY(strokeWidth);
             px = this.transformX(px);
             py = this.transformY(py);
             radius = view.height*radius/this.fov;
-            view.drawPieXY(px, py, radius, start, end, fill, ctx);
+            view.drawPieXY(px, py, radius, start, end, fill, ctx, strokeWidth);
         },
 
-        drawCircle: function(position, radius, fill, ctx = context){
-            this.drawCircleXY(position.x, position.y, radius, fill, ctx);
+        drawCircle: function(position, radius, fill, ctx = context, strokeWidth = 0){
+            this.drawCircleXY(position.x, position.y, radius, fill, ctx, strokeWidth);
         },
 
-        drawCircleXY: function(px, py, radius, fill, ctx = context){
-            this.drawPieXY(px, py, radius, 0, 1, fill, ctx);
+        drawCircleXY: function(px, py, radius, fill, ctx = context, strokeWidth = 0){
+            this.drawPieXY(px, py, radius, 0, 1, fill, ctx, strokeWidth);
         },
 
         drawLine: function(point0, point1, width, color, ctx = context){

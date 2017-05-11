@@ -238,6 +238,7 @@ gimmeSlideSpecs = function(){
             "<p>Alice and Bob make a country. Alice likes Red. Bob likes Blue.</p><p>They split the country into 2 districts.</p><p>For now, everyone is happy.</p>",
             board: {
                 groupCount: 2,
+                pulseIndex: 2,
                 layout: [
                     [0, 1],
                 ],
