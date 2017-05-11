@@ -49,16 +49,16 @@
                         <div class="close" onclick="closeToolbox();">&#x2716;</div>
 
                         <div class="quantity">
-                            <div class="button" onclick="subtractRow();">&#10134;</div>
-                            <div class="button" onclick="addRow();">&#10133;</div>
+                            <div class="button" onclick="subtractRow();"><img src="./res/minus.png" alt=""></div>
+                            <div class="button" onclick="addRow();"><img src="./res/plus.png" alt=""></div>
                             <div class="number" id="rowCounter">4 Rows</div>
                         </div>
 
                         <div class="spacer"></div>
 
                         <div class="quantity">
-                            <div class="button" onclick="subtractColumn();">&#10134;</div>
-                            <div class="button" onclick="addColumn();">&#10133;</div>
+                            <div class="button" onclick="subtractColumn();"><img src="./res/minus.png" alt=""></div>
+                            <div class="button" onclick="addColumn();"><img src="./res/plus.png" alt=""></div>
                             <div class="number" id="columnCounter">6 Columns</div>
                         </div>
 
@@ -67,24 +67,24 @@
                         <div class="spacer"></div>
 
                         <div class="quantity">
-                            <div class="button" onclick="scoreDown();">&#10134;</div>
-                            <div class="button" onclick="scoreUp();">&#10133;</div>
+                            <div class="button" onclick="scoreDown();"><img src="./res/minus.png" alt=""></div>
+                            <div class="button" onclick="scoreUp();"><img src="./res/plus.png" alt=""></div>
                             <div class="button" id="scoreCounter" onclick="switchTeam();">0</div>
                         </div>
 
                         <div class="spacer"></div>
 
                         <div class="quantity">
-                            <div class="button" onclick="subtractGroup();">&#10134;</div>
-                            <div class="button" onclick="addGroup();">&#10133;</div>
+                            <div class="button" onclick="subtractGroup();"><img src="./res/minus.png" alt=""></div>
+                            <div class="button" onclick="addGroup();"><img src="./res/plus.png" alt=""></div>
                             <div class="number" id="groupCounter">0 Groups</div>
                         </div>
 
                         <div class="spacer"></div>
 
                         <div class="quantity">
-                            <div class="button" onclick="subtractRep();">&#10134;</div>
-                            <div class="button" onclick="addRep();">&#10133;</div>
+                            <div class="button" onclick="subtractRep();"><img src="./res/minus.png" alt=""></div>
+                            <div class="button" onclick="addRep();"><img src="./res/plus.png" alt=""></div>
                             <div class="number" id="repCounter">0 Reps</div>
                         </div>
 
@@ -264,7 +264,7 @@
                 var url = embedWindow.location.href;
                 if (url.includes("?")) url = url.slice(0, url.indexOf("?"));
                 url += board.getQueryString();
-                embedField.value = "<embed src=\""+url+"\" width=\"640px\" height=\"640px\" style=\"border:1px solid black\"></embed>";
+                embedField.value = "<iframe src=\""+url+"\" width=\"640px\" height=\"640px\" style=\"border:1px solid black\"></iframe>";
             }
         </script>
 
