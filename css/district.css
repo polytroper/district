@@ -35,14 +35,24 @@ body {
 }
 
 .skip {
-    margin: 32px 0px 32px 32px;
+    margin: px 0px 32px 32px;
     color: #bbb;
 
     font-size: 28px;
     text-align: left;
 
     cursor: pointer;
+    transition: 0.2s;
+
+    -webkit-user-select: none; /* Chrome/Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+ */
 }
+
+.skip:hover {
+    opacity: 0.5;
+}
+
 
 .ruler > hr {
     margin-left: 5%;
