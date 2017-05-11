@@ -77,10 +77,10 @@ function Post(spec){
     },
 
     onMouseUp = function(point){
-        var tr = false;
-        touch = contains(point);
-        setPulse(touch);
+        var tr = touch;
+        touch = false;
         down = false;
+        setPulse(touch);
         return tr;
     },
 
