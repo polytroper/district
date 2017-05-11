@@ -406,7 +406,7 @@ gimmeSlideSpecs = function(){
                 "<b>Spread the Word</b> about these issues! Sharing this page on <a href=\"https://twitter.com/home?status=Here%20is%20a%20totally%20rad%20game%20about%20redistricting%20and%20representation%3A%20polytrope.com/district/\" onclick=\"trackOutboundLink('https://twitter.com/home?status=Here%20is%20a%20totally%20rad%20game%20about%20redistricting%20and%20representation%3A%20polytrope.com/district/'); return false;\">Twitter</a> or <a href=\"https://www.facebook.com/sharer/sharer.php?u=polytrope.com/district/\" onclick=\"trackOutboundLink('https://www.facebook.com/sharer/sharer.php?u=polytrope.com/district/'); return false;\">Facebook</a> is a good start.",
             ],
             closer: "Want to make, share, or embed your own District maps? <a href=\"http://polytrope.com/district/sandbox.html\" onclick=\"trackOutboundLink('http://polytrope.com/district/sandbox.html'); return false;\">Use the Level Editor!</a>",
-            credits: "<p>Special thanks to these<br>very patient people:</p><p>Amit Patel<br>Andy Matuschak<br>Jameson Quinn<br>Lingxi Chenyang<br>Lucas Vieira<br>Nicky Case</p><p>And finally, thanks to you for playing!</p>",
+            credits: "<p>Special thanks to these<br>very patient people:</p><p>Amit Patel<br>Andy Matuschak<br>Jack Schaedler<br>Jameson Quinn<br>Lingxi Chenyang<br>Lucas Vieira<br>Nicky Case</p><p>And finally, thanks to you for playing!</p>",
         },
     ];
 

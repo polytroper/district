@@ -463,6 +463,7 @@ function Board(spec){
         var specString = JSON.stringify(spec);
         var str = LZString.compressToBase64(specString);
         //var str = btoa(encodeURIComponent(JSON.stringify(spec)));
+        qs += "&res="+resolution;
         qs += "&spec="+str;
         return qs;
         /*

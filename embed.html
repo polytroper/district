@@ -56,6 +56,14 @@ canvas {
             var canvasElement = document.getElementById("gameCanvas");;
             var context = canvasElement.getContext("2d");
 
+            var resolution = getQueryString("res");
+            if (resolution == null) resolution = 640;
+            else {
+                resolution = parseInt(resolution);
+                canvasElement.width = resolution;
+                canvasElement.height = resolution;
+            }
+
             var CANVAS_WIDTH = canvasElement.offsetWidth;
             var CANVAS_HEIGHT = canvasElement.offsetHeight;
 
