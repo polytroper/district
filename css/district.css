@@ -34,6 +34,16 @@ body {
     text-align: center;
 }
 
+.skip {
+    margin: 32px 0px 32px 32px;
+    color: #bbb;
+
+    font-size: 28px;
+    text-align: left;
+
+    cursor: pointer;
+}
+
 .ruler > hr {
     margin-left: 5%;
     margin-right: 5%;

@@ -41,6 +41,8 @@
 
         <div class="deck" id="deck"></div>
 
+        <div class="skip" id="skip" onclick="skip();">Been here before? Skip to the end.</div>
+
         <script type="text/javascript">
             var deck = document.getElementById("deck");
 
@@ -49,6 +51,8 @@
 
             var startTime = new Date();
             var advanceTime = new Date();
+            var showSkip = true;
+            var skipButton = document.getElementById('skip');
 
             // Big ugly regex check for mobile and therefore performance-constrained devices
             var mobile = (function(){
@@ -116,10 +120,19 @@
             }
 
             skip = function(){
-                while (slideSpecs.length > 0) advance(false);
+                slideSpecs = slideSpecs.slice(slideSpecs.length-1);
+                advance(false);
+            }
+
+            setShowSkip = function(SHOWSKIP){
+                if (showSkip != SHOWSKIP) {
+                    showSkip = SHOWSKIP;
+                    skipButton.style.display = "none";
+                }
             }
 
             advance = function(report = true){
+                if (slides.length > 0) setShowSkip(false);
                 if (slideSpecs.length > 0) {
                     if (slides.length > 0) {
                         var ruler = document.createElement('div');
