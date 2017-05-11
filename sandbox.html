@@ -86,7 +86,7 @@
                         <div class="quantity">
                             <div class="button" onclick="subtractRep();"><img src="./res/minus.png" alt=""></div>
                             <div class="button" onclick="addRep();"><img src="./res/plus.png" alt=""></div>
-                            <div class="number" id="repCounter">0 Reps</div>
+                            <div class="number" id="repCounter">1 Winner</div>
                         </div>
 
                         <div class="spacer"></div>
@@ -286,7 +286,7 @@
                 groupCounter.innerHTML = groupCount+" Group"+(groupCount == 1 ? "" : "s");
 
                 var repCount = board.getRepCount();
-                repCounter.innerHTML = repCount+" Rep"+(repCount == 1 ? "" : "s");
+                repCounter.innerHTML = repCount+" Winner"+(repCount == 1 ? "" : "s");
 
                 var url = window.location.href;
                 if (url.includes("?")) url = url.slice(0, url.indexOf("?"));
@@ -322,8 +322,8 @@
                     embedWindow = frame.contentWindow;
                     board = frame.contentWindow.getBoard();
                     board.setRefreshQueryCallback(refreshToolbox);
-                    refreshToolbox();
                     if (!window.location.href.includes('?')) openToolbox();
+                    refreshToolbox();
                     board.setMutable(editing);
                 });
             }
