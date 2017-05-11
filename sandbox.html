@@ -259,6 +259,8 @@
                 url += board.getQueryString();
                 linkField.value = url;
 
+                window.location.href = url;
+
                 var url = embedWindow.location.href;
                 if (url.includes("?")) url = url.slice(0, url.indexOf("?"));
                 url += board.getQueryString();

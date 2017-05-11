@@ -206,7 +206,7 @@ FinalSlide = function(spec){
     bullets.className = "bullets";
     base.words.appendChild(bullets);
 
-    base.description.style.fontSize = "28px";
+    //base.description.style.fontSize = "28px";
 
     for (var i = 0; i < spec.bullets.length; i++) {
         let bullet = document.createElement('div');
@@ -403,9 +403,9 @@ gimmeSlideSpecs = function(){
             bullets: [
                 "<b>Get Informed</b> and read up on <a href=\"http://election.princeton.edu/2016/11/24/a-lower-court-win-on-partisan-gerrymandering/\" onclick=\"trackOutboundLink('http://election.princeton.edu/2016/11/24/a-lower-court-win-on-partisan-gerrymandering/'); return false;\">Gerrymandering Metrics</a> and <a href=\"http://medium.com/@jameson.quinn/a-proportional-representation-primer-be76186861dc\" onclick=\"trackOutboundLink('http://medium.com/@jameson.quinn/a-proportional-representation-primer-be76186861dc'); return false;\">Proportional Representation</a>.",
                 "<b>Get Involved</b> with voting groups in the <a href=\"http://fairvote.org/\" onclick=\"trackOutboundLink('http://fairvote.org/'); return false;\">US</a>, <a href=\"http://electoral-reform.org.uk/\" onclick=\"trackOutboundLink('http://electoral-reform.org.uk/'); return false;\">UK</a>, and <a href=\"http://allvotescount.ca/\" onclick=\"trackOutboundLink('http://allvotescount.ca/'); return false;\">Canada</a>, and donate to groups like the <a href=\"https://secure.squarespace.com/commerce/donate?donatePageId=55f70a4ee4b080e8fac1d69e\"  onclick=\"trackOutboundLink('https://secure.squarespace.com/commerce/donate?donatePageId=55f70a4ee4b080e8fac1d69e'); return false;\">Fair Elections Project</a>.",
-                "<b>Spread the Word</b> about these issues! Sharing this page on <a href=\"https://twitter.com/home?status=Here%20is%20a%20totally%20rad%20game%20about%20redistricting%20and%20representation%3A%20polytrope.com/district/\" onclick=\"trackOutboundLink('http://twitter.com/'); return false;\">Twitter</a> or <a href=\"https://www.facebook.com/sharer/sharer.php?u=polytrope.com/district/\" onclick=\"trackOutboundLink('http://facebook.com/'); return false;\">Facebook</a> is a good start.",
+                "<b>Spread the Word</b> about these issues! Sharing this page on <a href=\"https://twitter.com/home?status=Here%20is%20a%20totally%20rad%20game%20about%20redistricting%20and%20representation%3A%20polytrope.com/district/\" onclick=\"trackOutboundLink('https://twitter.com/home?status=Here%20is%20a%20totally%20rad%20game%20about%20redistricting%20and%20representation%3A%20polytrope.com/district/'); return false;\">Twitter</a> or <a href=\"https://www.facebook.com/sharer/sharer.php?u=polytrope.com/district/\" onclick=\"trackOutboundLink('https://www.facebook.com/sharer/sharer.php?u=polytrope.com/district/'); return false;\">Facebook</a> is a good start.",
             ],
-            closer: "Want to make, share, or embed your own District maps? <a href=\"http://polytrope.com/district/sandbox.html\">Use the Level Editor!</a>",
+            closer: "Want to make, share, or embed your own District maps? <a href=\"http://polytrope.com/district/sandbox.html\" onclick=\"trackOutboundLink('http://polytrope.com/district/sandbox.html'); return false;\">Use the Level Editor!</a>",
             credits: "<p>Special thanks to these<br>very patient people:</p><p>Amit Patel<br>Andy Matuschak<br>Jameson Quinn<br>Lingxi Chenyang<br>Lucas Vieira<br>Nicky Case</p><p>And finally, thanks to you for playing!</p>",
         },
     ];
