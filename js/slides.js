@@ -365,7 +365,7 @@ gimmeSlideSpecs = function(){
         {
             type: PuzzleSlide,
             title: "A Fairer Game",
-            description: "<p>Multiple winners make districts more <b>proportional</b>.</p><p><b>Half as many districts</b> with <b>two winners each</b> means a better map for WINTEAM.</p><p>You want to guarantee that <b>all maps are fair</b> for when LOSETEAM takes charge.</p>",
+            description: "<p>Multiple winners make districts more <b>proportional</b>.</p><p><b>Half as many districts</b> with <b>two winners each</b> means a better map for WINTEAM.</p><p>But when LOSETEAM takes charge, you want to guarantee that <b>all maps are fair</b>.</p>",
             board: {
                 groupCount: 2,
                 goalScore: 0,
