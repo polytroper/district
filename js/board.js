@@ -458,8 +458,10 @@ function Board(spec){
         layout = extractLayout();
         var qs = "?=";
         var spec = getSpec();
-        var str = btoa(encodeURIComponent(JSON.stringify(spec)));
-        qs += str;
+        var specString = JSON.stringify(spec);
+        var str = LZString.compressToBase64(specString);
+        //var str = btoa(encodeURIComponent(JSON.stringify(spec)));
+        qs += "&spec="+str;
         return qs;
         /*
         var qs = "?=";

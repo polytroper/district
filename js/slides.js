@@ -395,7 +395,7 @@ gimmeSlideSpecs = function(){
             title: "What You Can Do About This",
             description: "",//"<p>If you care about this issue, here are some further steps you can take:</p>",
             bullets: [
-                "<b>Get Informed</b> and read up on <a href=\"http://election.princeton.edu/2016/11/24/a-lower-court-win-on-partisan-gerrymandering/\">Gerrymandering Metrics</a> and <a href=\"http://fairvote.org/proportional_representation_library\">Proportional Representation</a>.",
+                "<b>Get Informed</b> and read up on <a href=\"http://election.princeton.edu/2016/11/24/a-lower-court-win-on-partisan-gerrymandering/\">Gerrymandering Metrics</a> and <a href=\"http://medium.com/@jameson.quinn/a-proportional-representation-primer-be76186861dc\">Proportional Representation</a>.",
                 "<b>Get Involved</b> with voting groups in the <a href=\"http://fairvote.org/\">US</a>, <a href=\"http://electoral-reform.org.uk/\">UK</a>, and <a href=\"http://allvotescount.ca/\">Canada</a>, and donate to groups like the <a href=\"https://secure.squarespace.com/commerce/donate?donatePageId=55f70a4ee4b080e8fac1d69e\">Fair Elections Project</a>.",
                 "<b>Spread the Word</b> about these issues! Sharing this page on <a href=\"https://twitter.com/home?status=Here%20is%20a%20totally%20rad%20game%20about%20redistricting%20and%20representation%3A%20polytrope.com/district/\">Twitter</a> or <a href=\"https://www.facebook.com/sharer/sharer.php?u=polytrope.com/district/\">Facebook</a> is a good start.",
             ],

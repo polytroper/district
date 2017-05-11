@@ -162,13 +162,15 @@ function getQueryString(field, url){
 }
 
 function getQueryBoard(){
-    var href = window.location.href;
-    if (!href.includes("?")) return null;
-    href = href.slice(href.indexOf("?")+2);
-    href = atob(href);
-    console.log("Decoding: "+href);
-    href = decodeURIComponent(href);
-    var spec = JSON.parse(href);
+    var specString = getQueryString("spec");
+
+    if (specString == null) return null;
+    
+//    href = atob(href);
+    console.log("Decoding: "+specString);
+//    href = decodeURIComponent(href);
+    var str = LZString.decompressFromBase64(specString);
+    var spec = JSON.parse(str);
     return Board(spec);
     /*
     var xCount = parseInt(getQueryString("x"));
