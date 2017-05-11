@@ -1,5 +1,9 @@
 function Menu(){
     var // No spec for menu
+
+    chart = new Chart({}),
+    balance = new Balance(),
+
     resetButton = BasicButton({
         radius: 0.04,
         show: false,
@@ -52,6 +56,7 @@ function Menu(){
                 click = false;
                 board.cancelDrag();
                 board.completeAnimation();
+                balance.completeAnimation();
                 self.mover.setProgress(0);
             }
         },
@@ -105,9 +110,6 @@ function Menu(){
         name: "Balance Layer",
         parent: menuLayer,
     }),
-
-    chart = new Chart({}),
-    balance = new Balance(),
 
     draw = function(ctx){
         var promptColor = colors.menu.prompt;
