@@ -349,7 +349,7 @@ gimmeSlideSpecs = function(){
         {
             type: PuzzleSlide,
             title: "Catastrophe",
-            description: "<p>You have a problem: <b>WINTEAM can't win</b> the next election!</p><p>Where WINTEAM voters live gives them <b>36%</b> of the votes but only <b>25%</b> of the floor.</p><p>This is <i>clearly</i> unfair. Something must be done!</p>",
+            description: "<p><b>Gerrymandering can't save you</b> this time!</p><p>WINTEAM gets <b>36%</b> of the votes but only <b>25%</b> of the floor.</p><p>This is <i>clearly</i> unfair. Something must be done to ensure <b>Proportional Representation</b>!</p>",
             board: {
                 groupCount: 4,
                 goalScore: -2,
@@ -365,10 +365,10 @@ gimmeSlideSpecs = function(){
         {
             type: PuzzleSlide,
             title: "A Fairer Game",
-            description: "<p>You read up on <b>Proportional Representation</b> and discover multi-member districts.</p><p>By drawing <b>half as many districts</b> with <b>two winners each</b>, you can make a better map for WINTEAM.</p><p>But when LOSETEAM takes charge, you want to guarantee that <b>all maps are fair</b>.</p>",
+            description: "<p>Multiple winners make districts more <b>proportional</b>.</p><p><b>Half as many districts</b> with <b>two winners each</b> means a better map for WINTEAM.</p><p>You want to guarantee that <b>all maps are fair</b> for when LOSETEAM takes charge.</p>",
             board: {
                 groupCount: 2,
-                goalScore: -2,
+                goalScore: 0,
                 goalTeam: 0,
                 repCount: 2,
                 layout: [
@@ -382,7 +382,7 @@ gimmeSlideSpecs = function(){
         {
             type: PuzzleSlide,
             title: "The End",
-            description: "<p>You add a third winner to each district. Now gerrymandering is <b>almost impossible</b>.</p><p>You realize that single-member districts are fundamentally unrepresentative.</p><p>You wonder, <b>\"What can I do about this?\"</b></p>",
+            description: "<p>You give each district three winners. Now gerrymandering is <b>almost impossible</b>.</p><p>You realize that single-winner districts are fundamentally unrepresentative.</p><p>You wonder, <b>\"What can I do about this?\"</b></p>",
             board: {
                 groupCount: 2,
                 goalScore: -2,
@@ -399,7 +399,7 @@ gimmeSlideSpecs = function(){
         {
             type: FinalSlide,
             title: "What You Can Do About This",
-            description: "In 1967, the US Congress <b>mandated</b> single-member districts by law.",//"<p>If you care about this issue, here are some further steps you can take:</p>",
+            description: "In 1967, the US Congress <b>mandated</b> single-winner districts by law.",//"<p>If you care about this issue, here are some further steps you can take:</p>",
             bullets: [
                 "<b>Get Informed</b> and read up on <a href=\"http://election.princeton.edu/2016/11/24/a-lower-court-win-on-partisan-gerrymandering/\">Gerrymandering Metrics</a> and <a href=\"http://medium.com/@jameson.quinn/a-proportional-representation-primer-be76186861dc\">Proportional Representation</a>.",
                 "<b>Get Involved</b> with voting groups in the <a href=\"http://fairvote.org/\">US</a>, <a href=\"http://electoral-reform.org.uk/\">UK</a>, and <a href=\"http://allvotescount.ca/\">Canada</a>, and donate to groups like the <a href=\"https://secure.squarespace.com/commerce/donate?donatePageId=55f70a4ee4b080e8fac1d69e\">Fair Elections Project</a>.",

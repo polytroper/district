@@ -45,7 +45,7 @@ function Post(spec){
 
     update = function(){
         var tr = pulse || pulseFade > 0;
-        pulseFade = tickProgress(pulse, pulseFade, 1);
+        pulseFade = tickProgress(pulse, pulseFade, 2);
         return tr;
     },
 
