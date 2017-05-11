@@ -51,7 +51,6 @@ function onTouchStart(event){
 }
 
 function onTouchEnd(event){
-    var touch = event.touches[0];
     var mouseEvent = new MouseEvent("mouseup");
     canvasElement.dispatchEvent(mouseEvent);
     //onMouseUp(convertTouches(event));
@@ -68,7 +67,6 @@ function onTouchMove(event){
 }
 
 function onTouchCancel(event){
-    var touch = event.touches[0];
     var mouseEvent = new MouseEvent("mouseup");
     canvasElement.dispatchEvent(mouseEvent);
     //onMouseUp(convertTouches(event));
