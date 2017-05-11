@@ -149,6 +149,8 @@ body {
     margin: 8px 32px 8px 32px;
 }
 .slide > .choice > .colorButton {
+    display: inline-block;
+
     width: 128px;
     height: 128px;
     border-radius: 32px;
@@ -160,7 +162,9 @@ body {
     cursor: pointer;
     transition: 0.2s;
 
-    display: inline-block;
+    -webkit-user-select: none; /* Chrome/Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+ */
 }
 .slide > .choice > .colorButton:hover {
     opacity: 0.5;
