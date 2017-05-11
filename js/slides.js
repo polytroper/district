@@ -238,7 +238,7 @@ gimmeSlideSpecs = function(){
             type: PuzzleSlide,
             title: "Alice & Bob",
             description:
-            "<p>Alice and Bob make a country.</p><p>Alice likes Red. Bob likes Blue.</p><p>They split the country into 2 districts.</p><p>For now, everyone is happy.</p>",
+            "<p>Alice and Bob make a country.<br>Alice likes Red. Bob likes Blue.</p><p>They split the country into 2 districts.<br>For now, everyone is happy.</p>",
             board: {
                 groupCount: 2,
                 pulseIndex: 2,

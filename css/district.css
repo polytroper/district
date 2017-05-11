@@ -7,6 +7,12 @@ body {
     width: 100%;
     margin: auto;
 }
+html {
+    width: 100%;
+    margin: auto;
+    position: relative;
+    min-height: 100%;
+}
 
 /** DECK **/
 
@@ -76,7 +82,7 @@ body {
 
 .slide > .words {
     order: 0;
-    flex-basis: 480px;
+    flex-basis: 520px;
     flex-grow: 0.3;
     flex-shrink: 0.1;
 

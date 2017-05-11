@@ -7,6 +7,12 @@ body {
     width: 100%;
     margin: auto;
 }
+html {
+    width: 100%;
+    margin: auto;
+    position: relative;
+    min-height: 100%;
+}
 
 /** SANDBOX **/
 
