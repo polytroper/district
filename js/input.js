@@ -19,7 +19,7 @@ function onMouseDown(event){
 
 function onMouseUp(event){
     if (pause) setPause(false);
-    
+
     click = false;
 
     for (var i = 0; i < mouseListeners.length; i++) {
@@ -39,6 +39,8 @@ function onMouseMove(event){
 }
 
 function onTouchStart(event){
+    event.preventDefault();
+    
     var touch = event.touches[0];
     var mouseEvent = new MouseEvent("mousedown", {
         clientX: touch.clientX,
@@ -66,6 +68,9 @@ function onTouchMove(event){
 }
 
 function onTouchCancel(event){
+    var touch = event.touches[0];
+    var mouseEvent = new MouseEvent("mouseup");
+    canvasElement.dispatchEvent(mouseEvent);
     //onMouseUp(convertTouches(event));
 }
 

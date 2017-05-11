@@ -294,6 +294,10 @@ function Balance(){
         dirty = true;
     },
 
+    completeAnimation = function(){
+        currentAngle = targetAngle;
+    },
+
     setRatio = function(ratio){
         console.log("Setting ratio to "+ratio);
         ratio = ratio;
@@ -318,5 +322,7 @@ function Balance(){
         setRatio,
         setGoal,
         setShow,
+
+        completeAnimation,
     });
 }

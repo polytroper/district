@@ -12,7 +12,7 @@ function BasicButton(spec){
         show = true,
         enabled = true,
 
-        onClick = function(){},
+        onClick = function(self){},
         drawDetails = function(info){},
     } = spec,
 
@@ -29,6 +29,7 @@ function BasicButton(spec){
     showProgress = show?1:0,
 
     drawColor = baseColor,
+    self = null,
 
     draw = function(ctx){
         if (mover.getProgress() > 0) {
@@ -79,7 +80,7 @@ function BasicButton(spec){
         var tr = false;
         touch = contains(point);
         if (touch && enabled) {
-            onClick();
+            onClick(self);
             press = true;
             tr = true;
         }
@@ -90,16 +91,17 @@ function BasicButton(spec){
         var tr = false;
         touch = contains(point);
         if (touch && enabled && !press) {
-            onClick();
+            onClick(self);
             tr = true;
         }
         press = false;
         return tr;
     };
 
-    return Object.freeze({
+    self = Object.freeze({
         // Fields
         radius,
+        mover,
 
         // Methods
         draw,
@@ -112,4 +114,5 @@ function BasicButton(spec){
         onMouseDown,
         onMouseUp,
     });
+    return self;
 }

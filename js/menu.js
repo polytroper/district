@@ -44,13 +44,15 @@ function Menu(){
             y: 0.9
         },
 
-        onClick: function(){
+        onClick: function(self){
             if (completionCallback != null) {
                 completionCallback();
                 completionCallback = null;
                 menu.setShowNext(false);
                 click = false;
                 board.cancelDrag();
+                board.completeAnimation();
+                self.mover.setProgress(0);
             }
         },
 

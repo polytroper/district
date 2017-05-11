@@ -47,6 +47,10 @@ function Mover(spec){
 		return progress;
 	},
 
+	setProgress = function(PROGRESS){
+		progress = PROGRESS;
+	},
+
 	getState = function(){
 		return state;
 	},
@@ -73,10 +77,12 @@ function Mover(spec){
 		// Methods
 
 		update,
+		getState,
 		setState,
 		getPosition,
 		getProgress,
-		getState,
+		setProgress,
+
 		completeAnimation,
 	});
 
