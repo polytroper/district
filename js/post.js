@@ -55,12 +55,20 @@ function Post(spec){
     },
 
     setPulse = function(PULSE){
-        pulse = PULSE;
+        if (pulse != PULSE) {
+            pulse = PULSE;
+
+            if (pulse && pulseFade == 0) {
+                pulseFade = 1;
+                pulseTime = time;
+            }
+        }
     },
 
     onMouseDown = function(point){
         var tr = false;
         touch = contains(point);
+        setPulse(touch);
         if (touch) {
             down = true;
             tr = true;
@@ -71,6 +79,7 @@ function Post(spec){
     onMouseUp = function(point){
         var tr = false;
         touch = contains(point);
+        setPulse(touch);
         down = false;
         return tr;
     },
@@ -80,12 +89,8 @@ function Post(spec){
         if (touch != contains(point)) {
             tr = true;
             touch = !touch;
-            if (touch && !pulse && pulseFade == 0) {
-                pulseFade = 1;
-                pulseTime = time;
-            }
-            if (pulse && !touch && pulseFade == 0) pulseFade = 1;
-            pulse = touch;
+            setPulse(touch);
+            //if (pulse && !touch && pulseFade == 0) pulseFade = 1;
         }
         if (!touch) down = false;
         return tr;
