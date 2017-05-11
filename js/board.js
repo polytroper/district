@@ -443,6 +443,7 @@ function Board(spec){
                 placeFence(postList[fencePairs[i].a], postList[fencePairs[i].b]);
             }
         }
+        compute();
     },
 
     getSpec = function(){
