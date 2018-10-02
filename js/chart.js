@@ -57,7 +57,7 @@ function Chart(spec){
         port.drawText(Math.round((voteRatio)*100)+"%", {x: x0+0.01*yScale, y: (y0+y1)/2}, 0.025*yScale, "left", colors.menu.chart, ctx);
         port.drawText(Math.round((1-voteRatio)*100)+"%", {x: x1-0.01*yScale, y: (y0+y1)/2}, 0.025*yScale, "right", colors.menu.chart, ctx);
 
-        port.drawText("FLOOR", {x: position.x, y: (y2+y3)/2}, 0.025*yScale, "center", colors.menu.chart, ctx);
+        port.drawText("DISTRICTS", {x: position.x, y: (y2+y3)/2}, 0.025*yScale, "center", colors.menu.chart, ctx);
         port.drawText(Math.round((repRatio)*100)+"%", {x: x0+0.01*yScale, y: (y2+y3)/2}, 0.025*yScale, "left", colors.menu.chart, ctx);
         port.drawText(Math.round((1-repRatio)*100)+"%", {x: x1-0.01*yScale, y: (y2+y3)/2}, 0.025*yScale, "right", colors.menu.chart, ctx);
 
